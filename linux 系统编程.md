@@ -452,7 +452,6 @@ tryagain:
 
 
 
-
 ##### lseek函数
 ```c
 off_t lseek(int fd, off_t offset, int whence);
@@ -590,11 +589,9 @@ buf: (传出参数) 存放文件属性
 区别：穿透符号链接：stat：会  lstat：不会
 
 获取文件大小：buf.st_size 
-获取文件类型：buf.st_mode
-获取文件权限：buf.st_mode
 
 ```c
-
+//获取文件大小
 int main(int argc,char *argv[])
 { 
   struct stat sbuf;
@@ -609,7 +606,40 @@ int main(int argc,char *argv[])
 }
 ```
 
+判断文件类型，权限
+
+  上述的文件类型中定义了检查这些类型的宏定义：
+  S_ISLNK (st_mode)  判断是否为符号连接
+  S_ISREG (st_mode)  是否为一般文件
+  S_ISDIR (st_mode)  是否为目录
+  S_ISCHR (st_mode)  是否为字符装置文件
+  S_ISBLK (s3e)    是否为先进先出
+  S_ISSOCK (st_mode)  是否为socket
+
+```c
+//判断是否是目录
+int main(int argc,char *argv[])
+{ 
+  struct stat sbuf;
+  
+  int ret = stat(argv[1],&sbuf);
+  if(ret == -1){
+    perror("stat error");
+    exit(0);
+  }
+  if(S_ISDIR(sbuf->st_mode)){ //判断
+      printf("it is dir");
+  }
+    
+    
+  return 0;
+}
+```
+
+
+
 ##### link和ulink函数
+
 ```c
 int link(const char* oldpath, const char* newpath); //创建硬链接
 int ulink(const char *pathname);  //删除dentry
