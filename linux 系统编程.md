@@ -800,5 +800,6 @@ int main(int argc, char *argv[])
 ##### dup(重定向)
 ```c
 int dup(int oldfd);  //返回值为新的文件描述符
-int dup2(int oldfd,int newfd);
+int dup2(int oldfd,int newfd); //dupto 使newfd指向oldfd指向的文件 newfd->oldfd oldfd必须为有效的文件描述符 返回值为newfd
 ```
+ 
