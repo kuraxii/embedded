@@ -802,4 +802,56 @@ int main(int argc, char *argv[])
 int dup(int oldfd);  //返回值为新的文件描述符
 int dup2(int oldfd,int newfd); //dupto 使newfd指向oldfd指向的文件 newfd->oldfd oldfd必须为有效的文件描述符 返回值为newfd
 ```
+example
+```c
+DUP
+int main(int argc,char *argv[])
+{
+  int fd;
+  fd = open(argv[1],O_RDONLY);
+  printf("fd = %d\n",fd);
+  int newfd;
+  newfd = dup(fd);
+  
+  printf("newfd = %d\n",newfd);
+  close(fd);
+
+
+  return 0;
+}
+```
+```c
+DUP2
+int main(int argc,char *argv[])
+{
+  int fd1,fd2;
+  fd1 = open(argv[1],O_RDWR);
+  fd2 = open(argv[2],O_RDWR);
+  printf("fd1 = %d fd2 = %d\n",fd1,fd2);
+  int ret;
+  ret = dup2(fd1,fd2);
+  printf("fd1 = %d fd2 = %d\n",fd1,fd2);
+  printf("%d\n",ret);
+  dup2(fd1,STDOUT_FILENO) ;
+  close(fd1);
+  return 0;
+}
+``` 
+
+##### fcntl函数实现dup函数
+cmd：F_DUPFD
+参数3：被占用的，返回最小可用的
+      未被占用的，返回=该值的文件描述符
+```c
+int main(int argc,char *argv[])
+{
+  int fd1 = open(argv[1],O_RDWR);
+  printf("fd1 = %d\n",fd1);
+  int newfd = fcntl(fd1,F_DUPFD,0);//0被占用，fcntl使用文件描述符表中可用的最小的文件描述符返回
+  printf("newfd = %d\n",newfd);
+  int newfd2 = fcntl(fd1,F_DUPFD,7);//使用未被占用>=7的文件描述符
+  printf("newfd2 = %d\n",newfd2);
+  return 0;
+}
+```
  
