@@ -11,6 +11,7 @@
 
 void isfile(char *name);
 void read_dir(char *dir);
+
 void read_dir(char *dir)
 {
   char path[256];
