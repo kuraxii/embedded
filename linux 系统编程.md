@@ -1,35 +1,34 @@
 [TOC]
 
-### linux基础命令
+### linux基础
 
-根目录介绍
+##### 根目录介绍
 
-```shell
-bin #存放二进制可执行文件
-boot #存放开机启动程序
-dev #存放设备文件
-etc #用户信息和系统配置
-home #用户目录
-lib  #库路径
-media mnt  #磁盘挂载相关
-opt proc
-root #root用户目录
-usr #用户资源管理目录 
-```
+- bin  存放二进制可执行文件
+- boot  存放开机启动程序
+- dev  存放设备文件
+- etc  用户信息和系统配置
+- home  用户目录
+- lib   库路径
+- media/mnt   磁盘挂载相关
+- opt proc
+- root  root用户目录
+- usr  用户资源管理目录 
 
 
 
-cd用法（change directory）
+##### cd用法（change directory）
 
-```shell
-cd       #切换目录
-cd ~     #切换到家目录
-cd /etc  #切换到etc目录
-cd -     #回到上一次操作的路径
-cd ..    #回到上级目录
-```
+- 
+  cd       切换目录
 
-文件操作
+- cd ~     切换到家目录
+- cd /etc  切换到etc目录
+- cd -     回到上一次操作的路径
+- cd ..    回到上级目录
+
+
+##### 文件操作
 
 ```shell
 ls（list）  #作用：列出当前目录下的文件
@@ -100,7 +99,9 @@ o（other） #其他人
 
 ```
 
-linux文件类型
+
+
+##### linux文件类型
 
 ```shell
 -  #普通文件
@@ -113,7 +114,10 @@ s  #套接字
 #其他未知文件
 ```
 
+
+
 ##### linux系统目录
+
 * bin：存放二进制文件
 * boot：存放开机启动程序
 * dev：存放设备文件 ：字符设备，鼠标键盘
@@ -123,7 +127,10 @@ s  #套接字
 * root：管路员宿主目录（家目录）
 * usr：用户资源管路目录
 
-#####文件系统
+
+
+##### 文件系统
+
 * inode
   * 本质为结构体，存储文件的存储信息 如：权限，类型，大小，时间，用户，盘块位置，大多数的inode都存储在磁盘上
 
@@ -131,13 +138,7 @@ s  #套接字
 	* 目录项，本质依然是结构体，重要的成员变量有两个，{文件名，inode...},而文件内容保存在磁盘盘块中
 	
 
-
-
-
-dentry
-
-
-基本命令
+##### 基本命令
 
 * echo $SHELL		#查看当前命令解析器
 * which 			#查看指定命令所在路径
@@ -148,7 +149,9 @@ dentry
 * df				#查看磁盘使用情况
 
 
-用户管理
+
+##### 用户管理
+
 ```shell
 whoami   #查看当前登录用户
 sudo adduser <用户名>     #创建用户 
@@ -157,7 +160,8 @@ sudo chown <新用户名>   <文件名> #修改文件所属用户
 sudo chgrp <用户组名>  <文件名>   #修改文件所属用户组
 ```
 
-查找与检索
+##### 查找与检索
+
 ```shell
 stat   #查看文件的状态（修改时间，大小，权限。。。）
 find    	#查找文件
@@ -178,7 +182,8 @@ ps aux | grep 'cupsd'   #检索进程结果集
 
 
 
-压缩与解压 
+##### 压缩与解压 
+
 ```shell
 #tar压缩
 tar -zcvf <压缩包名> <压缩源文件>。。。   #以gzip方式压缩
@@ -189,7 +194,8 @@ tar -jxvf <压缩包名> <压缩源文件>。。。   #以bzip2方式解压缩
 
 ```
 
-gcc
+##### gcc
+
 ```shell
 -I 			#制定头文件所在的目录
 -c			#只做预处理，编译，汇编，得到二进制文件
@@ -199,7 +205,8 @@ gcc
 -D			#在程序中注册一个宏
 ```
 
-静态库
+##### 静态库
+
 ```shell
 ar rcs libmylib.a file.o  #将file.o加入到libmyllib.a中
 
@@ -211,7 +218,8 @@ ar rcs libmylib.a file.o  #将file.o加入到libmyllib.a中
   gcc test.c lib<库名>.a -o a.out
 ```
 
-动态库
+##### 动态库
+
 ```shell
 #动态库的制作及使用
 1.将.c文件生成.o文件 (生成与位置无关的代码 -fPIC)
@@ -239,7 +247,8 @@ ar rcs libmylib.a file.o  #将file.o加入到libmyllib.a中
 
 
 ```
-gdb
+##### gdb
+
 ```shell
 gcc -g <文件名> -o a.out 使用-g参数编译可执行文件，得到调试表
 gdb a.out  #开始调试
@@ -262,7 +271,8 @@ quit #退出
 
 ```
 
-makefile项目管理
+##### makefile项目管理
+
 ```shell
 命名：makefile Makefile
 1个规则
@@ -836,15 +846,15 @@ int main(int argc,char *argv[])
   close(fd1);
   return 0;
 }
-``` 
+```
 
-##### fcntl函数实现dup函数
+###### fcntl函数实现dup函数
 cmd：F_DUPFD
 参数3：被占用的，返回最小可用的
       未被占用的，返回=该值的文件描述符
 ```c
 int main(int argc,char *argv[])
-{
+{ 
   int fd1 = open(argv[1],O_RDWR);
   printf("fd1 = %d\n",fd1);
   int newfd = fcntl(fd1,F_DUPFD,0);//0被占用，fcntl使用文件描述符表中可用的最小的文件描述符返回
@@ -854,4 +864,39 @@ int main(int argc,char *argv[])
   return 0;
 }
 ```
- 
+
+### 进程
+程序：死的，只占用磁盘空间
+进程：活得，运行起来的程序。占用内存，cpu等系统资源
+
+##### 虚拟内存和物理内存的映射关系
+```https://www.bilibili.com/video/BV1KE411q7ee?p=77&spm_id_from=pageDriver&vd_source=a1edf3ad63e77272acbd0c1f89c365d6```
+
+##### pcb进程控制块
+每个进程在内核中都有一个进程控制块（PCB）来维护进程相关信息，Linux内核的进程控制块是task_struct结构体
+/usr/src/linux-headers-3.16.0-30/include/linux/sched.h文件中可以查看struct task_struct结构体定义。其内部成员有很多，我们重点掌握以下部分即可:
+* 进程id (PID) 命令：ps aux可查看
+* 进程的状态 （（初始态）， 就绪，运行，挂起，终止等状态）
+* 进程切换时需要保存和恢复的一些cpu寄存器
+* 描述虚拟地址空间的信息
+* 当前工作目录
+* *umask掩码
+* 文件描述符表
+* 和信号相关的信息
+* 用户id和组id
+* 会话（session）和进程组
+* 进程可使用的资源上限（Resource Limit）
+
+##### 环境变量
+* PATH
+* SHELL 查看当前shell
+* TERM  查看当前终端
+* LANG  查看当前语言
+* HOME  查看当前用户家目录
+
+##### fork函数
+```c
+//include <unistd.h>
+pid_t fork(void);  //创建一个子进程
+```
+
