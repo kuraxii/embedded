@@ -865,7 +865,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-### 进程
+### 进程控制
 程序：死的，只占用磁盘空间
 进程：活得，运行起来的程序。占用内存，cpu等系统资源
 
@@ -897,6 +897,39 @@ int main(int argc,char *argv[])
 ##### fork函数
 ```c
 //include <unistd.h>
-pid_t fork(void);  //创建一个子进程
+pid_t fork(void);  //创建一个子进程 
+//两个返回值
+//成功
+//父进程 返回子进程PID
+//子进程 0
+ -1 创建失败
+ 0  创建成功
+ 1  
+``` 
+example
+```c
+int main(int argc,char *argv[])
+{
+
+  printf("before fork-1-\n");
+  printf("before fork-2-\n");
+  printf("before fork-3-\n");
+  printf("before fork-4-\n");
+  pid_t pid = fork();
+  if(pid ==-1){
+    perror("fork error");
+    exit(1);
+  }else if(pid == 0){
+    printf("---child is create\n");
+  }else if (pid > 0)
+  {
+    printf("---parent press: my child is %d\n",pid);
+  }
+  printf("end of file\n");
+
+  return 0;
+}
 ```
+
+##### getpid & getppid函数
 

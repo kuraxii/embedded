@@ -13,5 +13,8 @@ int main(int argc,char *argv[])
   printf("newfd = %d\n",newfd);
   int newfd2 = fcntl(fd1,F_DUPFD,7);//使用未被占用>=7的文件描述符
   printf("newfd2 = %d\n",newfd2);
+
+
+
   return 0;
 }
