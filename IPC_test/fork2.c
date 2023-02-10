@@ -11,21 +11,21 @@ int main(int argc,char *argv[])
   printf("---before create\n");
   printf("---before create\n");
   size_t count;
+  size_t i;
   scanf("%ld",&count);
-  for (size_t i = 0; i < count; i++)
+  for (i = 0; i < count; i++)
   {
-    pid_t pid = fork();
-    if(pid == 0){
-      printf("%d i am son process %d created\n",i,getpid());
+    if(fork() == 0){
+      break;
     }
-    else
-    {
-      printf("%d i am parent process my pid is %d , my son id %d \n",i,getpid(),pid); 
-    }
-    
   }
-  
-
-
+  if(i == count){
+    sleep(count);
+    printf("parent process\n");
+  }
+  else{
+    sleep(i);
+    printf("%ld i am son process\n",i+1);
+  }
   return 0;
 }

@@ -905,7 +905,7 @@ pid_t fork(void);  //创建一个子进程
  -1 创建失败
  0  创建成功
  1  
-``` 
+```
 example
 ```c
 int main(int argc,char *argv[])
@@ -931,5 +931,110 @@ int main(int argc,char *argv[])
 }
 ```
 
-##### getpid & getppid函数
+###### getpid & getppid函数
+```c
+pid_t getpid(void);  //返回当前进程的pid
+pid_t getppid(void); //返回父进程的pid
+```
 
+
+
+
+###### 循环创建进程
+```c
+int main(int argc,char *argv[])
+{
+  printf("---before create\n");
+  printf("---before create\n");
+  printf("---before create\n");
+  size_t count;
+  size_t i;
+  scanf("%ld",&count);
+  for (i = 0; i < count; i++)
+  {
+    if(fork() == 0){
+      break;
+    }
+  }
+  if(i == count){
+    sleep(count);
+    printf("parent process\n");
+  }
+  else{
+    sleep(i);
+    printf("%ld i am son process\n",i+1);
+  }
+  return 0;
+}
+```
+###### 进程共享
+| 父子相同之处 | 父子不相同之处 | 父子进程共享 |
+| :----------: | :------------: | :------------: |
+|   全局变量   | 进程id         | 文件描述符   |
+|    .data     | fork返回值     | mmap建立的映射区 |
+|    .text     | 父进程id       | （读时共享，写时复制）---大多应用于全局变量 |
+|      栈      | 进程创建运行时间   |    |
+|      堆      | 闹钟（定时器） |  |
+|   环境变量   | 未决信号集     |      |
+|    用户ID    |                |                |
+|   宿主目录   |                |                |
+| 进程工作目录 |                |                |
+| 信号处理方式 |                |                |
+|              |                |                |
+
+父子进程间遵循**读时共享写时复制**原则。这样设计，无论子进程执行父进程的逻辑还是自己的逻辑都能节省内存开销  
+
+fork之后父子进程运行顺序由操作系统的调度算法决定
+
+##### exec函数族
+fork创建的程序执行的是父进程相同的程序（但又可能执行不同的代码分支），子进程往往要调用一种exec函数以执行另一个程序。当进程调用一种exec函数时，该进程的用户空间代码和数据完全被新程序替换，从新程序的启动开始执行。调用exec并不会创建新进程，所以调用exec前后台该进程的id并未改变。
+将当前进程的.text、.data替换为所要加载的程序的.text、.data,然后让进程从新的.text第一天指令开始执行，但进程id不变，换核不换壳
+```c  
+int execl(const char *pathname, const char *arg, .../* 可写多个参数 */);
+int execlp(const char *file, const char *arg, .../* 可写多个参数 */, NULL/* 结束符 */);
+int execle(const char *pathname, const char *arg, .../* 可写多个参数 */);
+int execv(const char *pathname, char *const argv[]);
+int execvp(const char *file, char *const argv[]); 
+int execvpe(const char *file, char *const argv[],char *const envp[]);
+```
+###### execlp函数
+加载一个进程，借助PATH环境变量
+```c
+int execlp(const char *file, const char *arg, .../* (char  *) NULL */); 
+//成功：无返回
+//失败：返回-1
+//参数1:要加载的程序的名字。该函数需要配合PATH环境变量来使用，当PATH中所有目录搜索后没有参数1则出错返回。
+//该函数通常用来调用系统程序。如:ls、date、cp、 cat等命令。
+```
+###### exexl函数
+加载一个进程，借助路径 （相对路径，绝对路径）
+```c
+int execl(const char *pathname, const char *arg, .../* 可写多个参数 */);
+//成功：无返回
+//失败：返回-1
+
+```
+
+###### 孤儿进程
+孤儿进程:父进程先于子进程结束，则子进程成为孤儿进程，子进程的父进程成为init进程，称为init进程领养孤儿进程。
+
+
+
+###### 僵尸进程
+僵尸进程:进程终止，父进程尚未回收，子进程残留资源（PCB）存放于内核中，变成僵尸（zombie）进程。
+特别注意，僵尸进程是不能使用kill命令清除掉的。因为 kill命令只是用来终止进程的,而僵尸进程已经终止。
+思考!用什么办法可清除掉僵尸进程呢?  杀掉父进程 
+
+##### wait函数
+一个进程在终止时会关闭所有文件描述符，释放在用户空间分配的内存，但它的 PCB还保留着，内核在其中保存了一些信息:如果是正常终止则保存着退出状态，如果是异常终止则保存着导致该进程终止的信号是哪个。这个进程的父进程可以调用wait或 waitpid_获取这些信息，然后彻底清除掉这个进程。我们知道一个进程的退出状态可以在 shell中用特殊变量$?查看，因为shell是它的父进程，当它终止时shell 调用wait或waitpid得到它的退出状态同时彻底清除掉这个进程。
+父进程调用wait函数可以回收子进程终止信息。该函数有3个功能：
+1. 阻塞等待子进程退出
+2. 回收子进程残留资源‘
+3. 回去子进程结束状态（退出原因）
+```c
+pid_t wait(int *status); 
+//返回 -1表示失败
+//传出参数 status 表示子进程退出状态 
+
+pid_t waitpid(pid_t pid, int *status, int options);
+``` 
