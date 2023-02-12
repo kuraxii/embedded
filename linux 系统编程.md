@@ -1037,4 +1037,43 @@ pid_t wait(int *status);
 //传出参数 status 表示子进程退出状态 
 
 pid_t waitpid(pid_t pid, int *status, int options);
+//成功：返回清理掉的子进程ID
+//失败：-1（无子进程）
+//特殊情况和返回情况
+//参数 pid
+ >0 回收i指定id的子进程
+ -1 回收任意子进程 
+ 0 回收和当前调用 waitpid 一个组的所有子进程
+ <-1 回收指定进组内的任意程                                                   
 ``` 
+explame
+```c
+int main(int argc,char *argv[])
+{
+  pid_t pid,wpid;
+  int status;
+  pid = fork();
+  if(pid == 0)
+  {
+    printf("---child,my id = %d ,going to sleep 10s\n",getpid);
+    sleep(10);
+  }else if(pid > 0)
+  {
+    wpid = wait(&status);
+    if(wpid == -1)
+    {
+      perror("wait err");
+      exit(1);
+    }
+    printf("wait success");
+  }else
+  {
+    perror("fork err");
+    exit(1);
+  }
+  return 0;
+}
+```
+```c
+
+```
