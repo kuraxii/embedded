@@ -14,17 +14,28 @@ int main(int argc,char *argv[])
   pid = fork();
   if(pid == 0)
   {
-    printf("---child,my id = %d ,going to sleep 10s\n",getpid);
-    sleep(10);
+    printf("---child,my id = %d ,going to sleep 10s\n",getpid());
+    sleep(100);
   }else if(pid > 0)
   {
-    wpid = wait(&status);
-    if(wpid == -1)
-    {
-      perror("wait err");
-      exit(1);
+    wpid = waitpid(pid,&status,0);
+    if(waitpid == -1){
+      perror("waitpid err");
+      exit(0);
     }
-    printf("wait success");
+    printf("i am parent i am kill %ld\n",wpid);
+    if(WIFEXITED(status)){
+      printf("the son prosses exit nor %d\n",WEXITSTATUS(status));
+    }
+    if(WIFSIGNALED(status)){
+      printf("the son prosses exit nonor %d\n",WTERMSIG(status));
+    }
+    if(WIFCONTINUED(status)){
+      printf("the son prosses stop %d\n",WSTOPSIG(status));
+      
+    }
+
+
   }else
   {
     perror("fork err");

@@ -1032,11 +1032,19 @@ int execl(const char *pathname, const char *arg, .../* 可写多个参数 */);
 2. 回收子进程残留资源‘
 3. 回去子进程结束状态（退出原因）
 ```c
+#include <sys/types>
+#include <sys/wait.h>
 pid_t wait(int *status); 
 //返回 -1表示失败
 //传出参数 status 表示子进程退出状态 
-
+//运行时会阻塞，当子进程结束时才会继续运行
 pid_t waitpid(pid_t pid, int *status, int options);
+//options参数
+//WEXITED
+//WSTOPPED
+//WCONTINUED
+//
+
 //成功：返回清理掉的子进程ID
 //失败：-1（无子进程）
 //特殊情况和返回情况
@@ -1044,10 +1052,26 @@ pid_t waitpid(pid_t pid, int *status, int options);
  >0 回收i指定id的子进程
  -1 回收任意子进程 
  0 回收和当前调用 waitpid 一个组的所有子进程
- <-1 回收指定进组内的任意程                                                   
+ <-1 回收指定进组内的任意 程          
+
+//宏函数
+WIFEXITED(status);  //为非0 -> 进程正常结束
+  WEXITSTARUS(status); //如上宏为非0 -> 获取进程退出状态
+
+WIFSIGNALED(status); //为非0 -> 进程异常终止
+  WTERMSIGN(status);  //如上宏为真-> 取得进程暂停的那个信号
+
+WIFSTOPPED(status);   //为非0 -> 进程暂停
+  WSTOPSIG(status);  //如上宏为真 -> 取得进程暂停的那个信号
+  WIFCONTINUED(status);   //为非0 -> 进程暂停后已经继续运行
+
+
+
 ``` 
 explame
+
 ```c
+//wait
 int main(int argc,char *argv[])
 {
   pid_t pid,wpid;
@@ -1075,5 +1099,45 @@ int main(int argc,char *argv[])
 }
 ```
 ```c
+//waitpid回收子进程
+int main(int argc,char *argv[])
+{
+  pid_t pid,wpid;
+  int status;
+  pid = fork();
+  if(pid == 0)
+  {
+    printf("---child,my id = %d ,going to sleep 10s\n",getpid());
+    sleep(100);
+  }else if(pid > 0)
+  {
+    wpid = waitpid(pid,&status,0);
+    if(waitpid == -1){
+      perror("waitpid err");
+      exit(0);
+    }
+    printf("i am parent i am kill %ld\n",wpid);
+    if(WIFEXITED(status)){
+      printf("the son prosses exit nor %d\n",WEXITSTATUS(status));
+    }
+    if(WIFSIGNALED(status)){
+      printf("the son prosses exit nonor %d\n",WTERMSIG(status));
+    }
+    if(WIFCONTINUED(status)){
+      printf("the son prosses stop %d\n",WSTOPSIG(status));     
+    }
+  }else
+  {
+    perror("fork err");
+    exit(1);
+  }
+  return 0;
+}
+```
+
+```c
+//循环回收
+
 
 ```
+
