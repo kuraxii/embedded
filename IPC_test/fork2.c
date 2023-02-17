@@ -7,9 +7,7 @@
 #include <errno.h>
 int main(int argc,char *argv[])
 {
-  printf("---before create\n");
-  printf("---before create\n");
-  printf("---before create\n");
+  
   size_t count;
   size_t i;
   scanf("%ld",&count);
@@ -25,7 +23,7 @@ int main(int argc,char *argv[])
   }
   else{
     sleep(i);
-    printf("%ld i am son process\n",i+1);
+    printf("%ld i am son process my pid %d\n",i+1, getpid());
   }
   return 0;
 }
