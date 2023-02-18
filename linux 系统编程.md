@@ -1034,18 +1034,19 @@ int execl(const char *pathname, const char *arg, .../* 可写多个参数 */);
 2. 回收子进程残留资源‘
 3. 回去子进程结束状态（退出原因）
 ```c
-#include <sys/types>
+#include <sys/types.h>
 #include <sys/wait.h>
 pid_t wait(int *status); 
 //返回 -1表示失败
 //传出参数 status 表示子进程退出状态 
 //运行时会阻塞，当子进程结束时才会继续运行
+
 pid_t waitpid(pid_t pid, int *status, int options);
 //参数 pid
  >0 回收指定pid的子进程
  -1 回收任意子进程 
- 0 回收和当前调用 waitpid 一个组的所有子进程
- <-1 回收指定进组内的任意 程          
+ 0 回收和当前调用 waitpid 同组的所有子进程
+        
 
 //options参数
 WNOHANG 如果pid指定的子进程没有结束，则waitpid()函数立即返回0，而不是阻塞在这个函数上等待；如果结束了，则返回该子进程的进程号。
@@ -1055,10 +1056,10 @@ WUNTRACED 如果子进程进入暂停状态，则马上返回。
 失败的原因主要有：没有子进程（errno设置为ECHILD），调用被某个信号中断（errno设置为EINTR）或选项参数无效（errno设置为EINVAL）
 
                     
-
-//成功：返回清理掉的子进程ID
-//失败：-1（无子进程）
-//特殊情况和返回情况
+//返回值
+// >0 表示成功回收的子进程
+// 0 函数调用时，参数3 指定了WNOHANG， 并且没有子进程结束
+// -1 失败，设置errno
 
 //宏函数
 WIFEXITED(status);  //为非0 -> 进程正常结束
@@ -1142,7 +1143,7 @@ int main(int argc,char *argv[])
 ```
 
 ```c
-//循环回收
+//回收多个子进程
 
 
 
