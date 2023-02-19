@@ -26,17 +26,12 @@ int main(int argc,char *argv[])
     close(pipefd[1]);
   }else if (pid == 0){ //子进程
     close(pipefd[1]);
-    ret = read(pipefd[0],buf,sizeof(buf));
+    ret = read(pipefd[0],buf,sizeof(buf));   //写要控制写入大小，否则多余内容输出乱码
     write(STDOUT_FILENO,buf,ret);
     close(pipefd[0]);
    
   }else{
     sys_err("fork err");
   }
-  
-  
-
-
-
   return 0;
 }
