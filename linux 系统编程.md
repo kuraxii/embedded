@@ -1025,7 +1025,7 @@ int execl(const char *pathname, const char *arg, .../* 可写多个参数 */);
 ###### 僵尸进程
 僵尸进程:进程终止，父进程尚未回收，子进程残留资源（PCB）存放于内核中，变成僵尸（zombie）进程。
 特别注意，僵尸进程是不能使用kill命令清除掉的。因为 kill命令只是用来终止进程的,而僵尸进程已经终止。
-思考!用什么办法可清除掉僵尸进程呢?  杀掉父进程 
+思考!用什么办法可清除掉僵尸进程呢?  杀掉父进程让init进程回收  wait函数回收
 
 ##### wait函数
 一个进程在终止时会关闭所有文件描述符，释放在用户空间分配的内存，但它的 PCB还保留着，内核在其中保存了一些信息:如果是正常终止则保存着退出状态，如果是异常终止则保存着导致该进程终止的信号是哪个。这个进程的父进程可以调用wait或 waitpid_获取这些信息，然后彻底清除掉这个进程。我们知道一个进程的退出状态可以在 shell中用特殊变量$?查看，因为shell是它的父进程，当它终止时shell 调用wait或waitpid得到它的退出状态同时彻底清除掉这个进程。
@@ -1034,9 +1034,14 @@ int execl(const char *pathname, const char *arg, .../* 可写多个参数 */);
 2. 回收子进程残留资源‘
 3. 回去子进程结束状态（退出原因）
 ```c
+
 #include <sys/types.h>
 #include <sys/wait.h>
 pid_t wait(int *status); 
+/*函数作用 1.阻塞等待子进程退出
+          2.清理子进程残留的pcb资源
+          3.通过传出参数，得到走进从结束状态
+          */
 //返回 -1表示失败
 //传出参数 status 表示子进程退出状态 
 //运行时会阻塞，当子进程结束时才会继续运行
@@ -1049,16 +1054,19 @@ pid_t waitpid(pid_t pid, int *status, int options);
         
 
 //options参数
-WNOHANG 如果pid指定的子进程没有结束，则waitpid()函数立即返回0，而不是阻塞在这个函数上等待；如果结束了，则返回该子进程的进程号。
-WUNTRACED 如果子进程进入暂停状态，则马上返回。
-这些参数可以用“|”运算符连接起来使用。
-如果waitpid()函数执行成功，则返回子进程的进程号；如果有错误发生，则返回-1，并且将失败的原因存放在errno变量中。
-失败的原因主要有：没有子进程（errno设置为ECHILD），调用被某个信号中断（errno设置为EINTR）或选项参数无效（errno设置为EINVAL）
+//0 阻塞
+
+// WNOHANG 如果pid指定的子进程没有结束，则waitpid()函数立即返回0，而不是阻塞在这个函数上等待；如果结束了，则返回该子进程的进程号。
+
+// WUNTRACED 如果子进程进入暂停状态，则马上返回。
+// 这些参数可以用“|”运算符连接起来使用。
+// 如果waitpid()函数执行成功，则返回子进程的进程号；如果有错误发生，则返回-1，并且将失败的原因存放在errno变量中。
+// 失败的原因主要有：没有子进程（errno设置为ECHILD），调用被某个信号中断（errno设置为EINTR）或选项参数无效（errno设置为EINVAL）
 
                     
 //返回值
 // >0 表示成功回收的子进程
-// 0 函数调用时，参数3 指定了WNOHANG， 并且没有子进程结束
+// 0 表示函数调用时，参数3 指定了WNOHANG， 并且没有子进程结束
 // -1 失败，设置errno
 
 //宏函数
@@ -1144,8 +1152,103 @@ int main(int argc,char *argv[])
 
 ```c
 //回收多个子进程
+int main(int argc,char *argv[])
+{
+  int i;
+  pid_t pid,wpid;
 
+  for(i = 0;i < 5; i++){
+    pid = fork();
+    if(pid == 0){
+      break;
+    }
+  }
+  if(i == 5){
+    // while((wpid = waitpid(-1,NULL,0))){  //阻塞方式回收子进程 
+     
+    //   printf("wait child %d \n",wpid);
+    // }
+
+    while(((wpid = waitpid(-1,NULL,WNOHANG))) != -1){  //非阻塞方式回收子进程 
+      
+      if(wpid > 0){
+        printf("wait child %d \n",wpid);
+      }else if (wpid == 0)
+      {
+        printf("no child die\n");
+      }
+      
+      sleep(1);
+    }
+   
+  }else{
+    sleep(i);
+    printf("i am child， pid = %d\n",getpid());
+  }
+  return 0;
+}
 
 
 ```
 
+##### 进程通信
+现用常用的进程间通信方式
+1. 管道（使用最简单）
+2. 信号（开销最小）
+3. 共享映射区（无血缘关系）
+4. 本地套接字（最稳定）
+
+###### 管道
+管道是一种最基本的IPC(Inter Process Communication)机制，作用于有血缘关系的进程之间，完成数据传递。调用pipe系统函数即可创建一个管道。有如下特质:
+1. 本质是一个伪文件(实为内存缓冲区)
+2. 由两个文件描述符引用，一个表示读端，一个表示写端
+3. 规定数据由写端流入管道，由读端流出
+管道的原理：管道实为内核使用环形队列机制，借助内核缓冲区(4k)实现
+管道的局限性：
+1. 数据不能自己写，自己读
+2. 管道中的数据不可反复读取。一旦读走，管道不服存在
+3. 采用半双工通信方式，数据只能在单方向上流动
+4. 只能在有公共祖先的进程间使用管道
+只能在有公共祖先的进程间使用管道。
+
+```c
+#include <unistd.h>
+int pipe(int pipefd[2]);   //创建并打开管道
+//参数：fd[0] 读端
+//     fd[1] 写端
+//返回值：成功 0
+//       失败 -1 errno
+```
+
+```c
+void sys_err(char *str){
+  perror(str);
+  exit(1);
+}
+int main(int argc,char *argv[])
+{
+
+  int ret;
+  pid_t pid;
+  int pipefd[2];
+  ret = pipe(pipefd);
+  char *str = "hello pipe\n";
+  char buf[1024];
+
+  pid = fork();
+  if(pid > 0){   //父进程
+    close(pipefd[0]);
+    write(pipefd[1],str,strlen(str));
+    close(pipefd[1]);
+  }else if (pid == 0){ //子进程
+    close(pipefd[1]);
+    ret = read(pipefd[0],buf,sizeof(buf));   //写要控制写入大小，否则多余内容输出乱码
+    write(STDOUT_FILENO,buf,ret);
+    close(pipefd[0]);
+   
+  }else{
+    sys_err("fork err");
+  }
+  return 0;
+}
+```
