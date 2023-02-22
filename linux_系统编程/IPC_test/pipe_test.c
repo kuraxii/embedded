@@ -21,19 +21,15 @@ int main(int argc,char *argv[])
 
   pid = fork();
   if(pid > 0){   //父进程
-    close(pipefd[0]);
     
-    write(pipefd[1],str,strlen(str));
-    
+     
     close(pipefd[1]);
+    dup2(pipefd[0],STDIN_FILENO);
+    execlp("wc","wc","-l",NULL);
   }else if (pid == 0){ //子进程
-    sleep(1);
-    close(pipefd[1]);
-    ret = read(pipefd[0],buf,sizeof(buf));   //写要控制写入大小，否则多余内容输出乱码
-    printf("%d\n",ret);
-    write(STDOUT_FILENO,buf,ret);
     close(pipefd[0]);
-   
+    dup2(pipefd[1],STDOUT_FILENO);
+    execlp("ls","ls",NULL);
   }else{
     sys_err("fork err");
   }
