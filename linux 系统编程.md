@@ -104,7 +104,7 @@ o（other） #其他人
 ##### linux文件类型
 
 ```shell
--  #普通文件
+f  #普通文件
 d  #目录文件
 c  #字符设备文件
 b  #块设备文件
@@ -170,8 +170,8 @@ find  <路径目录>  <-maxdepth>  <搜索类型> <搜索字符串> ...
 #搜索类型： -name 按名字     -type 按文件类型  -size 按文件大小 -maxdepth 指定搜索深度
 example:
 find <路径目录>  -size <+20M> -size <-50M>   #查找文件大小>20 <50的文件
-find ./ -type 'f' -maxdepth 1 -exec(运行命令) ls -l {} \;   #exec执行后面的操作
-find ./ -type 'f' -maxdepth 1 -ok rm -r         {} \;    #询问是否执行操作
+find ./ -type 'f' -maxdepth 1 -exec(运行命令) ls -l {} \;   #将前面得到的结果集合进行ls操作 exec执行后面的操作
+find ./ -type 'f' -maxdepth 1 -ok rm -r         {} \;    #将前面得到的结果集合进行rm操作并询问是否执行操作
 
 grep #查找文件内容或筛选结果集
 grep -r 'copy' ./ -n
@@ -185,12 +185,16 @@ ps aux | grep 'cupsd'   #检索进程结果集
 ##### 压缩与解压 
 
 ```shell
-#tar压缩
+#gzip命令压缩  gizp压缩只会压缩目录下的文件
+gzip <-r> <failename> #压缩
+gzip -d <failename>  #解压
+
+#tar命令压缩解压
 tar -zcvf <压缩包名> <压缩源文件>。。。   #以gzip方式压缩
+tar -zxvf <压缩包名>   #以gzip方式解压缩
+
 tar -jcvf <压缩包名> <压缩源文件>。。。   #以bzip2方式压缩
-#tar解压  （将压缩命令中的c->x）
-tar -zxvf <压缩包名> <压缩源文件>。。。   #以gzip方式解压缩
-tar -jxvf <压缩包名> <压缩源文件>。。。   #以bzip2方式解压缩
+tar -jxvf <压缩包名>   #以bzip2方式解压缩
 
 ```
 
@@ -1001,13 +1005,7 @@ int execvpe(const char *file, char *const argv[],char *const envp[]);
 ```
 ###### execlp函数
 加载一个进程，借助PATH环境变量
-```c
-int execlp(const char *file, const char *arg, .../* (char  *) NULL */); 
-//成功：无返回
-//失败：返回-1
-//参数1:要加载的程序的名字。该函数需要配合PATH环境变量来使用，当PATH中所有目录搜索后没有参数1则出错返回。
-//该函数通常用来调用系统程序。如:ls、date、cp、 cat等命令。
-```
+
 ###### exexl函数
 加载一个进程，借助路径 （相对路径，绝对路径）
 ```c
@@ -1016,6 +1014,15 @@ int execl(const char *pathname, const char *arg, .../* 可写多个参数 */);
 //失败：返回-1
 
 ```
+
+```c
+int execlp(const char *file, const char *arg, .../* (char  *) NULL */); 
+//成功：无返回
+//失败：返回-1
+//参数1:要加载的程序的名字。该函数需要配合PATH环境变量来使用，当PATH中所有目录搜索后没有参数1则出错返回。
+//该函数通常用来调用系统程序。如:ls、date、cp、 cat等命令。
+```
+
 
 ###### 孤儿进程
 孤儿进程:父进程先于子进程结束，则子进程成为孤儿进程，子进程的父进程成为init进程，称为init进程领养孤儿进程。
@@ -1082,7 +1089,7 @@ WIFSTOPPED(status);   //为非0 -> 进程暂停
 
 
 
-``` 
+```
 explame
 
 ```c
