@@ -955,12 +955,15 @@ int main(int argc,char *argv[])
   printf("---before create\n");
   size_t count;
   size_t i;
+  pid_t pid;
   scanf("%ld",&count);
   for (i = 0; i < count; i++)
   {
-    if(fork() == 0){
+    pid = fork();
+    if(pid == -1)
+      sys_err("fork err"); 
+    if(pid == 0)
       break;
-    }
   }
   if(i == count){
     sleep(count);
