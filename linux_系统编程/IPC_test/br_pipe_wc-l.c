@@ -24,6 +24,8 @@ int main(int argc,char *argv[])
     if(pid == 0)
       break;
   }
+
+  printf("abc");
   if(i == 2){
     close(pipefd[0]);
     close(pipefd[1]);

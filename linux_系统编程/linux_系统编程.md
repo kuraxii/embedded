@@ -1272,3 +1272,69 @@ int main(int argc,char *argv[])
   return 0;
 }
 ```
+
+##### fifo命名管道
+fifo命名管道的创建
+命令行方式
+```shell
+mkfifo <filenale>
+```
+函数方式
+```c
+int mkfifo(const char *pathname, mode_t mode);
+// 参数：
+// pathname：文件名
+// mode： 文件权限
+
+// 返回值：
+// 成功：返回文件描述符
+// 失败：-1
+```
+
+example
+```c
+//读端
+void sys_err(char *str){
+  perror(str);
+  exit(1);
+}
+
+int main(int argc,char *argv[])
+{
+  char buf[1024];
+  int ret;
+  int fd = open(argv[1],O_RDONLY);
+  if(fd < 0){
+    sys_err("open error");
+  }
+  while(1){
+    ret = read(fd,buf,sizeof(buf));
+    
+    write(STDOUT_FILENO,buf,ret);
+   sleep(1);
+  }
+  return 0;
+}
+```
+```c
+//写端
+int main(int argc,char *argv[])
+{
+  char buf[1024];
+  int ret,i = 0;
+  int fd = open(argv[1],O_WRONLY);
+  if(fd < 0){
+    sys_err("open error");
+  }
+  char *str = "fifo_w";
+  while(1){
+    i++;
+    printf("%d\n",i);
+    sprintf(buf,"%d %s\n",i,str);
+    write(fd,buf,strlen(buf));
+    sleep(2);
+  }
+  close(fd);
+  return 0;
+}
+```
