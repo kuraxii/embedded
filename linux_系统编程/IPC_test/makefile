@@ -1,4 +1,4 @@
-src = $(wildcard *.c)  #hello.c sub.c div1.c add.c
+src = $(wildcard *.c)  
 obj = $(patsubst %.c,%,$(src))
 
 ALL:$(obj)
