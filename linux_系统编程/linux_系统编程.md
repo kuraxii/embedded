@@ -1338,3 +1338,19 @@ int main(int argc,char *argv[])
   return 0;
 }
 ```
+
+##### 存储映射
+mmap函数原理
+```c
+void *mmap(void *addr, size_t length, int prot, int flags,int fd, off_t offset);  //创建共享内存映射区
+//参数 
+// addr 指定映射区的首地址。通常传NULL，表示系让统自动分配
+// length 共享内存映射区大小  
+// prot 共享内存映射区的读写属性 PROT_READ、PROT_WRITE、PROT_READ|PROT_WRITE
+// flags 标注共享内存的共享属性 MAP_SHARED MAP_ORIVATE
+// fd 用于创建内存映射区的那个文件的 文件描述符
+// offset 偏移位置  4k的整数倍   
+//返回值 
+// 成功 映射区的首地址
+// 失败 -1 errno  
+```
