@@ -1342,6 +1342,7 @@ int main(int argc,char *argv[])
 ##### 存储映射
 mmap函数原理
 ```c
+#include <sys/mman.h>
 void *mmap(void *addr, size_t length, int prot, int flags,int fd, off_t offset);  //创建共享内存映射区
 //参数 
 // addr 指定映射区的首地址。通常传NULL，表示系让统自动分配
@@ -1353,4 +1354,11 @@ void *mmap(void *addr, size_t length, int prot, int flags,int fd, off_t offset);
 //返回值 
 // 成功 映射区的首地址
 // 失败 -1 errno  
+
+int munmap(void *addr, size_t length); //释放共享内存映射区
+//参数
+// addr （映射区的首地址）mmap的返回值
+// length 映射区的大小
+
 ```
+  

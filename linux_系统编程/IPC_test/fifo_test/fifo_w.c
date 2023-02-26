@@ -30,5 +30,5 @@ int main(int argc,char *argv[])
     sleep(2);
   }
   close(fd);
-  return 0;
+  return 23;
 }
