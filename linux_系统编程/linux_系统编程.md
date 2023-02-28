@@ -104,7 +104,7 @@ o（other） #其他人
 ##### linux文件类型
 
 ```shell
-f  #普通文件
+-  #普通文件
 d  #目录文件
 c  #字符设备文件
 b  #块设备文件
@@ -1340,7 +1340,7 @@ int main(int argc,char *argv[])
 ```
 
 ##### 存储映射
-mmap函数原理
+###### mmap函数原理
 ```c
 #include <sys/mman.h>
 void *mmap(void *addr, size_t length, int prot, int flags,int fd, off_t offset);  //创建共享内存映射区
@@ -1361,4 +1361,7 @@ int munmap(void *addr, size_t length); //释放共享内存映射区
 // length 映射区的大小
 
 ```
-  
+###### mmap注意事项
+1. 用于创建映射区的大小为0，实际指定非0大小创建有映射区，出"总线错误" bus error
+2. 实际制定0大小创建映射区，出"无效参数错误" Invalid argument  (映射区大小不能为0)
+3. 用于创建映射区的文件读写行为为 只读 ，映射区属性为读写。出"无效参数错误" Invalid argument

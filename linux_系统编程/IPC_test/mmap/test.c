@@ -17,7 +17,7 @@ int main(int argc,char *argv[])
   char *p = NULL;
   int ret,fd;
 
-  fd = open("mmap_test", O_RDWR|O_CREAT|O_TRUNC, 0664);
+  fd = open("mmap_test", O_RDONLY|O_CREAT|O_TRUNC, 0664);
   if(fd == -1){
     sys_err("open error");
   }
@@ -27,8 +27,8 @@ int main(int argc,char *argv[])
   if(ret == -1){
     sys_err("weite err");
   }
-  int len = lseek(fd, 0, SEEK_END);
-
+  // int len = lseek(fd, 0, SEEK_END);  //获取文件的大小
+  int len = 0;
   p = mmap(NULL, len, PROT_WRITE | PROT_READ, MAP_SHARED, fd, 0);
   if(p == MAP_FAILED){
     sys_err("mmap error");
