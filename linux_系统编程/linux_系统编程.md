@@ -1350,7 +1350,7 @@ void *mmap(void *addr, size_t length, int prot, int flags,int fd, off_t offset);
 // prot 共享内存映射区的读写属性 PROT_READ、PROT_WRITE、PROT_READ|PROT_WRITE
 // flags 标注共享内存的共享属性 MAP_SHARED MAP_ORIVATE
 // fd 用于创建内存映射区的那个文件的 文件描述符
-// offset 偏移位置  4k的整数倍   
+// offset 偏移位置  4k(4096byte)的整数倍   
 //返回值 
 // 成功 映射区的首地址
 // 失败 -1 errno  
@@ -1365,3 +1365,13 @@ int munmap(void *addr, size_t length); //释放共享内存映射区
 1. 用于创建映射区的大小为0，实际指定非0大小创建有映射区，出"总线错误" bus error
 2. 实际制定0大小创建映射区，出"无效参数错误" Invalid argument  (映射区大小不能为0)
 3. 用于创建映射区的文件读写行为为 只读 ，映射区属性为读写。出"无效参数错误" Invalid argument
+4. 创建映射区，打开的文件需要read权限。
+5. 文件描述符fd, 再mmap创建银行社区完成即可关闭。后访问文件，用地址访问
+6. offset(偏移量) 必须是 4096的整数倍
+7. 对申请的映射区内存，不能越界访问
+8. mmap用于释放的地址必须是mmap申请返回的地址（mmap首地址）
+9. 映射区访问权限为“私有”MAP_PRIVATE，对内存所做的所有修改，只在内存有效，不会反应到物理磁盘上。
+
+mmap函数的保险调用方式
+  1.open(O_RDER) 
+  2.mmap(NULL,<filesize>, PROT_READ |PROT_WRITE，MAP_SHARED,fd，0);
