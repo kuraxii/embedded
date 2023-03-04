@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/mman.h>
+
 void sys_err(char *str)
 {
   perror(str);

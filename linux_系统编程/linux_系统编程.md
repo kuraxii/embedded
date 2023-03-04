@@ -1081,7 +1081,7 @@ pid_t waitpid(pid_t pid, int *status, int options);
 
 //宏函数
 WIFEXITED(status);  //为非0 -> 进程正常结束
-  WEXITSTARUS(status); //如上宏为非0 -> 获取进程退出状态
+  WEXITSTATUS(status); //如上宏为非0 -> 获取进程退出状态
 
 WIFSIGNALED(status); //为非0 -> 进程异常终止
   WTERMSIGN(status);  //如上宏为真-> 取得进程暂停的那个信号
@@ -1375,3 +1375,91 @@ int munmap(void *addr, size_t length); //释放共享内存映射区
 mmap函数的保险调用方式
   1.open(O_RDER) 
   2.mmap(NULL,<filesize>, PROT_READ |PROT_WRITE，MAP_SHARED,fd，0);
+
+###### 父子进程使用mmap实现进程间通信
+父进程先创建映射区。 open(O_RDWR) mmap()
+指定MAP_SHARE 权限
+fork创建子进程
+一个进程读 一个进程写
+
+```c
+int main(int argc,char *argv[])
+{
+  pid_t pid;
+  char *p;
+  int ret,fd;
+  if(argc < 2){
+    sys_err("too few file input");
+  }
+
+  fd = open(argv[1], O_RDWR | O_CREAT , 0664);
+  if(fd == -1){
+    sys_err("open error");
+  }
+  int len = lseek(fd, 0, SEEK_END);
+  if(len == 0){
+    lseek(fd, 100, SEEK_END);
+    write(fd, "\0", 1);
+  }
+  len = lseek(fd, 0, SEEK_END);
+  p = (char*)mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  if(p == MAP_FAILED){
+       sys_err("mmap error");
+  }
+  pid = fork();
+  if(pid == -1){
+    sys_err("fork error");
+  }
+  if(pid == 0){ //子进程
+    strcpy(p, "abcaaa");
+  }
+  if(pid > 0){  //父进程
+    wait(NULL);
+    // sleep(1);
+    printf("i am parient  i read mmap: %s\n",p);
+    munmap(p, len);
+  }
+  return 0;
+}
+```
+
+
+
+##### 信号
+信号的共性：简单，不能携带大量信息，满足条件才能发送
+信号是软件层面的”终断“。一旦信号产生，无论程序执行到什么位置，必须立刻停止运行，处理信号 ，处理结束，在继续执行后续命令
+所有的信号的产生及处理全部都是由 内核 完成的
+
+###### 与信号相关的事件与状态
+产生信号
+1. 按键产生 如：ctrl+c ctrl+z ctrl+\
+2. 系统调用产生 如：kill raise abort
+3. 软件条件产生 如：定时器 sleep
+4. 硬件异常产生 如：非法访问内存(段错误) 除0(浮点数除外) 内存对齐出错(总线出错)
+5. 命令产生 如：kill 命令
+
+信号递达
+* 递送并且到达进程
+
+信号未决
+* 信号产生和递达之间的状态主要由**阻塞**(屏蔽)导致该状态
+
+信号的处理方式
+1. 执行默认动作
+2. 忽略(丢弃)
+3. 捕捉(调用用户处理函数)
+
+Linux内核的进程控制块PCB是一个结构体，task_struct,除了包含进程id，状态，工作目录,用户id，组id，文件描述符表，还包含了信号相关的信息，主要指阻塞信号集和未决信号集。
+
+阻塞信号集(信号屏蔽字) 
+本质：位图，用来记录信号的屏蔽状态。一旦被屏蔽的信号，在被屏蔽之前，一直处于未决态
+
+未决信号集
+本质：位图。用来记录信号的处理状态。该信号集中的信号，表示已经产生但未被处理的信号
+
+信号4要素：
+* 信号编号
+* 信号名称
+* 信号事件
+* 信号默认处理动作
+信号使用之前，应先确定4要素，而后再使用
