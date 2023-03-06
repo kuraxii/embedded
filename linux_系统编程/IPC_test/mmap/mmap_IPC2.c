@@ -41,8 +41,11 @@ int main(int argc,char *argv[])
        sys_err("mmap error");
   }
 
-    printf("i am read process  i read mmap: %s\n",p);
+
+  strcpy(p, "abcaaa");
+  sleep(10);
    
+  
 
 
   return 0;

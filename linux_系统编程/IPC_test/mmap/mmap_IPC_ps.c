@@ -41,8 +41,21 @@ int main(int argc,char *argv[])
        sys_err("mmap error");
   }
 
-    printf("i am read process  i read mmap: %s\n",p);
-   
+  pid = fork();
+  if(pid == -1){
+    sys_err("fork error");
+  }
+
+  if(pid == 0){ //子进程
+    strcpy(p, "abcaaa");
+  
+  }
+  if(pid > 0){  //父进程
+    wait(NULL);
+    // sleep(1);
+    printf("i am parient  i read mmap: %s\n",p);
+    munmap(p, len);
+  }
 
 
   return 0;
