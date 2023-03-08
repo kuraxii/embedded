@@ -1642,4 +1642,92 @@ int setitimer(int which, const struct itimerval *new_value, struct itimerval *ol
 old_value参数，通常用不上，设置为NULL，它是用来存储上一次setitimer调用时设置的new_value值。
 
 
-###### 信号集操作函数
+##### 信号集操作函数
+
+###### 信号集设定
+```c
+signset_t set;   //typedef unsigned long sigset t;
+int sigemptyset(sigset .t *set);  //将某个信号集清0 成功:0;失败:-1
+int sigfillset(sigset t*set);  //将整个信号集置1 成功:0;失败:-1
+int sigaddset(sigset t *set, int signum);  //将某个信号加入信号集 成功:0﹔失败:-1
+int sigdelset(sigset t *set, int signum);  //将某个信号移除信号集 成功:0﹔失败:-1
+int sigismember(const sigset .t *set, int signum);  //判断某个信号是否在信号集中  返回值:在集合:1﹔不在:0  出错:-1 
+
+sigset_t //类型的本质是位图。但不应该直接使用位操作，而应该使用上述函数，保证跨系统操作有效。
+```
+
+###### sigprocmask函数
+用来屏蔽信号、解除屏蔽也使用该函数。其本质，读取或修改进程的 信号屏蔽字(PCB中)
+**严格注意，屏蔽信号。只是将信号处理延后执行(延至解除屏蔽);而忽略表示将信号丢处理。**
+```c
+#include <signal.h>
+int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
+// 参数： 
+//   set: 传入参数，是一个信号集位图
+//   oldset: 传出参数，保留旧的信号屏蔽集
+//   how: 参数取值，假设当前的信号屏蔽字为mask
+//     1. SIG_BLOCK  设置阻塞  当how设置为此值，set表示需要屏蔽的信号。相当于mask=mask | set
+//     2. SIG_UNBLOCK  取消阻塞 当 how设置为此，set表示需要解除屏蔽的信号。相当于mask= mask & ~set
+//     3. SIG_SETMASK  当how设置为此，set表示用于替代原始屏蔽及的新屏蔽集。相当于mask = set 若调用sigprocmask解除了对当前若干个信号的阻塞，则在sigprocmask返回前，至少将其中一个信号递达
+// 返回值：
+//     成功 0 
+//     失败 -1 errno
+```
+  
+###### sigpending函数
+读取当前进程的未决信号集
+```c
+#include <signal.h>
+int sigpending(sigset_t *set);
+// 参数： 
+//     set 传出参数
+// 返回值：
+//     成功 0
+//     失败 -1 errno
+```
+###### 信号集处理案例
+```c
+void printset(sigset_t *set){
+
+  for (size_t i = 0; i < 32; i++)
+  {
+    if(sigismember(set, i))
+      putchar('1');
+    else{
+      putchar('0');
+    }
+  }
+  printf("\n");
+
+}
+
+int main(int argc,char *argv[])
+{
+  int ret;
+  sigset_t set, oldset, pedset;
+  ret = sigemptyset(&set);   //设置为0
+  if(ret == 1){
+    sys_err("sigemptyset err");
+  }
+  ret = sigaddset(&set,SIGINT);  //添加set值
+  if(ret == 1){
+    sys_err("sigaddset err");
+  }
+  ret = sigprocmask(SIG_BLOCK, &set, NULL);   //添加set到屏蔽字中
+  if(ret == 1){
+    sys_err("sigprocmask err");
+  }
+  
+  while(1){
+    ret = sigpending(&pedset);  //读取当前未决信号集 
+  if(ret == 1){
+    sys_err("sigpending err");
+  }
+    printset(&pedset);   //打印set集
+    sleep(1);
+  }
+  return 0;
+}
+```
+
+##### 信号捕捉
