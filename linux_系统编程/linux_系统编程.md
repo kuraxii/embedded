@@ -1382,6 +1382,7 @@ mmap函数的保险调用方式
 fork创建子进程
 一个进程读 一个进程写
 
+通过传递指针实现
 ```c
 int main(int argc,char *argv[])
 {
@@ -1419,6 +1420,68 @@ int main(int argc,char *argv[])
     printf("i am parient  i read mmap: %s\n",p);
     munmap(p, len);
   }
+  return 0;
+}
+```
+
+###### 无血缘关系进程使用mmap实现进程间通信
+通过打开相同文件实现
+读
+```c
+int main(int argc,char *argv[])
+{
+  pid_t pid;
+  char *p;
+  int ret,fd;
+  if(argc < 2){
+    sys_err("too few file input");
+  }
+  
+  fd = open(argv[1], O_RDWR | O_CREAT , 0664);
+  if(fd == -1){ 
+    sys_err("open error");
+  }
+  int len = lseek(fd, 0, SEEK_END);
+  if(len == 0){
+    lseek(fd, 100, SEEK_END);
+    write(fd, "\0", 1);
+  }
+  len = lseek(fd, 0, SEEK_END);
+  p = (char*)mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  if(p == MAP_FAILED){
+       sys_err("mmap error");
+  }
+    printf("i am read process  i read mmap: %s\n",p);
+  return 0;
+}
+```
+
+写
+```c
+int main(int argc,char *argv[])
+{
+  pid_t pid;
+  char *p;
+  int ret,fd;
+  if(argc < 2){
+    sys_err("too few file input");
+  }
+  fd = open(argv[1], O_RDWR | O_CREAT , 0664);
+  if(fd == -1){
+    sys_err("open error");
+  }
+  int len = lseek(fd, 0, SEEK_END);
+  if(len == 0){
+    lseek(fd, 100, SEEK_END);
+    write(fd, "\0", 1);
+  }
+  len = lseek(fd, 0, SEEK_END);
+  p = (char*)mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  if(p == MAP_FAILED){
+       sys_err("mmap error");
+  }
+  strcpy(p, "abcaaa");
+  sleep(10);
   return 0;
 }
 ```
@@ -1462,4 +1525,121 @@ Linux内核的进程控制块PCB是一个结构体，task_struct,除了包含进
 * 信号名称
 * 信号事件
 * 信号默认处理动作
+
 信号使用之前，应先确定4要素，而后再使用
+
+常规信号
+这里特别强调了9 SIGKILL和 19 SIGSTOP信号，不允许忽略和捕捉，只能执行默认动作。甚至不能将其设置为阻塞。
+
+1. `SIGHUB`  当用户退出 shell时，由该shell启动的所有进程将收到这个信号，默认动作为终止进程
+2. `SIGINT`  当用户按下了<Ctrl+C>组合键时，用户终端向正在运行中的由该终端启动的程序发出此信号。默认动作为终止进程
+3. `SIGQUIT`  当用户按下<ctrl+\>组合键时产生该信号，用户终端向正在运行中的由该终端启动的程序发出些信号。默认动作为终止进程
+4. SIGILL  CPU检测到某进程执行了非法指令。默认动作为终止进程并产生core文件。
+5. SIGTRAP  该信号由断点指令或其他trap指令产生。默认动作为终止里程并产生core文件。 gdb调试中会发生该信号
+6. SIGABRT  调用abort函数时产生该信号。默认动作为终止进程并产生core文件。
+7. `SIGBUS`  非法访问内存地址，包括内存对齐出错，默认动作为终止进程并产生core文件。
+8. `SIGFPE`  在发生致命的运算错误时发出。不仅包括浮点运算错误，还包括溢出及除数为О等所有的算法错误。默认动作为终止进程并产生core文件。
+9. **`SIGKILL`**  无条件终止进程。本信号不能被忽略，处理和阻塞。默认动作为终止进程。它向系统管理员提供可以杀死任何进程的方法。
+10. `SIGUSR1`  用户定义的信号。即程序员可以在程序中定义并使用该信号。默认动作为终止进程   没有默认事件
+11. `SIGSEGV`  指示进程进行了无效内存访问。默认动作为终止进程并产生core文件
+12. `SIGUSR2`  另外一个用户自定义信号，程序员可以在程序中定义并使用该信号。默认动作为终止进程  没有默认事件
+13. `SIGPIPE`  Broken pipe，向一个没有读端的管道写数据。默认动作为终止进程。
+14. `SIGALRM`  定时器超时，超时的时间由系统调用alarm设置。默认动作为终止进程。
+15. `SIGTERM`  程序结束信号，与SIGKILL不同的是，该信号可以被阻塞和终止。通常用来表示程序正常退出。 执行shell命令Kill时，缺省产生这个信号。默认动作为终止进程。
+16. SIGSTKFLT  Linux早期版本出现的信号，现仍保留向后兼容。默认动作为终止进程。
+17. `SIGCHLD`  子进程状态发生变化时，父进程会收到这个信号。默认动作为忽略这个信号
+18. SIGCONT  如果进程已停止，则使其继续运行。默认动作为继续/忽略。
+19. **`S0lGSTOP`**  停止进程的执行。信号不能被忽略，处理和阻塞。默认动作为暂停进程。
+20. SIGTSTP  停止终端交互进程的运行。按下<ctrltz>组合键时发出这个信号。默认动作为暂停进程。
+21. SIGTTIN  后台进程读终端控制台。默认动作为暂停进程。
+22. SIGTTOU  该信号类似于SIGTTIN，在后台进程要向终端输出数据时发生。默认动作为暂停进程。
+23. SIGURG  套接字上有紧急数据时，向当前正在运行的进程发出些信号，报告有紧急数据到达。如网络带清收据到达，默认动作为忽略该信号。
+24. SIGXCPU  进程执行时间超过了分配给该进程的CPU时间﹐系统产生该信号并发送给该进程。默认动作为终止进程。
+25. SIGXFSZ  超过文件的最大长度设置。默认动作为终止进程。
+26. SIGVTALRM  虚拟时钟超时时产生该信号。类似于SIGALRM，但是该信号只计算该进程占用CPU的使用时间。默认动作为终止进程。
+27. SGIPROF  类似于SIGVTALRM，它不公包括该进程占用CPU时间还包括执行系统调用时间默认动作为终止进程。
+28. SIGWINCH  窗口变化大小时发出。默认动作为忽略该信号。
+29. SIGIO  此信号向进程指示发出了一个异步lo事件。默认动作为忽略。·
+30. SIGPWR  关机。默认动作为终止进程。
+31. SIGSYS:无效的系统调用。默认动作为终止进程并产生core文件。
+34. SIGRTMIN ～(64)SIGATMAX  LINUX的实时信号，它们没有固定的含义(可以由用户自定义)。所有的实时信号的默认动作都为终止进程。
+
+
+
+
+
+###### kill函数与kill命令
+kill命令
+kill -<sign> <pid>
+向指定pid的进程发送信号
+
+kill函数
+```c
+#include <signal.h>
+int kill(pid_t pid, int sig); 
+// 参数：
+// sig  信号 不推荐直接使用数字，应使用宏名，因为不同操作系统信号编号可能不同，但名称一致。   
+// pid > 0  发送信号给指定的进程。
+// pid = 0  发送信号给与调用kill函数进程属于同一进程组的所有进程。
+// pid < -1  取|pid|发给对应进程组。
+// pid = -1  发送给进程有权限发送的系统中所有进程。·
+```
+example
+```c
+int main(int argc,char *argv[])
+{
+  pid_t pid;
+  pid = fork();
+  if(pid == -1){ 
+    sys_err("fork err");
+  }
+  if(pid == 0){
+    printf("child pid = %d,ppid = %d\n",getpid(),getppid());
+    kill(getppid(),SIGKILL);
+  }else{
+    printf("parent pid = %d\n",getpid());
+  }
+  return 0;
+}
+```
+ 
+###### alarm函数   setitimer函数
+time 命令 查看程序运行时间  实际时间 = 用户时间 + 内核时间 + 等待时间  --》优化瓶颈 I/O
+
+alarm
+```c
+#include <signal.h>
+unsigned int alarm(unsigned int seconeds);   //定时发送ALARM信号给进程 自然计时
+//返回0或剩余秒数，无失败
+// 常用：取消定时器alarm(0) ,返回旧闹钟剩余的秒数，无失败
+// 定时与进程状态无关。就绪，运行，挂起，终止，僵尸。。。无论进程处于何种状态，alarm都计时
+```
+setitimer
+```c
+
+int setitimer(int which, const struct itimerval *new_value, struct itimerval *old_value);
+// 参数：which 指定计时方式
+//      1. 自然定时  ITIMER_REAL -> SIGALRM   计算自然时间
+//      2. 虚拟空间计时(用户空间) -> SIGVTALRM   只计算进程占用cpu的时间
+//      3. 运行时计时(用户+内核) -> SIGPROF  计算占用cpu及执行系统调用的时间,
+// new_val 定时秒数
+// old_val 传出参数。上次定时剩余时间
+    // it_interval 用来设定两次定时任务之间间隔的时间
+    // it_value 定时的时长
+
+// 成功 返回0
+// 失败 -1 errno
+
+
+```
+
+深入理解setitimer
+`itimeval`又是由两个`timeval`结构体组成，`timeval`包含`tv_sec`和`tv_usec`两部分，其中`tv_se`为秒，`tv_usec`为微秒(即1/1000000秒)
+其中的new_value参数用来对计时器进行设置，`it_interval`为计时间隔，`it_value`为延时时长，下面例子中表示的是在`setitimer`方法调用成功后，延时1微秒便触发一次SIGALRM信号，以后每隔200毫秒触发一次`SIGALRM`信号。
+`settimer`工作机制是，先对`it_value`倒计时，当`it_value`为零时触发信号，然后重置为`it_interval`，继续对`it_value`倒计时，一直这样循环下去。
+基于此机制，`setitimer`既可以用来延时执行，也可定时执行。
+假如`it_value`为0是不会触发信号的，所以要能触发信号，`it_value`得大于0；如果`it_interval`为零，只会延时，不会定时(也就是说只会触发一次信号)。
+old_value参数，通常用不上，设置为NULL，它是用来存储上一次setitimer调用时设置的new_value值。
+
+
+###### 信号集操作函数
