@@ -1731,3 +1731,39 @@ int main(int argc,char *argv[])
 ```
 
 ##### 信号捕捉
+
+###### signal函数与sigaction函数
+signal
+`signal`函数用来在进程中指定当一个信号到达进程后该做什么处理，主要的两种方式有忽略某些信号，(监听到`SIGTERM`/`SIGINT`)退出前的打扫工作。信号处理函数的`handler`有两个默认值，分别是`SIG_IGN`和`SIG_DFL`，表示忽略和默认行为。而且`signal`函数是阻塞的，比如当进程正在执行`SIGUSR1`信号的处理函数，此时又来一个`SIGUSR1`信号，`signal`会等到当前信号处理函数处理完后才继续处理后来的`SIGUSR1`，不管后来的多少个`SIGUSR1`信号，统一看做一个来处理。还有`SIGKILL`和`SIGSTOP`这两个信号是`signal`函数捕捉不到的。
+```c
+#include <signal.h>
+sighandler_t signal(int signum, sighandler_t handler);  //注册捕捉信号
+// 参数：
+//   signum 要捕捉的信号
+//   hander 信号处理函数
+//   sighandler_t 函数指针  原型 typedef void (*sighandler_t)(int);
+
+``` 
+sigaction
+
+```c
+#include <signal.h>
+int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
+struct sigaction {
+         void     (*sa_handler)(int); //信号处理函数
+         void     (*sa_sigaction)(int, siginfo_t *, void *);
+         sigset_t   sa_mask; //信号屏蔽集
+         int        sa_flags; 
+         void     (*sa_restorer)(void);// 已废弃
+};
+// 参数：
+//   signum   要捕捉的信号
+//   act  信号的处理参数
+//   oldact  保存信号上次安装时的处理参数(备份的作用)
+
+// 返回值：
+//   成功 0
+//   失败 -1
+```
+
+###### 慢速系统调用中断
