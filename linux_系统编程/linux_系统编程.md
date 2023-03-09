@@ -1488,7 +1488,7 @@ int main(int argc,char *argv[])
 
 
 
-##### 信号
+### 信号
 信号的共性：简单，不能携带大量信息，满足条件才能发送
 信号是软件层面的”终断“。一旦信号产生，无论程序执行到什么位置，必须立刻停止运行，处理信号 ，处理结束，在继续执行后续命令
 所有的信号的产生及处理全部都是由 内核 完成的
@@ -1732,7 +1732,7 @@ int main(int argc,char *argv[])
 
 ##### 信号捕捉
 
-###### signal函数与sigaction函数
+###### signal与sigaction函数
 signal
 `signal`函数用来在进程中指定当一个信号到达进程后该做什么处理，主要的两种方式有忽略某些信号，(监听到`SIGTERM`/`SIGINT`)退出前的打扫工作。信号处理函数的`handler`有两个默认值，分别是`SIG_IGN`和`SIG_DFL`，表示忽略和默认行为。而且`signal`函数是阻塞的，比如当进程正在执行`SIGUSR1`信号的处理函数，此时又来一个`SIGUSR1`信号，`signal`会等到当前信号处理函数处理完后才继续处理后来的`SIGUSR1`，不管后来的多少个`SIGUSR1`信号，统一看做一个来处理。还有`SIGKILL`和`SIGSTOP`这两个信号是`signal`函数捕捉不到的。
 ```c
@@ -1766,4 +1766,109 @@ struct sigaction {
 //   失败 -1
 ```
 
-###### 慢速系统调用中断
+example
+
+```c
+// signal
+void sys_sig(int signo){
+  printf("----catch sign %d\n", signo);
+}
+
+int main(int argc,char *argv[])
+{
+  signal(SIGINT,sys_sig);
+  signal(SIGQUIT, sys_sig);
+
+while (1);
+  return 0;
+}
+```
+```c
+// sigaction
+void sys_sig(int signo){
+  printf("----catch sign %d\n", signo);
+  sleep(5);
+}
+
+int main(int argc,char *argv[])
+{
+  struct sigaction act,oldact;
+
+  act.sa_handler = sys_sig;
+  sigemptyset(&act.sa_mask);
+  sigaddset(&act.sa_mask, SIGINT);
+  act.sa_flags = 0;
+  sigaction(SIGQUIT, &act, &oldact);
+  while(1){}
+  return 0;
+}
+```
+
+使用信号通信实现子进程回收 （SIGCHLD 子进程改变状态(停止、继续、退出)时，发送该信号给父进程）
+```c
+void catch_child(int signo){
+  int ret;
+  while((ret = wait(NULL)) != -1){
+    
+    printf("---catch child pid = %d\n",ret);
+  }
+}
+int main(int argc,char *argv[])
+{
+    int i,ret;
+    pid_t pid;
+    signal(SIGCHLD, catch_child);
+    for (i = 0; i < 5; i++)
+    {
+      if((pid = fork()) == 0)
+        break;
+
+      if(pid == -1){
+        sys_err("fork err");
+      }
+    }
+    if(i == 5){   //父进程
+      printf("i am parent my pid = %d\n",getpid());
+
+      signal(SIGCHLD, catch_child);
+      while(1);
+    }else
+    {
+      printf("i am child my pid = %d\n",getpid());
+    }
+  return 0;
+}
+```
+
+
+##### 慢速系统调用中断
+系统调用可分为两类:慢速系统调用和其他系统调用。
+1．慢速系统调用:可能会使进程永远阻塞的一类。如果在阻塞期间收到一个信号，该系统调用就被中断,不再
+继续执行(早期);也可以设定系统调用是否重启。如，read、write、pause、wait...
+2.其他系统调用:getpid、getppid、fork....
+结合pause，回顾慢速系统调用:
+慢速系统调用被中断的相关行为，实际上就是`pause`的行为:如 read
+1. 想中断`pause`，信号不能被屏蔽。
+2. 信号的处理方式必须是捕捉(默认、忽略都不可以)，中断后返回-1，设置`errno`为`EINTR`(表“被信号中断”)
+3. 可修改sa_flags,参数来设置被信号中断后系统调用是否重启。`SA_INTERRURT` 不重启   `SA_RESTART` 重启。
+
+
+### 进程守护
+
+##### 进程组与会话
+###### 进程组
+进程组，也称之为作业。BSD于1980年前后向Unix中增加的一个新特性。代表一个或多个进程的集合。每个进程都属于一个进程组。在waitpid函数和kill函数的参数中都曾使用到。操作系统设计的进程组的概念，是为了简化对多个进程的管理。
+当父进程，创建子进程的时候，默认子进程与父进程属于同一进程组。进程组ID = 第一个进程ID(组长进程)。所以，组长进程标识,其进程组ID = 其进程ID
+可以使用kill -SIGKILL -进程组ID(负的) 来将整个进程组内的进程全部杀死。
+组长进程可以创建一个进程组，创建该进程组中的进程，然后终止。只要进程组中有一个进程存在，进程组就存在，与组长进程是否终止无关。
+进程组生存期:进程组创建到最后一个进程离开(终止或转移到另一个进程组)。一个进程可以为自己或子进程设置进程组ID
+
+###### 创建会话
+会话（多个进程组的集合）
+创建一个会话需要注意以下6点注意事项;,
+1.调用进程不能是进程组组长，该进程变成新会话首进程(session header)
+  2．该进程成为一个新进程组的组长进程。,
+3．需有root权限(ubuntu不需要)
+4．新会话丢弃原有的控制终端，该会话没有控制终端s5.该调用进程是组长进程，则出错返回，
+6.建立新会话时，先调用fork,父进程终止，子进程调用setsid-
+   
