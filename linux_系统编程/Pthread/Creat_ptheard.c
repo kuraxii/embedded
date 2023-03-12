@@ -13,9 +13,10 @@ void sys_err(char *str)
 
 void *tfn(void *arg)
 {
-  sleep((int)arg);
-  printf("i= %d, thread: pid = %d, tid = %lu\n",(int)arg, getpid(), pthread_self());
+  sleep((intptr_t)arg);
+  printf("i= %ld, thread: pid = %d, tid = %lu\n",(intptr_t)arg, getpid(), pthread_self());
 }
+
 
 int main(int argc,char *argv[])
 {
@@ -23,7 +24,7 @@ int main(int argc,char *argv[])
   int i, ret; 
   for (i = 0; i < 5; i++)
   {
-    ret = pthread_create(&tid, NULL, tfn, (void *)i);  //传参采用值传递
+    ret = pthread_create(&tid, NULL, tfn, (void *)(intptr_t)i);  //传参采用值传递
     if(ret != 0){
       perror("pthread_create err");
     }

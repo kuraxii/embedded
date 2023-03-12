@@ -1975,7 +1975,7 @@ pthread_t pthread_self(void);   //获取线程ID。其作用对应进程中getpi
 ###### pthread_exit函数
 ```c
 #include <pthread.h>
-void pthread_exit(void *retval);  //将单个线程退出
+void pthread_exit(void *retval);  //将单个线程退出  相当于return
 // 参数：
 //   retval  表示线程退出状态 通常传NULL
 ```
@@ -1984,3 +1984,94 @@ void pthread_exit(void *retval);  //将单个线程退出
 所以，多线程环境中，应尽量少用，或者不使用exit 函数，取而代之使用`pthread_exit` 函数，将单个线程退出。任何线程里exit 导致进程退出，其他线程未工作结束，主控线程退出时不能return或exit。
 另注意，`pthread_exit`.或者`return`返回的指针所指向的内存单元必须是全局的或者是用`malloc`分配的，不能在线程函数的栈上分配，因为当其它线程得到这个返回指针时线程函数已经退出了。
 
+###### pthread_join函数
+阻塞等待线程退出，获取线程退出状态   起作用，对应进程 wait()函数
+```c
+#include <pthread.h>
+int pthread_join(pthread_t thread, void **retval);
+// 参数：
+//   thread 线程id
+//   retval 传出参数 线程退出状态
+
+// 返回值：
+//   成功：0
+//   失败：-1 errno
+```
+example
+```c
+struct tval{
+  int ret;
+  char *str;
+};
+
+void sys_err(char *str)
+{
+  perror(str);
+  exit(1);
+}
+
+void* func()
+{
+  struct tval* ret;
+  ret = (struct tval*)malloc(sizeof(struct tval));
+  ret->ret = 0;
+  ret->str = "hellow word";
+
+  return ret;
+}
+
+int main(int argc,char *argv[])
+{
+  pthread_t tid;
+  int ret;
+  struct tval* retval;
+  ret =  pthread_create(&tid, NULL, func, NULL);
+  if(ret != 0){
+    sys_err("pthread_create error");
+  }
+  ret = pthread_join(tid, (void**)&retval);
+  printf("retval->ret = %d,\nretval-> str = %s\n",retval->ret, retval->str);
+  return 0;
+}
+```
+
+###### pthread_cancel函数
+杀死线程（线程必须在取消点，进入内核）  作用对应进程中的kill函数 
+```c
+#include <pthread.h>
+int pthread_cancel(pthread_t thread);   //被杀死的线程返回-1
+// 参数：
+//   thread 带杀死的线程id
+// 返回值：
+//   成功 0
+//   失败 errno
+// 如果，子线程没有到达取消点，那么pthread_cance1无效。
+// 我们可以在程序中，手动添加一个取消点。使用pthread_testcance1();
+// 成功被pthread_cance1()杀死的线程，返回-1
+
+void pthread_testcancel(void);
+
+```
+```c
+void *tfn(void *arg)
+{
+  while(1){
+  // printf("i= %ld, thread: pid = %d, tid = %lu\n",(intptr_t)arg, getpid(), pthread_self());
+  // sleep(1);
+  pthread_testcancel();   //添加取消点
+  }
+}
+
+int main(int argc,char *argv[])
+{
+  pthread_t tid;
+  int i, ret; 
+  ret = pthread_create(&tid, NULL, tfn, (void *)(intptr_t)i);  //传参采用值传递
+  if(ret != 0){
+    perror("pthread_create err");
+  }
+  sleep(5);
+  pthread_cancel(tid);  //终止线程
+  return 0;
+}
+```
