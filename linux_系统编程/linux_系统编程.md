@@ -2047,7 +2047,7 @@ int pthread_cancel(pthread_t thread);   //被杀死的线程返回-1
 //   失败 errno
 // 如果，子线程没有到达取消点，那么pthread_cance1无效。
 // 我们可以在程序中，手动添加一个取消点。使用pthread_testcance1();
-// 成功被pthread_cance1()杀死的线程，返回-1
+// 成功被pthread_cance1()杀死的线程，返回-1 使用pthead_join回收。
 
 void pthread_testcancel(void);
 
