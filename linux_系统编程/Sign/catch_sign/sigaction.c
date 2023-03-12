@@ -20,7 +20,7 @@ void sys_sig(int signo){
 int main(int argc,char *argv[])
 {
   struct sigaction act,oldact;
-  
+                                       
   act.sa_handler = sys_sig;
   sigemptyset(&act.sa_mask);
   sigaddset(&act.sa_mask, SIGINT);
