@@ -1995,7 +1995,7 @@ int pthread_join(pthread_t thread, void **retval);
 
 // 返回值：
 //   成功：0
-//   失败：-1 errno
+//   失败：错误号
 ```
 example
 ```c
@@ -2044,7 +2044,7 @@ int pthread_cancel(pthread_t thread);   //被杀死的线程返回-1
 //   thread 带杀死的线程id
 // 返回值：
 //   成功 0
-//   失败 errno
+//   失败 错误号
 // 如果，子线程没有到达取消点，那么pthread_cance1无效。
 // 我们可以在程序中，手动添加一个取消点。使用pthread_testcance1();
 // 成功被pthread_cance1()杀死的线程，返回-1 使用pthead_join回收。
@@ -2074,4 +2074,29 @@ int main(int argc,char *argv[])
   pthread_cancel(tid);  //终止线程
   return 0;
 }
+```
+
+###### pthread_detach函数
+实现线程分离
+```c
+#include <pthread.h>
+int pthread_detach(pthread_t thread);
+// 参数：
+//   thread 要分离的线程id
+
+// 返回值
+//   成功 0
+//   失败 错误号
+
+// 线程分离状态:指定该状态，线程主动与主控线程断开关系。线程结束后，其退出状态不由其他线程获取，而直接自己自动释放。网络、多线程服务器常用。
+// 进程若有该机制，将不会产生僵尸进程。僵尸进程的产生主要由于进程死后，大部分资源被释放，一点残留资源仍存于系统中，导致内核认为该进程仍存在。
+// 也可使用pthread_create函数参2(线程属性)来设置线程分离。
+
+```
+一般情况下，线程终止后，其终止状态一直保留到其它线程调用pthread_join获取它的状态为止。但是线程也可以被置为detach状态，这样的线程一旦终止就立刻回收它占用的所有资源，而不保留终止状态。
+不能对一个已经处于detach状态的线程调用pthread_join，这样的调用将返回EINVAL错误。也就是说，如果已经对一个线程调用了 pthread _detach就不能再调用pthread_join 了。
+
+```c
+
+
 ```
