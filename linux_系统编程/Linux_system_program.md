@@ -13,13 +13,11 @@
 - media/mnt   磁盘挂载相关
 - opt proc
 - root  root用户目录
-- usr  用户资源管理目录 
-
-
+- usr  用户资源管理目录
 
 ##### cd用法（change directory）
 
-- 
+-
   cd       切换目录
 
 - cd ~     切换到家目录
@@ -27,24 +25,23 @@
 - cd -     回到上一次操作的路径
 - cd ..    回到上级目录
 
-
 ##### 文件操作
 
 ```shell
 ls（list）  #作用：列出当前目录下的文件
 #用法：
-ls		#查看当前目录
-ls -l	#列出当前目录下的文件详细信息
-ls -a	#查看当前目录所有文件
-ls -lh	#带单位显示文件大小
-#.（点）	当前目录
-#..（点点）	上一级目录
-#../../	上上级目录
+ls  #查看当前目录
+ls -l #列出当前目录下的文件详细信息
+ls -a #查看当前目录所有文件
+ls -lh #带单位显示文件大小
+#.（点） 当前目录
+#..（点点） 上一级目录
+#../../ 上上级目录
 
-touch  	#作用：创建普通文件、更新文件时间
+touch   #作用：创建普通文件、更新文件时间
 #用法：
 touch <filename> #如果filename存在，更新文件时间
-			   #如果不存在，就创建文件
+      #如果不存在，就创建文件
 
 file  #作用：查看文件属性
 #用法：
@@ -69,14 +66,14 @@ mkdir dirname：#创建一个目录
 
 rm（remove） #作用：删除文件或目录
 #用法：
-rm filename 	#删除文件
-rm dirname -r	#删除目录，删除目录及子目录
+rm filename  #删除文件
+rm dirname -r #删除目录，删除目录及子目录
 
 rmdir  #作用：删除空目录
 #用法：
 rmdir <directory>
 
-cp（copy）	   #作用：复制文件或目录
+cp（copy）    #作用：复制文件或目录
 #用法：
 cp file1 file2    #文件到文件，如果没有file2文件，则创建文件
 cp file dir     #文件到目录（操作文件到目录里面去不用加-r，本质是操作文件）
@@ -86,20 +83,18 @@ cp dir1/ dir2 -r  #目录复制到目录
 chmod     #修改文件权限
 用法：
 chmod  <八进制数>  <filename>
-chmod 777 3.txt 	#修改3.txt拥有所有权限
-chmod u+x 3.txt 	#给3.txt的user用户添加执行权限
-chmod g+w 3.txt 	#给3.txt的group组添加写权限
-chmod o+r 3.txt 	#给3.txt的other其他人添加读权限
+chmod 777 3.txt  #修改3.txt拥有所有权限
+chmod u+x 3.txt  #给3.txt的user用户添加执行权限
+chmod g+w 3.txt  #给3.txt的group组添加写权限
+chmod o+r 3.txt  #给3.txt的other其他人添加读权限
 #r ：读权限  w：写权限  x：可执行权限
 u（user）#文件所属用户
 g（group） # 文件所属用户组
 o（other） #其他人
 八进制数表示 :  r  w  x
-			  4 2 1
+     4 2 1
 
 ```
-
-
 
 ##### linux文件类型
 
@@ -114,41 +109,34 @@ s  #套接字
 #其他未知文件
 ```
 
-
-
 ##### linux系统目录
 
-* bin：存放二进制文件
-* boot：存放开机启动程序
-* dev：存放设备文件 ：字符设备，鼠标键盘
-* home：存放普通用户
-* etc：用户信息和系统配置文件
-* lib：库文件
-* root：管路员宿主目录（家目录）
-* usr：用户资源管路目录
-
-
+- bin：存放二进制文件
+- boot：存放开机启动程序
+- dev：存放设备文件 ：字符设备，鼠标键盘
+- home：存放普通用户
+- etc：用户信息和系统配置文件
+- lib：库文件
+- root：管路员宿主目录（家目录）
+- usr：用户资源管路目录
 
 ##### 文件系统
 
-* inode
-  * 本质为结构体，存储文件的存储信息 如：权限，类型，大小，时间，用户，盘块位置，大多数的inode都存储在磁盘上
+- inode
+  - 本质为结构体，存储文件的存储信息 如：权限，类型，大小，时间，用户，盘块位置，大多数的inode都存储在磁盘上
 
-* dentry 
-	* 目录项，本质依然是结构体，重要的成员变量有两个，{文件名，inode...},而文件内容保存在磁盘盘块中
-	
+- dentry
+  - 目录项，本质依然是结构体，重要的成员变量有两个，{文件名，inode...},而文件内容保存在磁盘盘块中
 
 ##### 基本命令
 
-* echo $SHELL		#查看当前命令解析器
-* which 			#查看指定命令所在路径
-* pwd   			#查看当前目录
-* wc				#计算文件的Byte数，字数或列数
-* od				#指定数据的显示格式
-* du				#显示磁盘大小
-* df				#查看磁盘使用情况
-
-
+- echo $SHELL  #查看当前命令解析器
+- which    #查看指定命令所在路径
+- pwd      #查看当前目录
+- wc    #计算文件的Byte数，字数或列数
+- od    #指定数据的显示格式
+- du    #显示磁盘大小
+- df    #查看磁盘使用情况
 
 ##### 用户管理
 
@@ -164,7 +152,7 @@ sudo chgrp <用户组名>  <文件名>   #修改文件所属用户组
 
 ```shell
 stat   #查看文件的状态（修改时间，大小，权限。。。）
-find    	#查找文件
+find     #查找文件
 用法：
 find  <路径目录>  <-maxdepth>  <搜索类型> <搜索字符串> ...  
 #搜索类型： -name 按名字     -type 按文件类型  -size 按文件大小 -maxdepth 指定搜索深度
@@ -180,9 +168,7 @@ grep -r 'copy' ./ -n
 ps aux | grep 'cupsd'   #检索进程结果集
 ```
 
-
-
-##### 压缩与解压 
+##### 压缩与解压
 
 ```shell
 #gzip命令压缩  gizp压缩只会压缩目录下的文件
@@ -201,12 +187,12 @@ tar -jxvf <压缩包名>   #以bzip2方式解压缩
 ##### gcc
 
 ```shell
--I 			#制定头文件所在的目录
--c			#只做预处理，编译，汇编，得到二进制文件
--g			#编译时添加调试文件，主要用于gdb调试
--On n=0~3	#编译优化，n越大，优化越多
--Wall		#显示所有警告信息
--D			#在程序中注册一个宏
+-I    #制定头文件所在的目录
+-c   #只做预处理，编译，汇编，得到二进制文件
+-g   #编译时添加调试文件，主要用于gdb调试
+-On n=0~3 #编译优化，n越大，优化越多
+-Wall  #显示所有警告信息
+-D   #在程序中注册一个宏
 ```
 
 ##### 静态库
@@ -251,6 +237,7 @@ ar rcs libmylib.a file.o  #将file.o加入到libmyllib.a中
 
 
 ```
+
 ##### gdb
 
 ```shell
@@ -338,11 +325,12 @@ O_APPEND O_CREAT O_EXCL O_TRUNC O_NONBLOCK
 
 ```
 
+#### read write
 
-##### read write
 ```c
 ssize_t read(int fd,void *buf,size_t count)
 ```
+
 参数（头文件 unistd.h）
 fd 文件描述符
 buf 存数据的缓冲区
@@ -355,6 +343,7 @@ count 缓冲区的大小
 ```c
 ssize_t write(int fd,const void *buf,size_t count)
 ```
+
 参数（头文件 unistd.h）
 fd 文件描述符
 buf 待写入数据的缓冲区
@@ -362,6 +351,7 @@ count 写入数据的大小
 返回值
 成功 写入的字节数
 失败 -1，设置errno
+
 ```c
 /*
  *./mycp src dst 命令行参数实现简单的cp命令
@@ -371,38 +361,39 @@ char buf[1024];
 
 int main(int argc, char *argv[])
 {
-	int src, dst;
-	int n;
+ int src, dst;
+ int n;
 
-	src = open(argv[1], O_RDONLY); //只读打开源文件
-	if(src < 0){
-		perror("open src error");
-		exit(1);
-	}
-	//只写方式打开，覆盖原文件内容，不存在则创建，rw-r--r--
-	dst = open(argv[2], O_WRONLY|O_TRUNC|O_CREAT, 0644);
-	if(src < 0){
-		perror("open dst error");
-		exit(1);
-	}
-	while((n = read(src, buf, 1024))){
-		if(n < 0){
-			perror("read src error");
-			exit(1);
-		}
-		write(dst, buf, n);  //不应写出1024, 读多少写多少
-	}
+ src = open(argv[1], O_RDONLY); //只读打开源文件
+ if(src < 0){
+  perror("open src error");
+  exit(1);
+ }
+ //只写方式打开，覆盖原文件内容，不存在则创建，rw-r--r--
+ dst = open(argv[2], O_WRONLY|O_TRUNC|O_CREAT, 0644);
+ if(src < 0){
+  perror("open dst error");
+  exit(1);
+ }
+ while((n = read(src, buf, 1024))){
+  if(n < 0){
+   perror("read src error");
+   exit(1);
+  }
+  write(dst, buf, n);  //不应写出1024, 读多少写多少
+ }
 
-	close(src);
-	close(dst);
+ close(src);
+ close(dst);
 
-	return 0;
+ return 0;
 }
 
 ```
 
 ##### 文件描述符
-```
+
+```shell
 PCB(process control block) 进程控制块  本质：结构体
 成员：文件描述符
 文件描述符：0-1023    文件描述符使用表中可用的最小的
@@ -410,68 +401,70 @@ PCB(process control block) 进程控制块  本质：结构体
 1 - STDOUT_FILENO
 3 - STDERR_FILENO
 ```
+
 ##### 阻塞，非阻塞  
-```
+
+```shell
 阻塞，非阻塞  是设备文件，网络文件的属性
-	产生阻塞的场景。 读设备文件，读网络文件。(读常规文件无阻塞概念)
-	/dev/tty
+ 产生阻塞的场景。 读设备文件，读网络文件。(读常规文件无阻塞概念)
+ /dev/tty
 
 ```
-
 
 ##### fcntl 改打开文件属性
+
 ```c
 int flags = fcntl(fd, F_GETFL);
 //获取文件状态 F_GETFL
 //设置文件状态 F_SETFL
 ```
 
-
 demo
+
 ```c
 #define MSG_TRY "try again\n"
 
 int main(void)
 {
-	char buf[10];
-	int flags, n;
+ char buf[10];
+ int flags, n;
 
-	flags = fcntl(STDIN_FILENO, F_GETFL); //获取stdin属性信息
-	if(flags == -1){
-		perror("fcntl error");
-		exit(1);
-	}
-	flags |= O_NONBLOCK;
-	int ret = fcntl(STDIN_FILENO, F_SETFL, flags);
-	if(ret == -1){
-		perror("fcntl error");
-		exit(1);
-	}
+ flags = fcntl(STDIN_FILENO, F_GETFL); //获取stdin属性信息
+ if(flags == -1){
+  perror("fcntl error");
+  exit(1);
+ }
+ flags |= O_NONBLOCK;
+ int ret = fcntl(STDIN_FILENO, F_SETFL, flags);
+ if(ret == -1){
+  perror("fcntl error");
+  exit(1);
+ }
 
 tryagain:
-	n = read(STDIN_FILENO, buf, 10);
-	if(n < 0){
-		if(errno != EAGAIN){		
-			perror("read /dev/tty");
-			exit(1);
-		}
-		sleep(3);
-		write(STDOUT_FILENO, MSG_TRY, strlen(MSG_TRY));
-		goto tryagain;
-	}
-	write(STDOUT_FILENO, buf, n);
+ n = read(STDIN_FILENO, buf, 10);
+ if(n < 0){
+  if(errno != EAGAIN){  
+   perror("read /dev/tty");
+   exit(1);
+  }
+  sleep(3);
+  write(STDOUT_FILENO, MSG_TRY, strlen(MSG_TRY));
+  goto tryagain;
+ }
+ write(STDOUT_FILENO, buf, n);
 
-	return 0;
+ return 0;
 }
 
 ```
 
-
-
 ##### lseek函数
+
 ```c
 off_t lseek(int fd, off_t offset, int whence);
 ```
+
 参数
   fd：文件描述符
   offset：偏移量
@@ -489,39 +482,41 @@ off_t lseek(int fd, off_t offset, int whence);
 od -tcx <filename> 查看文件的16进制表示形式
 od -tco <filename> 查看文件的10进制表示形式
 
-
 使用
+
 ```c
 int main(void)
 {
-	int fd, n;
-	char msg[] = "It's a test for lseek\n";
-	char ch;
+ int fd, n;
+ char msg[] = "It's a test for lseek\n";
+ char ch;
 
-	fd = open("lseek.txt", O_RDWR|O_CREAT, 0644);
-	if(fd < 0){
-		perror("open lseek.txt error");
-		exit(1);
-	}
+ fd = open("lseek.txt", O_RDWR|O_CREAT, 0644);
+ if(fd < 0){
+  perror("open lseek.txt error");
+  exit(1);
+ }
 
-	write(fd, msg, strlen(msg));    //使用fd对打开的文件进行写操作，问价读写位置位于文件结尾处。
+ write(fd, msg, strlen(msg));    //使用fd对打开的文件进行写操作，问价读写位置位于文件结尾处。
 
-	lseek(fd, 0, SEEK_SET);  //偏移到文件起始位置       //修改文件读写指针位置，位于文件开头。 注释该行会怎样呢？ 会导致无法读到数据
+ lseek(fd, 0, SEEK_SET);  //偏移到文件起始位置       //修改文件读写指针位置，位于文件开头。 注释该行会怎样呢？ 会导致无法读到数据
 
-	while((n = read(fd, &ch, 1))){
-		if(n < 0){
-			perror("read error");
-			exit(1);
-		}
-		write(STDOUT_FILENO, &ch, n);   //将文件内容按字节读出，写出到屏幕
-	}
+ while((n = read(fd, &ch, 1))){
+  if(n < 0){
+   perror("read error");
+   exit(1);
+  }
+  write(STDOUT_FILENO, &ch, n);   //将文件内容按字节读出，写出到屏幕
+ }
 
-	close(fd);
+ close(fd);
 
-	return 0;
+ return 0;
 }
 ```
+
 获取文件大小
+
 ```c
 int main(int argc,char *argv[])
 {
@@ -538,7 +533,9 @@ int main(int argc,char *argv[])
     return 0;
 }
 ```
+
 拓展文件大小
+
 ```c
 int main(int argc,char *argv[])
 {
@@ -557,54 +554,62 @@ int main(int argc,char *argv[])
 }
 ```
 
-
 ##### ioctl函数
+
 对设备的I/O通道进行管理，控制设备特性
 
 ##### 传入传出参数
-* 传入参数
+
+- 传入参数
+
 1. 指针作为函数参数
 2. 通常由const关键字修饰
 3. 指针在有效区，在函数内部做读参数
 
-* 传出参数
+- 传出参数
+
 1. 指针作为函数参数
 2. 在函数调用之前指针指向的空间可以无意义，但必须有效
 3. 在函数内部做写操作
 4. 函数调用结束后充当函数返回值
 
-* 传入传出函数
+- 传入传出函数
+
 1. 指针做函数参数
 2. 在函数调用前，指针指向的空间有实际意义
 3. 在函数内部，先做读操作，再做写操作
 4. 函数调用中，充当函数返回值
 
-例： 
+例：
+
 ```c
 char *strcpy(char *dest, const char *src);
 //char *desk为传出参数   const char *src为传入参数
 
 ```
 
-##### stat与lstat函数 
+##### stat与lstat函数
+
 获取文件属性(从inode结构体中获取)
+
 ```c
 int stat(const char *path, struct stat *buf);
 int lstat(const char *path, struct stat *buf);
 ```
+
 参数：
 
 path: 文件路径
 
 buf: (传出参数) 存放文件属性
 
-返回值: 
-		成功 0
-		失败 -1 errno 
+返回值:
+  成功 0
+  失败 -1 errno
 
 区别：穿透符号链接：stat：会  lstat：不会
 
-获取文件大小：buf.st_size 
+获取文件大小：buf.st_size
 
 ```c
 //获取文件大小
@@ -652,14 +657,13 @@ int main(int argc,char *argv[])
 }
 ```
 
-
-
 ##### link和ulink函数
 
 ```c
 int link(const char* oldpath, const char* newpath); //创建硬链接
 int ulink(const char *pathname);  //删除dentry
 ```
+
 返回值
 
 成功 0
@@ -667,44 +671,47 @@ int ulink(const char *pathname);  //删除dentry
 失败 -1 设置errno
 
 使用link ulink函数实现mv命令
+
 ```c
 int main(int argc,char *argv[])
 {
     link(argv[1],argv[2]);    //建立argv[1]的硬链接到argv[2]
-    ulink(argv[1]);					//删除argv[1]的dentry
+    ulink(argv[1]);     //删除argv[1]的dentry
     return 0;
 }
 ```
+
 注意linux下删除文件的机制：不断将st_nlink -1,直至减为0为止。无目录项对应的文件，将会被操作系统择机释放
-因此，我们删除文件，从某种意义上说，只是让文件具备了被释放的条件 
+因此，我们删除文件，从某种意义上说，只是让文件具备了被释放的条件
 
 unlink函数的特征：清楚文件时，如果文件硬链接数到0了，没有dentry对应，但文件不会马上被释放。要等到所有打开该文件的进程关闭了该文件，系统才会挑时间将该文件释放掉
+
 ```c
 int main(void)
 {
-	int fd, ret;
-	char *p = "test of unlink\n";
-	char *p2 = "after write something.\n";
+ int fd, ret;
+ char *p = "test of unlink\n";
+ char *p2 = "after write something.\n";
 
-	fd = open("temp.txt", O_RDWR|O_CREAT|O_TRUNC, 0644);
-	if(fd < 0){
-		perror("open temp error");
-		exit(1);
-	}
+ fd = open("temp.txt", O_RDWR|O_CREAT|O_TRUNC, 0644);
+ if(fd < 0){
+  perror("open temp error");
+  exit(1);
+ }
 
-	ret = unlink("temp.txt");		 //具备了被释放的条件
-	if(ret < 0){
-		perror("unlink error");
-		exit(1);
-	}
+ ret = unlink("temp.txt");   //具备了被释放的条件
+ if(ret < 0){
+  perror("unlink error");
+  exit(1);
+ }
 
-	ret = write(fd, p, strlen(p));
+ ret = write(fd, p, strlen(p));
     if (ret == -1) {
         perror("-----write error");
     }
 
-	printf("hi! I'm printf\n");
-	ret = write(fd, p2, strlen(p2));
+ printf("hi! I'm printf\n");
+ ret = write(fd, p2, strlen(p2));
     if (ret == -1) {
         perror("-----write error");
     }
@@ -715,10 +722,10 @@ int main(void)
     p[3] = 'H';
 
 
-	close(fd);
+ close(fd);
 
 
-	return 0;
+ return 0;
 }
 
 ```
@@ -727,10 +734,12 @@ int main(void)
 
 ##### getcwd和chdir函数
 
-##### 文件和目录权限 
+##### 文件和目录权限
+
 打开文件夹需要x权限
 
 ##### 目录操作函数 opendir、closedir、readdir
+
 ```c
 //#include <dirent.h>
 //#include <sys/types.h>
@@ -738,7 +747,9 @@ DIR *opendir(const char* name); //打开文件夹  成功返回DIR*  失败返�
 int closedir(DIR *dirp);  //关闭文件夹 
 struct dirent *readdir(DIR* dirp); //读文件夹  获取目录     失败返回NULL
 ```
+
 ###### 递归遍历目录
+
 ```c
 void isfile(char *name);
 void read_dir(char *dir);
@@ -814,11 +825,14 @@ int main(int argc, char *argv[])
 ```
 
 ##### dup(重定向)
+
 ```c
 int dup(int oldfd);  //返回值为新的文件描述符
 int dup2(int oldfd,int newfd); //dupto 使newfd指向oldfd指向的文件 newfd->oldfd oldfd必须为有效的文件描述符 返回值为newfd
 ```
+
 example
+
 ```c
 DUP
 int main(int argc,char *argv[])
@@ -836,6 +850,7 @@ int main(int argc,char *argv[])
   return 0;
 }
 ```
+
 ```c
 DUP2
 int main(int argc,char *argv[])
@@ -855,9 +870,11 @@ int main(int argc,char *argv[])
 ```
 
 ###### fcntl函数实现dup函数
+
 cmd：F_DUPFD
 参数3：被占用的，返回最小可用的
       未被占用的，返回=该值的文件描述符
+
 ```c
 int main(int argc,char *argv[])
 { 
@@ -872,35 +889,42 @@ int main(int argc,char *argv[])
 ```
 
 ### 进程控制
+
 程序：死的，只占用磁盘空间
 进程：活得，运行起来的程序。占用内存，cpu等系统资源
 
 ##### 虚拟内存和物理内存的映射关系
+
 ```https://www.bilibili.com/video/BV1KE411q7ee?p=77&spm_id_from=pageDriver&vd_source=a1edf3ad63e77272acbd0c1f89c365d6```
 
 ##### pcb进程控制块
+
 每个进程在内核中都有一个进程控制块（PCB）来维护进程相关信息，Linux内核的进程控制块是task_struct结构体
 /usr/src/linux-headers-3.16.0-30/include/linux/sched.h文件中可以查看struct task_struct结构体定义。其内部成员有很多，我们重点掌握以下部分即可:
-* 进程id (PID) 命令：ps aux可查看
-* 进程的状态 （（初始态）， 就绪，运行，挂起，终止等状态）
-* 进程切换时需要保存和恢复的一些cpu寄存器
-* 描述虚拟地址空间的信息
-* 当前工作目录
-* *umask掩码
-* 文件描述符表
-* 和信号相关的信息
-* 用户id和组id
-* 会话（session）和进程组
-* 进程可使用的资源上限（Resource Limit）
+
+- 进程id (PID) 命令：ps aux可查看
+- 进程的状态 （（初始态）， 就绪，运行，挂起，终止等状态）
+- 进程切换时需要保存和恢复的一些cpu寄存器
+- 描述虚拟地址空间的信息
+- 当前工作目录
+- *umask掩码
+- 文件描述符表
+- 和信号相关的信息
+- 用户id和组id
+- 会话（session）和进程组
+- 进程可使用的资源上限（Resource Limit）
 
 ##### 环境变量
-* PATH
-* SHELL 查看当前shell
-* TERM  查看当前终端
-* LANG  查看当前语言
-* HOME  查看当前用户家目录
+
+- PATH
+
+- SHELL 查看当前shell
+- TERM  查看当前终端
+- LANG  查看当前语言
+- HOME  查看当前用户家目录
 
 ##### fork函数
+
 ```c
 //include <unistd.h>
 pid_t fork(void);  //创建一个子进程 
@@ -912,7 +936,9 @@ pid_t fork(void);  //创建一个子进程
  0  创建成功
  1  
 ```
+
 example
+
 ```c
 int main(int argc,char *argv[])
 {
@@ -938,15 +964,14 @@ int main(int argc,char *argv[])
 ```
 
 ###### getpid & getppid函数
+
 ```c
 pid_t getpid(void);  //返回当前进程的pid
 pid_t getppid(void); //返回父进程的pid
 ```
 
-
-
-
 ###### 循环创建进程
+
 ```c
 int main(int argc,char *argv[])
 {
@@ -976,7 +1001,9 @@ int main(int argc,char *argv[])
   return 0;
 }
 ```
+
 ###### 进程共享
+
 | 父子相同之处 | 父子不相同之处 | 父子进程共享 |
 | :----------: | :------------: | :------------: |
 |   全局变量   | 进程id         | 文件描述符   |
@@ -996,8 +1023,10 @@ int main(int argc,char *argv[])
 fork之后父子进程运行顺序由操作系统的调度算法决定
 
 ##### exec函数族
+
 fork创建的程序执行的是父进程相同的程序（但又可能执行不同的代码分支），子进程往往要调用一种exec函数以执行另一个程序。当进程调用一种exec函数时，该进程的用户空间代码和数据完全被新程序替换，从新程序的启动开始执行。调用exec并不会创建新进程，所以调用exec前后台该进程的id并未改变。
 将当前进程的.text、.data替换为所要加载的程序的.text、.data,然后让进程从新的.text第一天指令开始执行，但进程id不变，换核不换壳
+
 ```c  
 int execl(const char *pathname, const char *arg, .../* 可写多个参数 */);
 int execlp(const char *file, const char *arg, .../* 可写多个参数 */, NULL/* 结束符 */);
@@ -1006,11 +1035,15 @@ int execv(const char *pathname, char *const argv[]);
 int execvp(const char *file, char *const argv[]); 
 int execvpe(const char *file, char *const argv[],char *const envp[]);
 ```
+
 ###### execlp函数
+
 加载一个进程，借助PATH环境变量
 
 ###### exexl函数
+
 加载一个进程，借助路径 （相对路径，绝对路径）
+
 ```c
 int execl(const char *pathname, const char *arg, .../* 可写多个参数 */);
 //成功：无返回
@@ -1026,23 +1059,25 @@ int execlp(const char *file, const char *arg, .../* (char  *) NULL */);
 //该函数通常用来调用系统程序。如:ls、date、cp、 cat等命令。
 ```
 
-
 ###### 孤儿进程
+
 孤儿进程:父进程先于子进程结束，则子进程成为孤儿进程，子进程的父进程成为init进程，称为init进程领养孤儿进程。
 
-
-
 ###### 僵尸进程
+
 僵尸进程:进程终止，父进程尚未回收，子进程残留资源（PCB）存放于内核中，变成僵尸（zombie）进程。
 特别注意，僵尸进程是不能使用kill命令清除掉的。因为 kill命令只是用来终止进程的,而僵尸进程已经终止。
 思考!用什么办法可清除掉僵尸进程呢?  杀掉父进程让init进程回收  wait函数回收
 
 ##### wait函数
+
 一个进程在终止时会关闭所有文件描述符，释放在用户空间分配的内存，但它的 PCB还保留着，内核在其中保存了一些信息:如果是正常终止则保存着退出状态，如果是异常终止则保存着导致该进程终止的信号是哪个。这个进程的父进程可以调用wait或 waitpid_获取这些信息，然后彻底清除掉这个进程。我们知道一个进程的退出状态可以在 shell中用特殊变量$?查看，因为shell是它的父进程，当它终止时shell 调用wait或waitpid得到它的退出状态同时彻底清除掉这个进程。
 父进程调用wait函数可以回收子进程终止信息。该函数有3个功能：
+
 1. 阻塞等待子进程退出
 2. 回收子进程残留资源‘
 3. 回去子进程结束状态（退出原因）
+
 ```c
 
 #include <sys/types.h>
@@ -1093,6 +1128,7 @@ WIFSTOPPED(status);   //为非0 -> 进程暂停
 
 
 ```
+
 explame
 
 ```c
@@ -1123,6 +1159,7 @@ int main(int argc,char *argv[])
   return 0;
 }
 ```
+
 ```c
 //waitpid回收子进程
 int main(int argc,char *argv[])
@@ -1202,19 +1239,26 @@ int main(int argc,char *argv[])
 ```
 
 ##### 进程通信
+
 现用常用的进程间通信方式
+
 1. 管道（使用最简单）
 2. 信号（开销最小）
 3. 共享映射区（无血缘关系）
 4. 本地套接字（最稳定）
 
 ###### 管道
+
 管道是一种最基本的IPC(Inter Process Communication)机制，作用于有血缘关系的进程之间，完成数据传递。调用pipe系统函数即可创建一个管道。有如下特质:
+
 1. 本质是一个伪文件(实为内存缓冲区)
 2. 由两个文件描述符引用，一个表示读端，一个表示写端
 3. 规定数据由写端流入管道，由读端流出
+
 管道的原理：管道实为内核使用环形队列机制，借助内核缓冲区(4k)实现
+
 管道的局限性：
+
 1. 数据不能自己写，自己读
 2. 管道中的数据不可反复读取。一旦读走，管道不服存在
 3. 采用半双工通信方式，数据只能在单方向上流动
@@ -1229,16 +1273,18 @@ int pipe(int pipefd[2]);   //创建并打开管道
 //返回值：成功 0
 //       失败 -1 errno
 ```
+
 管道的读写行为
-* 读管道
-  * 管道有数据，read返回实际读到的数据
-  * 管道无数据
-    * 无写端 raed返回0 （类似读到文件尾）
-    * 有写端，read阻塞等待
-* 写管道
-  * 管道读端全部被关闭，进程异常终止（也可以使用捕捉 SIGPIPE 信号，使进程不终止）
-    * 管道已满:write阻塞
-    * 管道未满，write将数据写入，并返回实际写入的字节数 
+
+- 读管道
+  - 管道有数据，read返回实际读到的数据
+  - 管道无数据
+    - 无写端 raed返回0 （类似读到文件尾）
+    - 有写端，read阻塞等待
+- 写管道
+  - 管道读端全部被关闭，进程异常终止（也可以使用捕捉 SIGPIPE 信号，使进程不终止）
+    - 管道已满:write阻塞
+    - 管道未满，write将数据写入，并返回实际写入的字节数
 
 ```c
 void sys_err(char *str){
@@ -1274,12 +1320,16 @@ int main(int argc,char *argv[])
 ```
 
 ##### fifo命名管道
+
 fifo命名管道的创建
 命令行方式
+
 ```shell
 mkfifo <filenale>
 ```
+
 函数方式
+
 ```c
 int mkfifo(const char *pathname, mode_t mode);
 // 参数：
@@ -1292,6 +1342,7 @@ int mkfifo(const char *pathname, mode_t mode);
 ```
 
 example
+
 ```c
 //读端
 void sys_err(char *str){
@@ -1316,6 +1367,7 @@ int main(int argc,char *argv[])
   return 0;
 }
 ```
+
 ```c
 //写端
 int main(int argc,char *argv[])
@@ -1340,7 +1392,9 @@ int main(int argc,char *argv[])
 ```
 
 ##### 存储映射
+
 ###### mmap函数原理
+
 ```c
 #include <sys/mman.h>
 void *mmap(void *addr, size_t length, int prot, int flags,int fd, off_t offset);  //创建共享内存映射区
@@ -1361,7 +1415,9 @@ int munmap(void *addr, size_t length); //释放共享内存映射区
 // length 映射区的大小
 
 ```
+
 ###### mmap注意事项
+
 1. 用于创建映射区的大小为0，实际指定非0大小创建有映射区，出"总线错误" bus error
 2. 实际制定0大小创建映射区，出"无效参数错误" Invalid argument  (映射区大小不能为0)
 3. 用于创建映射区的文件读写行为为 只读 ，映射区属性为读写。出"无效参数错误" Invalid argument
@@ -1373,16 +1429,18 @@ int munmap(void *addr, size_t length); //释放共享内存映射区
 9. 映射区访问权限为“私有”MAP_PRIVATE，对内存所做的所有修改，只在内存有效，不会反应到物理磁盘上。
 
 mmap函数的保险调用方式
-  1.open(O_RDER) 
+  1.open(O_RDER)
   2.mmap(NULL,<filesize>, PROT_READ |PROT_WRITE，MAP_SHARED,fd，0);
 
 ###### 父子进程使用mmap实现进程间通信
+
 父进程先创建映射区。 open(O_RDWR) mmap()
 指定MAP_SHARE 权限
 fork创建子进程
 一个进程读 一个进程写
 
 通过传递指针实现
+
 ```c
 int main(int argc,char *argv[])
 {
@@ -1425,8 +1483,10 @@ int main(int argc,char *argv[])
 ```
 
 ###### 无血缘关系进程使用mmap实现进程间通信
+
 通过打开相同文件实现
 读
+
 ```c
 int main(int argc,char *argv[])
 {
@@ -1457,6 +1517,7 @@ int main(int argc,char *argv[])
 ```
 
 写
+
 ```c
 int main(int argc,char *argv[])
 {
@@ -1486,15 +1547,16 @@ int main(int argc,char *argv[])
 }
 ```
 
-
-
 ### 信号
+
 信号的共性：简单，不能携带大量信息，满足条件才能发送
 信号是软件层面的”终断“。一旦信号产生，无论程序执行到什么位置，必须立刻停止运行，处理信号 ，处理结束，在继续执行后续命令
 所有的信号的产生及处理全部都是由 内核 完成的
 
 ###### 与信号相关的事件与状态
+
 产生信号
+
 1. 按键产生 如：ctrl+c ctrl+z ctrl+\
 2. 系统调用产生 如：kill raise abort
 3. 软件条件产生 如：定时器 sleep
@@ -1502,29 +1564,33 @@ int main(int argc,char *argv[])
 5. 命令产生 如：kill 命令
 
 信号递达
-* 递送并且到达进程
+
+- 递送并且到达进程
 
 信号未决
-* 信号产生和递达之间的状态主要由**阻塞**(屏蔽)导致该状态
+
+- 信号产生和递达之间的状态主要由**阻塞**(屏蔽)导致该状态
 
 信号的处理方式
+
 1. 执行默认动作
 2. 忽略(丢弃)
 3. 捕捉(调用用户处理函数)
 
 Linux内核的进程控制块PCB是一个结构体，task_struct,除了包含进程id，状态，工作目录,用户id，组id，文件描述符表，还包含了信号相关的信息，主要指阻塞信号集和未决信号集。
 
-阻塞信号集(信号屏蔽字) 
+阻塞信号集(信号屏蔽字)
 本质：位图，用来记录信号的屏蔽状态。一旦被屏蔽的信号，在被屏蔽之前，一直处于未决态
 
 未决信号集
 本质：位图。用来记录信号的处理状态。该信号集中的信号，表示已经产生但未被处理的信号
 
 信号4要素：
-* 信号编号
-* 信号名称
-* 信号事件
-* 信号默认处理动作
+
+- 信号编号
+- 信号名称
+- 信号事件
+- 信号默认处理动作
 
 信号使用之前，应先确定4要素，而后再使用
 
@@ -1562,18 +1628,16 @@ Linux内核的进程控制块PCB是一个结构体，task_struct,除了包含进
 29. SIGIO  此信号向进程指示发出了一个异步lo事件。默认动作为忽略。·
 30. SIGPWR  关机。默认动作为终止进程。
 31. SIGSYS:无效的系统调用。默认动作为终止进程并产生core文件。
-34. SIGRTMIN ～(64)SIGATMAX  LINUX的实时信号，它们没有固定的含义(可以由用户自定义)。所有的实时信号的默认动作都为终止进程。
-
-
-
-
+32. SIGRTMIN ～(64)SIGATMAX  LINUX的实时信号，它们没有固定的含义(可以由用户自定义)。所有的实时信号的默认动作都为终止进程。
 
 ###### kill函数与kill命令
+
 kill命令
 kill -<sign> <pid>
 向指定pid的进程发送信号
 
 kill函数
+
 ```c
 #include <signal.h>
 int kill(pid_t pid, int sig); 
@@ -1584,7 +1648,9 @@ int kill(pid_t pid, int sig);
 // pid < -1  取|pid|发给对应进程组。
 // pid = -1  发送给进程有权限发送的系统中所有进程。·
 ```
+
 example
+
 ```c
 int main(int argc,char *argv[])
 {
@@ -1602,11 +1668,13 @@ int main(int argc,char *argv[])
   return 0;
 }
 ```
- 
+
 ###### alarm函数   setitimer函数
+
 time 命令 查看程序运行时间  实际时间 = 用户时间 + 内核时间 + 等待时间  --》优化瓶颈 I/O
 
 alarm
+
 ```c
 #include <signal.h>
 unsigned int alarm(unsigned int seconeds);   //定时发送ALARM信号给进程 自然计时
@@ -1614,7 +1682,9 @@ unsigned int alarm(unsigned int seconeds);   //定时发送ALARM信号给进程 
 // 常用：取消定时器alarm(0) ,返回旧闹钟剩余的秒数，无失败
 // 定时与进程状态无关。就绪，运行，挂起，终止，僵尸。。。无论进程处于何种状态，alarm都计时
 ```
+
 setitimer
+
 ```c
 
 int setitimer(int which, const struct itimerval *new_value, struct itimerval *old_value);
@@ -1641,10 +1711,10 @@ int setitimer(int which, const struct itimerval *new_value, struct itimerval *ol
 假如`it_value`为0是不会触发信号的，所以要能触发信号，`it_value`得大于0；如果`it_interval`为零，只会延时，不会定时(也就是说只会触发一次信号)。
 old_value参数，通常用不上，设置为NULL，它是用来存储上一次setitimer调用时设置的new_value值。
 
-
 ##### 信号集操作函数
 
 ###### 信号集设定
+
 ```c
 signset_t set;   //typedef unsigned long sigset t;
 int sigemptyset(sigset .t *set);  //将某个信号集清0 成功:0;失败:-1
@@ -1657,8 +1727,10 @@ sigset_t //类型的本质是位图。但不应该直接使用位操作，而应
 ```
 
 ###### sigprocmask函数
+
 用来屏蔽信号、解除屏蔽也使用该函数。其本质，读取或修改进程的 信号屏蔽字(PCB中)
 **严格注意，屏蔽信号。只是将信号处理延后执行(延至解除屏蔽);而忽略表示将信号丢处理。**
+
 ```c
 #include <signal.h>
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
@@ -1673,9 +1745,11 @@ int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 //     成功 0 
 //     失败 -1 errno
 ```
-  
+
 ###### sigpending函数
+
 读取当前进程的未决信号集
+
 ```c
 #include <signal.h>
 int sigpending(sigset_t *set);
@@ -1685,7 +1759,9 @@ int sigpending(sigset_t *set);
 //     成功 0
 //     失败 -1 errno
 ```
+
 ###### 信号集处理案例
+
 ```c
 void printset(sigset_t *set){
 
@@ -1733,8 +1809,10 @@ int main(int argc,char *argv[])
 ##### 信号捕捉
 
 ###### signal与sigaction函数
+
 signal
 `signal`函数用来在进程中指定当一个信号到达进程后该做什么处理，主要的两种方式有忽略某些信号，(监听到`SIGTERM`/`SIGINT`)退出前的打扫工作。信号处理函数的`handler`有两个默认值，分别是`SIG_IGN`和`SIG_DFL`，表示忽略和默认行为。而且`signal`函数是阻塞的，比如当进程正在执行`SIGUSR1`信号的处理函数，此时又来一个`SIGUSR1`信号，`signal`会等到当前信号处理函数处理完后才继续处理后来的`SIGUSR1`，不管后来的多少个`SIGUSR1`信号，统一看做一个来处理。还有`SIGKILL`和`SIGSTOP`这两个信号是`signal`函数捕捉不到的。
+
 ```c
 #include <signal.h>
 sighandler_t signal(int signum, sighandler_t handler);  //注册捕捉信号
@@ -1743,7 +1821,8 @@ sighandler_t signal(int signum, sighandler_t handler);  //注册捕捉信号
 //   hander 信号处理函数
 //   sighandler_t 函数指针  原型 typedef void (*sighandler_t)(int);
 
-``` 
+```
+
 sigaction
 
 ```c
@@ -1783,6 +1862,7 @@ while (1);
   return 0;
 }
 ```
+
 ```c
 // sigaction
 void sys_sig(int signo){
@@ -1805,6 +1885,7 @@ int main(int argc,char *argv[])
 ```
 
 使用信号通信实现子进程回收 （SIGCHLD 子进程改变状态(停止、继续、退出)时，发送该信号给父进程）
+
 ```c
 void catch_child(int signo){
   int ret;
@@ -1840,25 +1921,29 @@ int main(int argc,char *argv[])
 }
 ```
 
-
 ##### 慢速系统调用中断
+
 系统调用可分为两类:慢速系统调用和其他系统调用。
 1．慢速系统调用:可能会使进程永远阻塞的一类。如果在阻塞期间收到一个信号，该系统调用就被中断,不再
 继续执行(早期);也可以设定系统调用是否重启。如，read、write、pause、wait...
 2.其他系统调用:getpid、getppid、fork....
 结合pause，回顾慢速系统调用:
 慢速系统调用被中断的相关行为，实际上就是`pause`的行为:如 read
+
 1. 想中断`pause`，信号不能被屏蔽。
 2. 信号的处理方式必须是捕捉(默认、忽略都不可以)，中断后返回-1，设置`errno`为`EINTR`(表“被信号中断”)
 3. 可修改sa_flags,参数来设置被信号中断后系统调用是否重启。`SA_INTERRURT` 不重启   `SA_RESTART` 重启。
 
-
 ### 进程守护
+
 Daemon(精灵)进程，是Linux 中的后台服务进程，通常独立于控制终端并且周期性地执行某种任务或等待处理某些发生的事件。一般采用以d结尾的名字。
 Linux后台的一些系统服务进程，没有控制终端，不能直接和用户交互。不受用户登录、注销的影响，一直在运行着，他们都是守护进程。如:预读入缓输出机制的实现;ftp服务器;nfs服务器等。
 创建守护进程，最关键的一步是调用setsid函数创建一个新的Session，并成为Session leader
+
 ##### 进程组与会话
+
 ###### 进程组
+
 进程组，也称之为作业。BSD于1980年前后向Unix中增加的一个新特性。代表一个或多个进程的集合。每个进程都属于一个进程组。在waitpid函数和kill函数的参数中都曾使用到。操作系统设计的进程组的概念，是为了简化对多个进程的管理。
 当父进程，创建子进程的时候，默认子进程与父进程属于同一进程组。进程组ID = 第一个进程ID(组长进程)。所以，组长进程标识,其进程组ID = 其进程ID
 可以使用kill -SIGKILL -进程组ID(负的) 来将整个进程组内的进程全部杀死。
@@ -1866,15 +1951,17 @@ Linux后台的一些系统服务进程，没有控制终端，不能直接和用
 进程组生存期:进程组创建到最后一个进程离开(终止或转移到另一个进程组)。一个进程可以为自己或子进程设置进程组ID
 
 ###### 创建会话
+
 会话（多个进程组的集合）
 创建一个会话需要注意以下6点注意事项;,
+
 1. 调用进程不能是进程组组长，该进程变成新会话首进程(session header)
 2. 该进程成为一个新进程组的组长进程。,
 3. 需有root权限(ubuntu不需要)
 4. 新会话丢弃原有的控制终端，该会话没有控制终端.
 5. 该调用进程是组长进程，则出错返回，
 6. 建立新会话时，先调用fork,父进程终止，子进程调用setsid
-   
+
 ###### getsid函数
 
 ```c
@@ -1884,46 +1971,50 @@ pid_t getsid(pid_t pid);   //获取进程所属的会话ID
 //   失败:-1，设置errno
 //   pid为0表示察看当前进程session ID
 ```
+
 ps ajx,命令查看系统中的进程。参数a表示不仅列当前用户的进程，也列出所有其他用户的进程，参数x表示不仅列有控制终端的进程，也列出所有无控制终端的进程，参数j表示列出与作业控制相关的信息。
 组长进程不能成为新会话首进程，新会话首进程必定会成为组长进程。+
 
-
 ###### setsid函数
+
 ```c
 pid_t setsid(void);   //创建一个会话，并以自己的ID设置进程组ID，同时也是新会话的ID
 // 返回值
 //   成功: 返回调用进程的会话ID
 //   失败: -1，设置errno 
 ```
+
 调用了setsid函数的进程，既是新的会长，也是新的组长。
 
-
 #### 创建守护进程模型
+
 1. 创建子进程，父进程退出
-fork()
-  所有工作在子进程中进行形式上脱离了终端控制
+    fork()
+    所有工作在子进程中进行形式上脱离了终端控制
 2. 在子进程中创建新会话
-  setsid()函数
-  使子进程完全独立出来，脱离控制
+    setsid()函数
+    使子进程完全独立出来，脱离控制
 3. 改变当前目录为根目录  根据需要
-  chdir()函数 改变工作目录
-  防止占用可卸载的文件系统，也可以换成其他路径
+    chdir()函数 改变工作目录
+    防止占用可卸载的文件系统，也可以换成其他路径
 4. 重设文件权限掩码   根据需要
-  umask()函数
-  防止继承的文件创建屏蔽字拒绝某些权限
-  增加守护进程的灵活性
-5. 关闭文件描述符  根据需要 
+    umask()函数
+    防止继承的文件创建屏蔽字拒绝某些权限
+    增加守护进程的灵活性
+5. 关闭文件描述符  根据需要
 6. 开始执行守护进程核心工作守护进程，退出处理程序模型
 
-
 ### 线程
-概念 
+
+概念
 进程  有独立的进程地址空间，有独立的pcb
 线程  有独立的pcb 没有独立 的进程地址空间
 查看线程  ps -Lf <pid>  ->线程号 lwp -->  cpu执行的最小单位
 
 ###### linux内核线程实现原理
+
 类Unix系统中，早期是没有“线程”概念的，80年代才引入，借助进程机制实现出了线程的概念，因此在这类系统中，进程和线程关系密切。
+
 1. 轻量级进程(light-weight process)，也有PCB，创建线程使用的底层函数和进程一样，都是clone
 2. 从内核里看进程和线程是一样的，都有各自不同的PCB，但是PCB中指向内存资源的三级页表是相同的。
 3. 进程可以蜕变成线程
@@ -1931,33 +2022,40 @@ fork()
 5. 在linux 下，线程最是小的执行单位﹔进程是最小的分配资源单位。察看Lwp 号: ps  -Lf pid查看指定线程的lwp号。
 
 ###### 线程共享资源
+
 1. 文件描述符
 2. 每种信号的处理方式
 3. 当前工作目录
 4. 用户id 和组 id
-5. 内存地址空间(.text .data .bss .heap 共享库) 
+5. 内存地址空间(.text .data .bss .heap 共享库)
 
 ###### 线程非共享资源
+
 1. 线程id。
 2. 处理器现场和栈指针(内核栈)
-3. 独立的栈空间(用户空间栈) 
+3. 独立的栈空间(用户空间栈)
 4. errno变量
 5. 信号屏蔽字
 6. 调度优先级
 
 ### 线程控制原语
+
 ###### pthread_self函数
+
 ```c
 #include <pthread.h>
 pthread_t pthread_self(void);   //获取线程ID。其作用对应进程中getpid()函数。
 // 返回值:成功:调用该函数的线程ID
 // 失败:无!
 ```
+
 线程ID: pthread_t类型，本质:在Linux下为无符号整数(%lu)，其他系统中可能是结构体实现.线程ID是进程内部，识别标志。(两个进程间，线程ID允许相同)
 注意:不应使用全局变量 pthread_t tid，在子线程中通过 pthread_create传出参数来获取线程ID，而应使用pthread_self。v
 
 ###### pthread_create函数
+
 创建一个新线程。  其作用，对应进程中 fork()函数。
+
 ```c
  #include <pthread.h>
  int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
@@ -1973,19 +2071,23 @@ pthread_t pthread_self(void);   //获取线程ID。其作用对应进程中getpi
 ```
 
 ###### pthread_exit函数
+
 ```c
 #include <pthread.h>
 void pthread_exit(void *retval);  //将单个线程退出  相当于return
 // 参数：
 //   retval  表示线程退出状态 通常传NULL
 ```
+
 线程中，禁止使用`exit`函数，会导致进程内所有线程全部退出。
 在不添加`sleep`控制输出顺序的情况下。`pthread_create`在循环中，几乎瞬间创建5个线程，但只有第1个线程有机会输出（或者第2个也有，也可能没有，取决于内核调度）如果第3个线程执行了`exit`，将整个进程退出了，所以全部线程退出了。
 所以，多线程环境中，应尽量少用，或者不使用exit 函数，取而代之使用`pthread_exit` 函数，将单个线程退出。任何线程里exit 导致进程退出，其他线程未工作结束，主控线程退出时不能return或exit。
 另注意，`pthread_exit`.或者`return`返回的指针所指向的内存单元必须是全局的或者是用`malloc`分配的，不能在线程函数的栈上分配，因为当其它线程得到这个返回指针时线程函数已经退出了。
 
 ###### pthread_join函数
+
 阻塞等待线程退出，获取线程退出状态   起作用，对应进程 wait()函数
+
 ```c
 #include <pthread.h>
 int pthread_join(pthread_t thread, void **retval);
@@ -1997,7 +2099,9 @@ int pthread_join(pthread_t thread, void **retval);
 //   成功：0
 //   失败：错误号
 ```
+
 example
+
 ```c
 struct tval{
   int ret;
@@ -2036,7 +2140,9 @@ int main(int argc,char *argv[])
 ```
 
 ###### pthread_cancel函数
-杀死线程（线程必须在取消点，进入内核）  作用对应进程中的kill函数 
+
+杀死线程（线程必须在取消点，进入内核）  作用对应进程中的kill函数
+
 ```c
 #include <pthread.h>
 int pthread_cancel(pthread_t thread);   //被杀死的线程返回-1
@@ -2052,6 +2158,7 @@ int pthread_cancel(pthread_t thread);   //被杀死的线程返回-1
 void pthread_testcancel(void);
 
 ```
+
 ```c
 void *tfn(void *arg)
 {
@@ -2077,7 +2184,9 @@ int main(int argc,char *argv[])
 ```
 
 ###### pthread_detach函数
+
 实现线程分离
+
 ```c
 #include <pthread.h>
 int pthread_detach(pthread_t thread);
@@ -2093,10 +2202,151 @@ int pthread_detach(pthread_t thread);
 // 也可使用pthread_create函数参2(线程属性)来设置线程分离。
 
 ```
+
 一般情况下，线程终止后，其终止状态一直保留到其它线程调用pthread_join获取它的状态为止。但是线程也可以被置为detach状态，这样的线程一旦终止就立刻回收它占用的所有资源，而不保留终止状态。
 不能对一个已经处于detach状态的线程调用pthread_join，这样的调用将返回EINVAL错误。也就是说，如果已经对一个线程调用了 pthread _detach就不能再调用pthread_join 了。
 
 ```c
+void *func(void* arg)
+{
+  printf("thread pid = %d thread id= %ld\n",getpid(), pthread_self());
+}
+int main(int argc,char *argv[])
+{
+  pthread_t tid;
+  int ret;
+  ret = pthread_create(&tid, NULL, func, NULL);
+  if(ret != 0){
+    fprintf(stderr,"pthread_create error : %s\n", strerror(ret));
+  }
+  ret = pthread_detach(tid); //设置线程分离
+  if(ret != 0){
+    fprintf(stderr,"pthread_create error : %s\n", strerror(ret));
+  }
+  ret = pthread_join(tid, NULL);
+  printf("join ret = %d\n",ret);
+  if(ret != 0){
+    fprintf(stderr, "pthread_create error : %s\n", strerror(ret));
+  }
+  pthread_exit(NULL);
+}
+
+```
+
+#### 线程同步(锁)
+
+同步即协同步调，按预定的先后次序运行。
+线程同步，指一个线程发出某一功能调用时，在没有得到结果之前，该调用不返回。同时其它线程为保证数据一致性,不能调用该功能。
+
+##### 互斥锁(mutex)
+
+建议锁!对公共数据进行保护。所有线程【应该】在访问公共数据前先拿锁再访问。但，锁本身不具备强制性。
+使用mutex(互斥量，互斥锁)一般步骤
+
+  1. pthread_mutex_t lock 创建锁
+  2. pthread_mutex_init() 初始化
+  3. pthread_mautex_lock() 加锁
+  4. 访问共享数据(stdout)
+  5. pthrad_mmtext_un1ock()  解锁
+  6. pthead_mutex_destroy()  销毁锁
+
+初始化
+
+  1. pthread_mutex_init(&mutex, NULL);  //动态初始化
+  2. mutex = PTHREAD_MUTEX_INITIALIZER;  //静态初始化
+
+注意事项:
+尽量保证锁的粒度，越小越好 (访问共享数据前，加锁。访问结束【立即】解锁。)
+(mutex)互斥锁，本质是结构体。我们可以看成整数。初值为1。(pthread_mutex_init()函数调用成功。)
+加锁。--操作    阻塞线程
+解锁 :++操作    唤醒阻塞在锁上的线程
+try锁 尝试加锁 成功--   失败 返回  同时设置错误号 EBUSY
+
+```c
+restrict 关键字 :
+  用来限定指针变量 被关键字限定的指针变量所指向的内存操作，必须由本指针操作
+```
+
+lock 与trylock:
+lock加锁失败会阻塞，等待锁释放。
+trylock.加锁失败直接返回错误号 (如:EBUSY)，不阻塞。
+
+```c
+
+```
+
+###### 死锁
+
+使锁不恰当使用的
+
+1. 反复加锁
+
+##### 读写锁
+
+于互斥量类似，但读写锁允许更高的并行性。其特性为  
+
+1. 写独占，读共享  
+2. 写锁优先级高
+相较于互斥量而言，当读戮程多的时候，提高访问效率
+
+**读写锁状态**
+特别强调：读写锁只有一把，但其具备两种状态
+
+1. 读模式下加锁状态（读锁）
+2. 写模式下加锁状态（写锁）
+
+###### 读写锁函数
+
+```c
+pthread_rwlock_init() 
+pthread_rwlock_destroy() 
+pthread_rwlock_rdlock() 
+pthread_rwlock_wrlock() 
+pthread_rwlock_tryrdlock()
+pthread_rwlock_trywrlock()
+pthread_rwlock_unlock()
+上7个函数的返回值都是。成功返回o，失败直接返回错误号。
+
+pthread_rwlock_t 类型用于定义一个读写锁变量。
+pthread_rwlock_t rwlock;
+
+```
+
+##### 条件变量
+
+本身不是锁，但它也可以造成线程阻塞。通常与互斥锁配合使用。给多线程提供一个会合的场所。
+
+```c
+//主要应用函数
+pthread_cond_init()    //初始化
+pthread_cond_destroy()  //删除
+pthread_cond_wait()   //等待
+pthread_cond_timedwait()  //设置等待超时时间
+pthread_cond_signal()   //发出通知
+pthread_cond_broadcast()  //广播通知
+
+//以上6个函数的返回值都是:成功返回0，失败直接返回错误号。
+pthread_cond_t 类型用于定义条件变量。 
+pthread_cond_t cond;
+//初始化
+  pthread_cond_init(&cond, NULL);  //动态初始化
+  cond = PTHREAD_COND_INITIALIZER;  //静态初始化
+
+```
+
+```c
+//函数原型
+
+int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex); //阻塞等待一个条件变量
+// 函数作用
+// 1. 阻塞等待条件变量 cond满足
+// 2. 释放已经掌握的互斥锁（解锁互斥量） 相当于pthread_mutex_unlock();
+//   1、2 步为一个原子操作
+// 3. 当被唤醒，pthread cond_walt()函数返回时，解除阻塞并重新申请获取互斥锁 pthread mutex lock(&mutex);
 
 
 ```
+
+#### 生产者消费者模型
+
+![生产者消费者模型](./Linux_system_program.assets/Producer-consumer_model.png) 
