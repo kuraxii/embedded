@@ -2337,6 +2337,8 @@ pthread_cond_t cond;
 
 ```c
 //函数原型
+#include <pthread.h>
+int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *cond_attr);  // 动态初始化条件变量
 
 int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex); //阻塞等待一个条件变量
 // 函数作用
@@ -2345,9 +2347,275 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex); //阻塞等
 //   1、2 步为一个原子操作
 // 3. 当被唤醒，pthread cond_walt()函数返回时，解除阻塞并重新申请获取互斥锁 pthread mutex lock(&mutex);
 
+int pthread_cond_signal(pthread_cond_t *cond);  //唤醒至少一个阻塞在条件变量上的一个线程
+
+int pthread_cond_broadcast(pthread_cond_t *cond);  //唤醒所有阻塞在条件变量上的线程
+
+int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime);
+
+int pthread_cond_destroy(pthread_cond_t *cond);
 
 ```
 
 #### 生产者消费者模型
 
-![生产者消费者模型](./Linux_system_program.assets/Producer-consumer_model.png) 
+要求能够借助条件变量完成生产者消费者模型
+![生产者消费者模型](./Linux_system_program.assets/Producer_consumer_model.png)
+
+```c
+void sys_err(char *str, int _errno)
+{
+  fprintf(stderr, "%s :%s\n", str, strerror(_errno));
+}
+
+struct msg{
+  int num;
+  struct msg* next;
+};
+struct msg* head;
+
+void* product(void* arg);
+void* consumer(void* arg);
+
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+int main(int argc,char *argv[])
+{
+  int ret;
+  pthread_t pid,cid;
+  srand(time(NULL));
+  ret = pthread_create(&pid, NULL, product, NULL);  //生产者
+  if(ret != 0){
+    sys_err("pthread_create err", ret);
+  }
+  pthread_create(&cid, NULL, consumer, NULL);    //消费者
+  if(ret != 0){
+    sys_err("pthread_create err", ret);
+  }
+
+  pthread_create(&cid, NULL, consumer, NULL);    //消费者
+  if(ret != 0){
+    sys_err("pthread_create err", ret);
+  }
+
+  pthread_create(&cid, NULL, consumer, NULL);    //消费者
+  if(ret != 0){
+    sys_err("pthread_create err", ret);
+  }
+
+  pthread_join(pid, NULL);
+  if(ret != 0){
+    sys_err("pthread_join err", ret);
+  }
+  pthread_join(cid, NULL);
+  if(ret != 0){
+    sys_err("pthread_join err", ret);
+  }
+
+
+  return 0;
+}
+
+void* product(void* arg){   //生产者
+
+  while(1){
+    
+    struct msg *mp = (struct msg*)malloc(sizeof(struct msg));
+    mp->num = rand() % 1000;         //模拟生产数据
+    pthread_mutex_lock(&mutex);
+    mp->next = head;                 //写公共区域
+    head = mp;
+    
+    pthread_mutex_unlock(&mutex);
+    printf("product %d------\n", mp->num);
+    pthread_cond_signal(&cond);    //唤醒阻塞在条件变量的线程 生产者唤醒消费者
+    
+    sleep(rand() % 3);
+  }
+
+  return NULL;
+}
+
+void* consumer(void* arg){  //消费者
+  while(1){
+    pthread_mutex_lock(&mutex);
+    while(head == NULL){         // 检查条件变量
+      pthread_cond_wait(&cond, &mutex);   //阻塞等待条件边量   阻塞过程中解锁，  阻塞结束后加锁
+    }
+     struct msg *mp = head;
+     head = mp->next;
+
+    pthread_mutex_unlock(&mutex);
+    printf("------consumer id = %lu : %d\n",pthread_self(), mp->num);
+    free(mp);
+    sleep(rand() % 3);
+
+  }
+
+  return NULL;
+}
+
+```
+
+#### 信号量（semaphore）
+
+相当于初始化值为 N 的互斥量  N值表示可以同时访问共享数据区的线程数
+可以应用于进程与线程
+
+```c
+#include <semaphore.h>
+//主要应用函数
+  sem_init()  // 初始化信号量
+  sem_destroy()  // 销毁信号量
+  sem_wait()   //给信号量加锁  信号量--
+  sem_trywait() //
+  sem_timewait()  //
+
+```
+
+```c
+
+// 函数原型
+
+int sem_init(sem_t *sem, int pshared, unsigned int value);   
+// 参数：
+//   sem： 信号量
+//   pshare： 0：线程间同步   1：进程间同步
+//   value：指定同时访问的线程数（N值）
+// 返回值：
+//   成功 0
+//   失败 -1 errno
+
+int sem_destroy(sem_t *sem);
+// 参数：
+//  sem： 信号量
+// 返回值：
+//   成功 0
+//   失败 -1 errno
+
+int sem_wait(sem_t *sem);
+// 参数：
+//  sem： 信号量
+// 返回值：
+//   成功 0
+//   失败 -1 errno
+
+int sem_trywait(sem_t *sem);
+// 参数：
+//  sem： 信号量
+// 返回值：
+//   成功 0
+//   失败 -1 errno
+
+
+int sem_timedwait(sem_t *sem, const struct timespec *abs_timeout);
+struct timespec {
+    time_t tv_sec;      /* Seconds */
+    long   tv_nsec;     /* Nanoseconds [0 .. 999999999] */   纳秒
+};
+// 参数：
+//  sem： 信号量
+//  abs_timeout：最大阻塞时间(绝对时间)
+
+// 返回值：
+//   成功 0
+//   失败 -1 errno
+
+//定时一秒
+  time_t cur = time(NULL);  //获取当前时间
+  struct timespec t; //定义时间结构体变量
+  t.tv_sec = cur + 1; //定时一秒
+  sem_timedwait(&sem, &t); 
+
+
+```
+
+##### 信号量基本操作
+
+```c
+sem_wait()     // 1. 信号量大于0 则信号量--    (类比pthread_mutex_lock)
+   |           // 2. 信号量等于0 则线程阻塞
+  对应
+   |
+sem_post()     // 将信号量++ 同时隐藏阻塞在信号量上的线程  （类比pthread_mutex_unlock）
+
+// 但，由于sem t的实现对用户隐藏，所以所谓的++、--操作只能通过函数来实现，而不能直接++、--符号
+// 信号量的初值，决定了占用信号量的线程个数
+
+```
+
+##### 信号量实现生产者消费者模型
+
+![信号量实现生产者消费者模型](./Linux_system_program.assets/sem_product_consumer.png)
+
+```c
+void sys_err(char *str, int _errno)
+{
+  fprintf(stderr, "%s :%s\n", str, strerror(_errno));
+}
+
+void* consumer(void* arg);   //消费者
+void* product(void* arg);   //生产者
+
+#define NUM 5
+int sem_quene[NUM];
+sem_t blank_number, product_number;   //队列空白信号量数量  产品信号量数量
+
+
+int main(int argc,char *argv[])
+{
+  srand(time(NULL));  //随机数种子
+  pthread_t cid, pid;
+  sem_init(&blank_number, 0, 5);
+  sem_init(&product_number, 0, 0);  // 信号量队列初始化
+  pthread_create(&pid, NULL, product, NULL);
+  pthread_create(&cid, NULL, consumer, NULL);
+  pthread_join(pid, NULL);   //线程回收
+  pthread_join(cid, NULL);
+  sem_destroy(&blank_number);   //信号量回收
+  sem_destroy(&product_number);
+  pthread_exit(NULL);
+}
+
+
+
+void* product(void* arg)   //生产者
+{   
+  int i = 0;
+
+  while(1){
+    sem_wait(&blank_number);
+
+
+    sem_quene[i] = rand() % 1000;   //临界区
+    printf("----product %d\n",sem_quene[i]);
+
+
+    sem_post(&product_number);    //将产品数++
+    i = (i + 1) % NUM;    //循环队列
+    sleep(1);
+    sleep(rand() % 1);
+  }
+
+  return NULL;
+}
+
+void* consumer(void* arg)   //消费者
+{  
+  int i = 0;
+
+  while(1){
+    sem_wait(&product_number);
+
+    printf("-Consume--- %d\n",sem_quene[i]);  //临界区
+    sem_quene[i] = 0;
+
+    sem_post(&blank_number);   //空格数++
+    i = (i+1) % NUM;
+    sleep(rand() % 3);
+
+  }
+  return NULL;
+}
+```

@@ -27,11 +27,21 @@ int main(int argc,char *argv[])
   int ret;
   pthread_t pid,cid;
   srand(time(NULL));
-  ret = pthread_create(&pid, NULL, product, NULL);
+  ret = pthread_create(&pid, NULL, product, NULL);  //生产者
   if(ret != 0){
     sys_err("pthread_create err", ret);
   }
-  pthread_create(&cid, NULL, consumer, NULL);
+  pthread_create(&cid, NULL, consumer, NULL);    //消费者
+  if(ret != 0){
+    sys_err("pthread_create err", ret);
+  }
+
+  pthread_create(&cid, NULL, consumer, NULL);    //消费者
+  if(ret != 0){
+    sys_err("pthread_create err", ret);
+  }
+
+  pthread_create(&cid, NULL, consumer, NULL);    //消费者
   if(ret != 0){
     sys_err("pthread_create err", ret);
   }
@@ -72,14 +82,14 @@ void* product(void* arg){   //生产者
 void* consumer(void* arg){  //消费者
   while(1){
     pthread_mutex_lock(&mutex);
-    if(head == NULL){
+    while(head == NULL){         // 检查条件变量
       pthread_cond_wait(&cond, &mutex);   //阻塞等待条件边量   阻塞过程中解锁，  阻塞结束后加锁
     }
      struct msg *mp = head;
      head = mp->next;
 
     pthread_mutex_unlock(&mutex);
-    printf("------consumer  %d\n",mp->num);
+    printf("------consumer id = %lu : %d\n",pthread_self(), mp->num);
     free(mp);
     sleep(rand() % 3);
 
