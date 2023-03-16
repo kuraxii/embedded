@@ -2272,6 +2272,43 @@ lock加锁失败会阻塞，等待锁释放。
 trylock.加锁失败直接返回错误号 (如:EBUSY)，不阻塞。
 
 ```c
+//函数原型
+#include <pthread.h>
+int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *mutexattr);  //初始化互斥锁
+// 参数：
+//   mutex 锁
+//   mutexattr 锁的特性 一般传NULL
+// 返回值：
+//   成功 0
+//   失败 错误号
+int pthread_mutex_lock(pthread_mutex_t *mutex);   // 加锁
+// 参数：
+//   mutex 锁
+// 返回值：
+//   成功 0
+//   失败 错误号
+int pthread_mutex_trylock(pthread_mutex_t *mutex);   //加锁 非阻塞
+// 参数：
+//   mutex 锁
+//   mutexattr 锁的特性 一般传NULL
+// 返回值：
+//   成功 0
+//   失败 错误号
+int pthread_mutex_unlock(pthread_mutex_t *mutex);   //释放互斥锁
+// 参数：
+//   mutex 锁
+//   mutexattr 锁的特性 一般传NULL
+// 返回值：
+//   成功 0
+//   失败 错误号
+int pthread_mutex_destroy(pthread_mutex_t *mutex);   //销毁互斥锁，被销毁的锁要从新初始化
+// 参数：
+//   mutex 锁
+//   mutexattr 锁的特性 一般传NULL
+// 返回值：
+//   成功 0
+//   失败 错误号
+
 
 ```
 
@@ -2279,10 +2316,9 @@ trylock.加锁失败直接返回错误号 (如:EBUSY)，不阻塞。
 
 使锁不恰当使用的
 
-1. 反复加锁im
+1. 反复加锁
 
 ##### 读写锁
-
 
 于互斥量类似，但读写锁允许更高的并行性。其特性为  
 
@@ -2299,17 +2335,24 @@ trylock.加锁失败直接返回错误号 (如:EBUSY)，不阻塞。
 ###### 读写锁函数
 
 ```c
-pthread_rwlock_init() 
-pthread_rwlock_destroy() 
-pthread_rwlock_rdlock() 
-pthread_rwlock_wrlock() 
-pthread_rwlock_tryrdlock()
-pthread_rwlock_trywrlock()
-pthread_rwlock_unlock()
+#include <pthread.h>
+pthread_rwlock_t 类型用于定义一个读写锁变量。
+pthread_rwlock_t rwlock;
+pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER; //静态初始化
+int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock, const pthread_rwlockattr_t *restrict attr); 
+动态初始化
+int pthread_rwlock_destroy(pthread_rwlock_t *rwlock);   //销毁读写锁
+int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock);    //以写方式锁
+int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock);    //以读方式锁
+int pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock);  //非阻塞
+int pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock);
+int pthread_rwlock_unlock(pthread_rwlock_t *rwlock);    //解锁
+
 上7个函数的返回值都是。成功返回o，失败直接返回错误号。
 
 pthread_rwlock_t 类型用于定义一个读写锁变量。
 pthread_rwlock_t rwlock;
+pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER; //静态初始化
 
 ```
 
@@ -2339,19 +2382,26 @@ pthread_cond_t cond;
 //函数原型
 #include <pthread.h>
 int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *cond_attr);  // 动态初始化条件变量
+参数：
 
+返回值
+  成功 0
+  失败 错误号
 int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex); //阻塞等待一个条件变量
 // 函数作用
 // 1. 阻塞等待条件变量 cond满足
 // 2. 释放已经掌握的互斥锁（解锁互斥量） 相当于pthread_mutex_unlock();
-//   1、2 步为一个原子操作
+//   **1、2 步为一个原子操作**
 // 3. 当被唤醒，pthread cond_walt()函数返回时，解除阻塞并重新申请获取互斥锁 pthread mutex lock(&mutex);
 
-int pthread_cond_signal(pthread_cond_t *cond);  //唤醒至少一个阻塞在条件变量上的一个线程
+int pthread_cond_signal(pthread_cond_t *cond);  
+//唤醒至少一个阻塞在条件变量上的一个线程
 
-int pthread_cond_broadcast(pthread_cond_t *cond);  //唤醒所有阻塞在条件变量上的线程
+int pthread_cond_broadcast(pthread_cond_t *cond);  
+//唤醒所有阻塞在条件变量上的线程
 
 int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime);
+//阻塞等待条件变量 ，但设置超时
 
 int pthread_cond_destroy(pthread_cond_t *cond);
 
@@ -2469,9 +2519,9 @@ void* consumer(void* arg){  //消费者
   sem_init()  // 初始化信号量
   sem_destroy()  // 销毁信号量
   sem_wait()   //给信号量加锁  信号量--
-  sem_trywait() //
-  sem_timewait()  //
-
+  sem_trywait() //非阻塞
+  sem_timewait()  //定时
+  sem_post()  // 给信号量解锁，并发送信号  信号量++
 ```
 
 ```c
@@ -2494,7 +2544,14 @@ int sem_destroy(sem_t *sem);
 //   成功 0
 //   失败 -1 errno
 
-int sem_wait(sem_t *sem);
+int sem_post(sem_t *sem);  //sem_t ++
+// 参数：
+//  sem： 信号量
+// 返回值：
+//   成功 0
+//   失败 -1 errno
+
+int sem_wait(sem_t *sem); //sem_t --
 // 参数：
 //  sem： 信号量
 // 返回值：
@@ -2540,7 +2597,7 @@ sem_wait()     // 1. 信号量大于0 则信号量--    (类比pthread_mutex_loc
    |
 sem_post()     // 将信号量++ 同时隐藏阻塞在信号量上的线程  （类比pthread_mutex_unlock）
 
-// 但，由于sem t的实现对用户隐藏，所以所谓的++、--操作只能通过函数来实现，而不能直接++、--符号
+// 由于sem_t的实现对用户隐藏，所以所谓的++、--操作只能通过函数来实现，而不能直接++、--符号
 // 信号量的初值，决定了占用信号量的线程个数
 
 ```
