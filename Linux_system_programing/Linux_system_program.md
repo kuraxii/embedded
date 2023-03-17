@@ -2410,7 +2410,7 @@ int pthread_cond_destroy(pthread_cond_t *cond);
 #### 生产者消费者模型
 
 要求能够借助条件变量完成生产者消费者模型
-![生产者消费者模型](./Linux_system_program.assets/Producer_consumer_model.png)
+![生产者消费者模型](Linux_system_program.assets/Producer_consumer_model.png)
 
 ```c
 void sys_err(char *str, int _errno)
@@ -2604,7 +2604,7 @@ sem_post()     // 将信号量++ 同时隐藏阻塞在信号量上的线程  （
 
 ##### 信号量实现生产者消费者模型
 
-![信号量实现生产者消费者模型](./Linux_system_program.assets/sem_product_consumer.png)
+![信号量实现生产者消费者模型](Linux_system_program.assets/sem_product_consumer.png)
 
 ```c
 void sys_err(char *str, int _errno)
