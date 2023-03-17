@@ -329,28 +329,26 @@ O_APPEND O_CREAT O_EXCL O_TRUNC O_NONBLOCK
 
 ```c
 ssize_t read(int fd,void *buf,size_t count)
+// 参数（头文件 unistd.h）
+// fd 文件描述符
+// buf 存数据的缓冲区
+// count 缓冲区的大小
+// 返回值
+// 成功 读到的字节数
+// 失败 -1，设置errno
+// 如果 -1，并且 errno = EAGIN 或 EWOULDBLOCK吗，说明不是read失败，而是read在以非阻塞方式读设备文件或网络文件 
 ```
-
-参数（头文件 unistd.h）
-fd 文件描述符
-buf 存数据的缓冲区
-count 缓冲区的大小
-返回值
-成功 读到的字节数
-失败 -1，设置errno
-如果 -1，并且 errno = EAGIN 或 EWOULDBLOCK吗，说明不是read失败，而是read在以非阻塞方式读设备文件或网络文件  
 
 ```c
 ssize_t write(int fd,const void *buf,size_t count)
+// 参数（头文件 unistd.h）
+// fd 文件描述符
+// buf 待写入数据的缓冲区
+// count 写入数据的大小
+// 返回值
+// 成功 写入的字节数
+// 失败 -1，设置errno
 ```
-
-参数（头文件 unistd.h）
-fd 文件描述符
-buf 待写入数据的缓冲区
-count 写入数据的大小
-返回值
-成功 写入的字节数
-失败 -1，设置errno
 
 ```c
 /*
@@ -463,20 +461,21 @@ tryagain:
 
 ```c
 off_t lseek(int fd, off_t offset, int whence);
+// 参数
+//   fd：文件描述符
+//   offset：偏移量
+//   whence：起始偏移位置： SEEK_SET/SEEK_CUR/SEEK_END(文件 起始位置/当前位置/末尾位置)
+// 返回值
+//   成功：较起始位置偏移量
+//   失败：-1 errno
 ```
 
-参数
-  fd：文件描述符
-  offset：偏移量
-  whence：起始偏移位置： SEEK_SET/SEEK_CUR/SEEK_END(文件 起始位置/当前位置/末尾位置)
-返回值
-  成功：较起始位置偏移量
-  失败：-1 errno
+应用场景：
 
-应用场景：文件'读''写'使用同一偏移位置
-        使用lseek获取文件大小
-        使用lseek拓展文件大小
-          可以使用truncate 函数直接拓展文件 int ret = truncate("dict.cp",250); 将文件dict.cp拓展到250字节
+- 文件'读''写'使用同一偏移位置
+- 使用lseek获取文件大小
+- 使用lseek拓展文件大小
+- 可以使用truncate 函数直接拓展文件 int ret = truncate("dict.cp",250); 将文件dict.cp拓展到250字节
 
 查看文件
 od -tcx <filename> 查看文件的16进制表示形式
@@ -595,19 +594,16 @@ char *strcpy(char *dest, const char *src);
 ```c
 int stat(const char *path, struct stat *buf);
 int lstat(const char *path, struct stat *buf);
+// 参数：
+// path: 文件路径
+// buf: (传出参数) 存放文件属性
+// 返回值:
+//   成功 0
+//   失败 -1 errno
+// 区别：穿透符号链接：stat：会  lstat：不会
 ```
 
-参数：
 
-path: 文件路径
-
-buf: (传出参数) 存放文件属性
-
-返回值:
-  成功 0
-  失败 -1 errno
-
-区别：穿透符号链接：stat：会  lstat：不会
 
 获取文件大小：buf.st_size
 
@@ -628,14 +624,14 @@ int main(int argc,char *argv[])
 ```
 
 判断文件类型，权限
+上述的文件类型中定义了检查这些类型的宏定义：
 
-  上述的文件类型中定义了检查这些类型的宏定义：
-  S_ISLNK (st_mode)  判断是否为符号连接
-  S_ISREG (st_mode)  是否为一般文件
-  S_ISDIR (st_mode)  是否为目录
-  S_ISCHR (st_mode)  是否为字符装置文件
-  S_ISBLK (s3e)    是否为先进先出
-  S_ISSOCK (st_mode)  是否为socket
+* S_ISLNK (st_mode)  判断是否为符号连接
+* S_ISREG (st_mode)  是否为一般文件
+* S_ISDIR (st_mode)  是否为目录
+* S_ISCHR (st_mode)  是否为字符装置文件
+* S_ISBLK (s3e)    是否为先进先出
+* S_ISSOCK (st_mode)  是否为socket
 
 ```c
 //判断是否是目录
@@ -662,13 +658,11 @@ int main(int argc,char *argv[])
 ```c
 int link(const char* oldpath, const char* newpath); //创建硬链接
 int ulink(const char *pathname);  //删除dentry
+// 返回值
+// 成功 0
+// 失败 -1 设置errno
+
 ```
-
-返回值
-
-成功 0
-
-失败 -1 设置errno
 
 使用link ulink函数实现mv命令
 
@@ -1025,6 +1019,7 @@ fork之后父子进程运行顺序由操作系统的调度算法决定
 ##### exec函数族
 
 fork创建的程序执行的是父进程相同的程序（但又可能执行不同的代码分支），子进程往往要调用一种exec函数以执行另一个程序。当进程调用一种exec函数时，该进程的用户空间代码和数据完全被新程序替换，从新程序的启动开始执行。调用exec并不会创建新进程，所以调用exec前后台该进程的id并未改变。
+
 将当前进程的.text、.data替换为所要加载的程序的.text、.data,然后让进程从新的.text第一天指令开始执行，但进程id不变，换核不换壳
 
 ```c  
@@ -1924,8 +1919,9 @@ int main(int argc,char *argv[])
 ##### 慢速系统调用中断
 
 系统调用可分为两类:慢速系统调用和其他系统调用。
-1．慢速系统调用:可能会使进程永远阻塞的一类。如果在阻塞期间收到一个信号，该系统调用就被中断,不再
-继续执行(早期);也可以设定系统调用是否重启。如，read、write、pause、wait...
+
+1．慢速系统调用:可能会使进程永远阻塞的一类。如果在阻塞期间收到一个信号，该系统调用就被中断,不再继续执行(早期);也可以设定系统调用是否重启。如，read、write、pause、wait...
+
 2.其他系统调用:getpid、getppid、fork....
 结合pause，回顾慢速系统调用:
 慢速系统调用被中断的相关行为，实际上就是`pause`的行为:如 read
@@ -1947,7 +1943,9 @@ Linux后台的一些系统服务进程，没有控制终端，不能直接和用
 进程组，也称之为作业。BSD于1980年前后向Unix中增加的一个新特性。代表一个或多个进程的集合。每个进程都属于一个进程组。在waitpid函数和kill函数的参数中都曾使用到。操作系统设计的进程组的概念，是为了简化对多个进程的管理。
 当父进程，创建子进程的时候，默认子进程与父进程属于同一进程组。进程组ID = 第一个进程ID(组长进程)。所以，组长进程标识,其进程组ID = 其进程ID
 可以使用kill -SIGKILL -进程组ID(负的) 来将整个进程组内的进程全部杀死。
+
 组长进程可以创建一个进程组，创建该进程组中的进程，然后终止。只要进程组中有一个进程存在，进程组就存在，与组长进程是否终止无关。
+
 进程组生存期:进程组创建到最后一个进程离开(终止或转移到另一个进程组)。一个进程可以为自己或子进程设置进程组ID
 
 ###### 创建会话
