@@ -185,11 +185,22 @@ int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);  // 阻塞等
 //   addrlen  传入传出参数 传入addr大小 传出客户端addr的实际大小  sizeof 
 
 // 返回值：
-//   成功 0
+//   成功 进行通信的文件描述符
 //   失败 -1 errno
 
-返回值
+
+int connect(int sockfd, const struct sockaddr *addr,socklen_t addrlen);  //连接服务端
+参数：
+  socket :socket函数返回值
+  addr： 服务器的地址结构
+  addrlen: 服务器地址结构大小
+返回值：
+
+
 ```
+
+
+
 
 ###### tcp客户端
 
