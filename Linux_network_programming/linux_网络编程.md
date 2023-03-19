@@ -4,7 +4,7 @@
 
 #### 七层模型与四层模型及代表协议
 
-###### OSI七层模型
+##### OSI七层模型
 
 | OSI参考模型 |      |     TCP/IP模型     |
 | :---------: | :--: | :----------------: |
@@ -16,24 +16,24 @@
 | 数据链路层  | ---> | 网络接口层(链路层) |
 |   物理层    |  ⌋   |                    |
 
-###### TCP/IP协议代表协议
+##### TCP/IP协议代表协议
 
 应用层: http,ftp,nfs,ssh,telnet...
 传输层: TCP UDP
 网络层: IP ICMP IGMP
 链路层: 以太网帧协议, arp协议
 
-###### 网络传输流程
+##### 网络传输流程
 
 数据没有封装之前，是不能在网络中传递。
 **数据**--封装-->**应用层**--封装-->**传输层**--封装-->**网络层**--封装-->**链路层**
 
-###### 以太网帧协议
+##### 以太网帧协议
 
 ARP协议:根据Ip地址获取mac地址。
 以太网帧协议:根据mac地址，完成数据包传输。
 
-###### IP协议
+##### IP协议
 
 版本:IPv4、IPv6 -- 4位
 TTL: time to live 。设置数据包在路由节点中的跳转上限。每经过一个路由节点，该值-1，减为o的路由，有义务将该数据包丢弃
@@ -50,7 +50,7 @@ IP地址+端口号:可以在网络环境中，唯一标识一个进程。
 一个文件描述符指向一个套接字（该套接字内部由内核借助两个缓冲区实现）
 在通信过程中，套接字一定使成对出现的
 
-###### 网络字节序
+##### 网络字节序
 
 我们已经知道，内存中的多字节数据相对于内存地址有大端和小端之分，磁盘文件中的多字节数据相对于文件中的偏移地址也有大端小端之分。网络数据流同样有大端小端之分，那么如何定义网络数据流的地址呢﹖发送主机通常将发送缓冲区中的数据按内存地址从低到高的顺序发出，接收主机把从网络上接到的字节依次保存在接收缓冲区中，也是按内存地址从低到高的顺序保存，因此，网络数据流的地址应这样规定:先发出的数据是低地址，后发出的数据是高地址。
 TCP/IP 协议规定，网络数据流应采用大端字节序，即低地址高字节。例如上一节的UDP段格式，地址0-1是16位的源端口号，如果这个端口号是1000
@@ -68,6 +68,8 @@ uint32_t ntohl(uint32_t netlong); //net to host   针对于IP
 uint16_t ntohs(uint16_t netshort);  //net to host  针对于PORT
 ```
 
+##### ip地址转换函数
+
 ```c
 //点分十进制转网络字节序  // 支持ipv4 和 ipv6
 #include <arpa/inet.h>
@@ -75,7 +77,7 @@ int inet_pton(int af, const char *src, void *dst);
 // 参数： 
 //   af：AF_INET AF_INET6  选择转换格式
 //   src：传入参数 ip地址 点分十进制字符串
-//   dst：传出参数 装欢后的网络字节序
+//   dst：传出参数 转换后的网络字节序
 // 返回值：
 //   成功：1
 //   异常：0  src指向的不使一个有效的IP地址
@@ -92,3 +94,114 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 //   成功：电视台
 //   失败：NULL 
 ```
+
+##### sockaddr数据结构
+
+sockaddr地址结构
+![sockaddr地址结构](Linux_network_program.assets/sockaddr.png)
+
+```c
+struct sockaddr_in {
+  sa_family_t    sin_family; /*address family: AF_INET*/
+  in_port_t      sin_port;   /*port in network byte order*/
+  struct in_addr sin_addr;   /*internet address*/
+};
+
+/* Internet address. */
+struct in_addr {
+  uint32_t       s_addr;     /* address in network byte order */
+};
+
+// 赋值
+sockaddr_in addr;
+addr.sin_family = AF_INET / AF_INET6;
+addr.sin_port = htons(9527);
+
+int dst;
+inet_pton(AF_INET, "192.168.6.1", (void*)&dst);
+addr.sinaddr.s_addr = dst;
+
+addr.sinaddr.s_addr = inet_addr("192.168.6.1");
+
+addr.sin_addr.s_addr = htonl(INADDR_ANY);    //取出系统中有效的任意IP地址
+
+//传参
+bind(fd, (struct sockaddr*)&addr, size);
+
+
+```
+
+##### socket模型创建流程
+
+![socket创建流程](Linux_network_program.assets/socket_create.png)
+
+| 客户端                   | 服务端                         |
+| ------------------------ | ------------------------------ |
+| socket()                 | socket()                       |
+| connect() //建立连接 绑定ip和端口     | bind(); //绑定IP port          |
+| write()                  | listen()  //设置监听上限       |
+| read()                   | accept()  //阻塞监听客户端链接 |
+| close()                  | read()                         |
+|                          | write()                        |
+|                          | read()                         |
+|                          | close()                        |
+|                          |                                |
+
+###### 函数介绍
+
+```c
+#include <sys/socket.h>
+int socket(int domain, int type, int protocol);  // 创建套接字
+// 参数：
+//   domain  指定ip地址协议  AF_INET、AF_INET6、AF_UNIX
+//   type   指定数据传输协议  SOCK_STREAM（TCP）   SOCK_DGRAM（UDP）
+//   protocol   一般传0
+// 返回值：
+//   成功：新套接字对应的文件描述符
+//   失败：-1 errno
+
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen); // 给socket绑定一个地址结构（ip port）
+参数：
+  socketfd 套接字的文件描述符
+  addr 传入参数 地址结构
+  addrlen 地址结构大小 sizeof()
+
+返回值：
+  成功 0
+  失败 -1 errno 
+
+int listen(int sockfd, int backlog);  // 设置同时与服务器建立链接的上限数
+// 参数：
+//   sockfd socket文件描述符
+//   backlog 上限值 最大128
+// 返回值：
+//   成功 0
+//   失败 -1 errno
+
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);  // 阻塞等待客户端建立连接 成功返回一个与客户端成功连接的socket文件描述符
+// 参数：
+//   socket 用于监听的socket文件描述符
+//   addr  传出参数 客户端的地址结构（ip+port）
+//   addrlen  传入传出参数 传入addr大小 传出客户端addr的实际大小  sizeof 
+
+// 返回值：
+//   成功 进行通信的文件描述符
+//   失败 -1 errno
+
+
+int connect(int sockfd, const struct sockaddr *addr,socklen_t addrlen);  //连接服务端
+参数：
+  socket :socket函数返回值
+  addr： 服务器的地址结构
+  addrlen: 服务器地址结构大小
+返回值：
+
+
+```
+
+
+
+
+###### tcp客户端
+
+###### tcp服务端
