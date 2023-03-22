@@ -27,10 +27,10 @@ int main(int argc,char *argv[])
 
   struct sockaddr_in ser_addr;
   ser_addr.sin_family = AF_INET;
-  ser_addr.sin_addr.s_addr = inet_addr("192.168.6.122");
-  ser_addr.sin_port = htons(8888);
+  ser_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  ser_addr.sin_port = htons(12500);
 
-  ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(struct sockaddr_in));
+  ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
   if(ret == -1){
     sys_err("bing err");
   }
@@ -49,6 +49,7 @@ int main(int argc,char *argv[])
   printf("client connect success: ip = %s port = %d\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
 
   while(1){
+    
     ret = read(sfd, buf, sizeof(buf));
     if(ret == 0){
       break;
