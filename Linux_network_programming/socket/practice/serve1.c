@@ -48,15 +48,11 @@ int main(int argc,char *argv[])
   while(1){
     
     ret = read(ser_fd, buf, sizeof(buf));
-    // buf[ret] = '\0';   // 使字符串末位赋0 防止乱码
+    buf[ret] = '\0';   // 使字符串末位赋0 防止乱码
     if(ret == 0){
       break;
     }
     printf("from clint: %s\n", buf);  //使用换行符，使服务端能刷新缓冲区
-
-
-    
-
   }
   close(lfd);
   close(ser_fd);
