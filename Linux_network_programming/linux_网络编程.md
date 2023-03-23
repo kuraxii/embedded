@@ -282,3 +282,135 @@ int main(int argc,char *argv[])
   return 0;
 }
 ```
+
+##### 多进程并发服务器
+
+```c
+void _waitpid(int sig){
+  int ret;
+  while((ret = wait(NULL)) != -1){
+    
+    printf("---catch child pid = %d\n",ret);
+  }
+  
+}
+
+int main(int argc,char *argv[])
+{
+  int ret, pid;
+  char buf[1024];
+  int lfd, cfd;
+  signal(SIGCHLD, _waitpid);   //使用信号捕捉，及时处理僵尸进程
+  lfd = socket(AF_INET, SOCK_STREAM, 0);
+  if(lfd == -1){
+    sys_err("socket err");
+  }
+  struct sockaddr_in ser_addr;
+  ser_addr.sin_family = AF_INET;
+  ser_addr.sin_port = htons(12500);
+  ser_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+  
+  ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
+  if(ret == -1){
+    sys_err("bind err");
+  }
+
+  ret = listen(lfd, 255);
+  if(ret == -1){
+    sys_err("listen err");
+  }
+  struct sockaddr_in c_addr;
+  socklen_t c_addr_len = sizeof(c_addr);
+  while (1)
+  {
+    cfd = accept(lfd, (struct sockaddr*)&c_addr, &c_addr_len);
+    printf("client connect success: ip = %s port = %d\n",inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
+    pid = fork();
+    if(pid == 0){   //子进程
+      close(lfd);   //fock后立即退出循环，防止后续逻辑混乱
+      break;
+    }else if (pid > 0)   //父进程
+    {
+      close(cfd);
+      continue;
+      
+    }else{   //fork err
+      sys_err("fork err");
+    }
+    
+  }
+  if(pid == 0){
+     while(1){
+        ret = read(cfd, buf, sizeof(buf));
+        buf[ret] = '\0';
+        if(ret == 0){
+          break;
+        }
+        printf("from clint: %s", buf);
+      }
+      close(cfd);
+  }
+  
+  return 0;
+}
+```
+
+##### 多线程并行服务器
+
+```c
+void* func(void* cfd){
+  int ret;
+  char buf[1024];
+  
+  while(1){
+    memset(buf, '\0', sizeof(buf));
+    ret = read((int)(intptr_t)cfd, buf, sizeof(buf));
+    if(ret == 0){
+      break;
+    }
+    buf[ret] = '\0';
+    printf("from client: %s\n",buf);
+  }
+
+
+}
+
+int main(int argc,char *argv[])
+{
+  int ret;
+  int lfd, cfd;
+  pthread_t tid;
+  lfd = socket(AF_INET, SOCK_STREAM, 0);
+  if(lfd == -1){
+    sys_err("socket err");
+  }
+
+  struct sockaddr_in ser_addr;
+  ser_addr.sin_family = AF_INET;
+  ser_addr.sin_port = htons(12500);
+  ser_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+  ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
+  if(ret == -1){
+    sys_err("bind err");
+  }
+
+  ret = listen(lfd, 255);
+  if(ret == -1){
+    sys_err("listen err");
+  }
+
+  struct sockaddr_in cli_addr;
+  socklen_t cli_addr_len = sizeof(cli_addr);
+  while(1){
+    cfd = accept(lfd, (struct sockaddr*)&cli_addr, &cli_addr_len);
+    printf("client connect success,ip= %s, port= %d\n", inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port));
+
+    ret = pthread_create(&tid, NULL, func, (void*)(intptr_t)cfd);
+
+    pthread_detach(tid);   //设置线程分离
+
+  }
+  return 0;
+}
+```
