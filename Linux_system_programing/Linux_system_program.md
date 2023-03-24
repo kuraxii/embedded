@@ -337,6 +337,13 @@ ssize_t read(int fd,void *buf,size_t count)
 // 成功 读到的字节数
 // 失败 -1，设置errno
 // 如果 -1，并且 errno = EAGIN 或 EWOULDBLOCK吗，说明不是read失败，而是read在以非阻塞方式读设备文件或网络文件 
+
+//read返回值补充
+// 成功：
+//   >0 实际读到的字节数
+//   =0 阻塞文件读到末尾（对端已关闭）
+
+
 ```
 
 ```c
@@ -352,7 +359,7 @@ ssize_t write(int fd,const void *buf,size_t count)
 
 ```c
 /*
- *./mycp src dst 命令行参数实现简单的cp命令
+ *./mycp  命令行参数实现简单的cp命令
  */
 
 char buf[1024];

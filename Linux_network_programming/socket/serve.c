@@ -30,6 +30,9 @@ int main(int argc,char *argv[])
   ser_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
   ser_addr.sin_port = htons(12500);
 
+  int opt;
+  setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
   ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
   if(ret == -1){
     sys_err("bing err");
