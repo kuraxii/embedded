@@ -44,13 +44,13 @@ IP地址:可以在网络环境中，唯一标识一台主机。
 端口号:可以网络的一台主机上，唯一标识一个进程。
 IP地址+端口号:可以在网络环境中，唯一标识一个进程。
 
-### Socket编程
+## Socket编程
 
 套接字概念
 一个文件描述符指向一个套接字（该套接字内部由内核借助两个缓冲区实现）
 在通信过程中，套接字一定使成对出现的
 
-#### 网络字节序
+### 网络字节序
 
 我们已经知道，内存中的多字节数据相对于内存地址有大端和小端之分，磁盘文件中的多字节数据相对于文件中的偏移地址也有大端小端之分。网络数据流同样有大端小端之分，那么如何定义网络数据流的地址呢﹖发送主机通常将发送缓冲区中的数据按内存地址从低到高的顺序发出，接收主机把从网络上接到的字节依次保存在接收缓冲区中，也是按内存地址从低到高的顺序保存，因此，网络数据流的地址应这样规定:先发出的数据是低地址，后发出的数据是高地址。
 TCP/IP 协议规定，网络数据流应采用大端字节序，即低地址高字节。例如上一节的UDP段格式，地址0-1是16位的源端口号，如果这个端口号是1000
@@ -68,7 +68,7 @@ uint32_t ntohl(uint32_t netlong); //net to host   针对于IP
 uint16_t ntohs(uint16_t netshort);  //net to host  针对于PORT
 ```
 
-#### ip地址转换函数
+### ip地址转换函数
 
 ```c
 //点分十进制转网络字节序  // 支持ipv4 和 ipv6
@@ -95,7 +95,7 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 //   失败：NULL 
 ```
 
-#### sockaddr数据结构
+### sockaddr数据结构
 
 sockaddr地址结构
 ![sockaddr地址结构](Linux_network_program.assets/sockaddr.png)
@@ -131,7 +131,7 @@ bind(fd, (struct sockaddr*)&addr, size);
 
 ```
 
-#### socket模型创建流程
+### socket模型创建流程
 
 ![socket创建流程](Linux_network_program.assets/socket_create.png)
 
@@ -147,7 +147,7 @@ bind(fd, (struct sockaddr*)&addr, size);
 |                          | close()                        |
 |                          |                                |
 
-##### 函数介绍
+#### 函数介绍
 
 ```c
 #include <sys/socket.h>
@@ -199,7 +199,7 @@ int connect(int sockfd, const struct sockaddr *addr,socklen_t addrlen);  //连�
 
 ```
 
-##### tcp客户端
+#### tcp客户端
 
 ```c
 int main(int argc,char *argv[])
@@ -231,7 +231,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-##### tcp服务端
+#### tcp服务端
 
 ```c
 
@@ -283,9 +283,9 @@ int main(int argc,char *argv[])
 }
 ```
 
-#### TCP协议
+### TCP协议
 
-##### TCP通信时序
+#### TCP通信时序
 
 ![TCP通信时序](Linux_network_program.assets/TCP_Communication_Timing.png)
 
@@ -294,13 +294,13 @@ int main(int argc,char *argv[])
 上标出，例如段2的箭头上标着SYN, 8000(0), ACK1001, ，表示该段中的SYN位置1，32位序号是8000，该段不携带有效载荷（数据字节数为0），
 ACK位置1，32位确认序号是1001，带有一个mss（Maximum Segment Size，最大报文长度）选项值为1024。
 
-###### 三次握手
+##### 三次握手
 
 1. 客户端向主动服务端发送请求。SYN标志位为1，并附带当前包号（1000（0）），以及一个mss（Maximum Segment Size，最大报文长度）
 2. 服务端收到客户端请求，同时对客服端发送连接请求，SYN标志位为1，并附带当前包号（8000（0）），以及缓冲区大小，并且做出应答，ACK标志位为1 附带接收后的对方的包号
 3. 客户端应答服务端请求，发送ACK 附带接收到的包号
 
-###### 数据传输
+##### 数据传输
 
 1. 客户端发出段4，包含从序号1001开始的20个字节数据。
 2. 服务器发出段5，确认序号为1021，对序号为1001-1020的数据表示确认收到，同时请求发送序号1021开始的数据，服务器在应答的同时也向客户端发送从序号8001开始的10个字节数据，这称为piggyback。
@@ -310,7 +310,7 @@ ACK位置1，32位确认序号是1001，带有一个mss（Maximum Segment Size�
 ACK段才知道该数据包确实发到了对方，可以从发送缓冲区中释放掉了，如果因为网络故障丢失了数据包或者丢失了对方发回的ACK段，经过等待超时后TCP协议自动
 将发送缓冲区中的数据包重发
 
-###### 四次挥手
+##### 四次挥手
 
 由于TCP连接是全双工的，因此每个方向都必须单独进行关闭。这原则是当一方完成它的数据发送任务后就能发送一个FIN来终止这个方向的连接。收到一个 FIN只
 意味着这一方向上没有数据流动，一个TCP连接在收到一个FIN后仍能发送数据。首先进行关闭的一方将执行主动关闭，而另一方执行被动关闭。
@@ -323,7 +323,7 @@ ACK段才知道该数据包确实发到了对方，可以从发送缓冲区中�
 建立连接的过程是三方握手，而关闭连接通常需要4个段，服务器的应答和关闭连接请求通常不合并在一个段中，因为有连接半关闭的情况，这种情况下客户端关闭
 连接之后就不能再发送数据给服务器了，但是服务器还可以发送数据给客户端，直到服务器也关闭连接为止。
 
-##### 滑动窗口(TCP流量控制)
+#### 滑动窗口(TCP流量控制)
 
 介绍UDP时我们描述了这样的问题：如果发送端发送的速度较快，接收端接收到数据后处理的速度较慢，而接收缓冲区的大小是固定的，就会丢失数据。TCP协议通
 过“滑动窗口（Sliding Window）”机制解决这一问题。看下图的通讯过程：
@@ -343,15 +343,15 @@ ACK段才知道该数据包确实发到了对方，可以从发送缓冲区中�
 上图在接收端用小方块表示1K数据，实心的小方块表示已接收到的数据，虚线框表示接收缓冲区，因此套在虚线框中的空心小方块表示窗口大小，从图中可以看出，随着应用程序提走数据，虚线框是向右滑动的，因此称为滑动窗口。
 从这个例子还可以看出，发送端是一K一K地发送数据，而接收端的应用程序可以两K两K地提走数据，当然也有可能一次提走3K或6K数据，或者一次只提走几个字节的数据。也就是说，应用程序所看到的数据是一个整体，或说是一个流（stream），在底层通讯中这些数据可能被拆成很多数据包来发送，但是一个数据包有多少字节对应用程序是不可见的，因此TCP协议是面向流的协议。而UDP是面向消息的协议，每个UDP段都是一条消息，应用程序必须以消息为单位提取数据，不能一次提取任意字节的数据，这一点和TCP是很不同的。
 
-##### TCP状态转换
+#### TCP状态转换
 
-##### 半关闭
+#### 半关闭
 
-##### 2MSL
+#### 2MSL
 
-##### TCP异常断开 
+#### TCP异常断开
 
-###### 端口复用
+##### 端口复用
 
 在server的TCP连接没有完全断开之前不允许重新监听是不合理的。因为，TCP连接没有完全断开指的是connfd（127.0.0.1:6666）没有
 完全断开，而我们重新监听的是lis-tenfd（0.0.0.0:6666），虽然是占用同一个端口，但IP地址不同，connfd对应的是与某个客户端通
@@ -364,9 +364,9 @@ int opt = 1;
 setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 ```
 
-#### 高并发服务器
+### 高并发服务器
 
-##### 多进程并发服务器
+#### 多进程并发服务器
 
 使用多进程并发服务器时要考虑以下几点：
 
@@ -444,7 +444,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-##### 多线程并行服务器
+#### 多线程并行服务器
 
 在使用线程模型开发服务器时需考虑以下问题：
 
@@ -511,3 +511,125 @@ int main(int argc,char *argv[])
 }
 ```
 
+#### 多路IO转接服务器
+
+路IO转接服务器也叫做多任务IO服务器。该类服务器实现的主旨思想是，不再由应用程序自己监视客户端连接，取而代之由内核替应用程序监视文件。
+
+解决1024以下客户端时使用select是很合适的，但如果链接客户端过多，select采用的是轮询模型，会大大降低服务器响应效率，不应在select上投入更多精力
+
+##### sleect
+
+```c
+#include <sys/select.h>
+int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
+// 参数：
+//   nfds 监控的文件描述符集里最大文件描述符加1，因为此参数会告诉内核检测前多少个文件描述符的状态
+//   readfds  监控有读数据到达文件描述符集合，传入传出参数   fd_set均为位图 
+//   writefds  监控写数据到达文件描述符集合，传入传出参数
+//   exceptfds  监控异常发生达文件描述符集合,如带外数据到达异常，传入传出参数
+//   timeout  定时阻塞监控时间，3种情况
+//             1. NULL，永远等下去  阻塞监听 
+//             2. >0设置timeval，等待固定时间
+//             3. 设置timeval里时间均为0，检查描述符后立即返回，轮询
+// 返回值：
+//   >0 所有监听集合中，满足所有事件的总数
+//   0  没有满足条件的文件描述符
+//   -1 err
+
+void FD_CLR(int fd, fd_set *set);   //把文件描述符集合里fd清0
+int FD_ISSET(int fd, fd_set *set);   //测试文件描述符集合里fd是否置1   为1返回1 为0返回0
+void FD_SET(int fd, fd_set *set);   //把文件描述符集合里fd位置1
+void FD_ZERO(fd_set *set);    //把文件描述符集合里所有位清0
+
+
+```
+
+代码实现
+
+```c
+int main(int argc,char *argv[])
+{
+ int lfd, cfd;
+ int ret, maxfd, nread;
+  char buf[1024];
+
+  lfd = socket(AF_INET, SOCK_STREAM, 0);
+  if(lfd == -1){
+    sys_err("socket err");
+  }
+  int opt = 1;
+  ret = setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+  struct sockaddr_in ser_addr;
+  ser_addr.sin_family = AF_INET;
+  ser_addr.sin_port = htons(12500);
+  ser_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr)); 
+
+  ret = listen(lfd, 255);
+
+  fd_set r_set, all_set;   /* rset 读事件文件描述符集合allset用来暂存*/
+  maxfd = lfd;
+  FD_ZERO(&all_set);
+  FD_SET(lfd, &all_set);   /*构造select监控文件描述符集*/
+  
+  while(1){
+    r_set = all_set;
+
+    printf("before select\n");
+    for(int i = lfd + 1; i <= maxfd; i++){
+      printf("%d -> %d\n",i, FD_ISSET(i, &r_set));
+    }
+
+    nread = select(maxfd + 1, &r_set, NULL, NULL, NULL);
+    printf("after select\n");
+    if(nread < 0){    //判断select监听是否出错
+        sys_err("select err");
+      } 
+    if(nread > 0){     //没有新的监听事件，则循环监听
+      
+      if(FD_ISSET(lfd, &r_set)){    //判断listen套接字是否满足监听条件
+        struct sockaddr_in client_fd;
+        socklen_t client_fd_len = sizeof(client_fd);
+        cfd = accept(lfd, (struct sockaddr*)&client_fd, &client_fd_len);
+        if(cfd == -1){
+          sys_err("accept err");
+        }
+        printf("client connect success: ip = %s, port = %d\n", inet_ntoa(client_fd.sin_addr), ntohs(client_fd.sin_port));
+        FD_SET(cfd, &all_set);
+        if(cfd > maxfd){
+          printf("cfd > maxfd---\n");
+          maxfd = cfd;
+        }
+        if(--nread == 0){      //只有lfd有新事件，后续读套接字不执行
+        printf("1\n");
+          continue;          
+        }
+      }
+
+      for(int i = lfd + 1; i <= maxfd; i++){
+        printf("%d\n",i);
+        if(FD_ISSET(i, &r_set)){
+
+          ret = read(i, buf, sizeof(buf));
+          if(ret == -1){
+            sys_err("read err");
+          }
+          if(ret == 0){
+            FD_CLR(i, &all_set);
+            close(i);
+          }
+          if(ret > 0){
+            buf[ret] = '\0';
+            printf("%s\n", buf);
+          }
+          
+        }
+      }
+    }
+  }
+
+  return 0;
+}
+```
+
+##### poll
