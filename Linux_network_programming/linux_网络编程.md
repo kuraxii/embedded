@@ -515,9 +515,13 @@ int main(int argc,char *argv[])
 
 路IO转接服务器也叫做多任务IO服务器。该类服务器实现的主旨思想是，不再由应用程序自己监视客户端连接，取而代之由内核替应用程序监视文件。
 
-解决1024以下客户端时使用select是很合适的，但如果链接客户端过多，select采用的是轮询模型，会大大降低服务器响应效率，不应在select上投入更多精力
-
 ##### sleect
+
+解决1024以下客户端时使用select是很合适的，但如果链接客户端过多，select采用的是轮询模型，会大大降低服务器响应效率，不应在select上投入更多精力
+优缺点：
+缺点： 监听上限受文件描述符限制，最大1024
+      检测满足条件的fd，自己添加业务路基提高骁，提高了编码难度
+优点： 跨平台，
 
 ```c
 #include <sys/select.h>
@@ -567,65 +571,169 @@ int main(int argc,char *argv[])
 
   ret = listen(lfd, 255);
 
-  fd_set r_set, all_set;   /* rset 读事件文件描述符集合allset用来暂存*/
+  fd_set r_set, all_set;   /* rset 读事件文件描述符集合  allset用来暂存*/
   maxfd = lfd;
   FD_ZERO(&all_set);
-  FD_SET(lfd, &all_set);   /*构造select监控文件描述符集*/
+  FD_SET(lfd, &all_set);   /*添加lfd到监听集合*/
   
   while(1){
     r_set = all_set;
 
-    printf("before select\n");
-    for(int i = lfd + 1; i <= maxfd; i++){
-      printf("%d -> %d\n",i, FD_ISSET(i, &r_set));
-    }
+    // printf("before select\n");
+    // for(int i = lfd + 1; i <= maxfd; i++){
+    //   printf("%d -> %d\n",i, FD_ISSET(i, &r_set));
+    // }
 
     nread = select(maxfd + 1, &r_set, NULL, NULL, NULL);
-    printf("after select\n");
+    // printf("after select\n");
     if(nread < 0){    //判断select监听是否出错
         sys_err("select err");
       } 
-    if(nread > 0){     //没有新的监听事件，则循环监听
+    
       
-      if(FD_ISSET(lfd, &r_set)){    //判断listen套接字是否满足监听条件
-        struct sockaddr_in client_fd;
-        socklen_t client_fd_len = sizeof(client_fd);
-        cfd = accept(lfd, (struct sockaddr*)&client_fd, &client_fd_len);
-        if(cfd == -1){
-          sys_err("accept err");
-        }
-        printf("client connect success: ip = %s, port = %d\n", inet_ntoa(client_fd.sin_addr), ntohs(client_fd.sin_port));
-        FD_SET(cfd, &all_set);
-        if(cfd > maxfd){
-          printf("cfd > maxfd---\n");
-          maxfd = cfd;
-        }
-        if(--nread == 0){      //只有lfd有新事件，后续读套接字不执行
-        printf("1\n");
-          continue;          
-        }
+    if(FD_ISSET(lfd, &r_set)){    //判断listen套接字是否满足监听条件
+      struct sockaddr_in client_fd;
+      socklen_t client_fd_len = sizeof(client_fd);
+      cfd = accept(lfd, (struct sockaddr*)&client_fd, &client_fd_len);
+      if(cfd == -1){
+        sys_err("accept err");
       }
-
-      for(int i = lfd + 1; i <= maxfd; i++){
-        printf("%d\n",i);
-        if(FD_ISSET(i, &r_set)){
-
-          ret = read(i, buf, sizeof(buf));
-          if(ret == -1){
-            sys_err("read err");
-          }
-          if(ret == 0){
-            FD_CLR(i, &all_set);
-            close(i);
-          }
-          if(ret > 0){
-            buf[ret] = '\0';
-            printf("%s\n", buf);
-          }
-          
-        }
+      printf("client connect success: ip = %s, port = %d\n", inet_ntoa(client_fd.sin_addr), ntohs(client_fd.sin_port));
+      FD_SET(cfd, &all_set);
+      if(cfd > maxfd){
+        // printf("cfd > maxfd---\n");
+        maxfd = cfd;   //将产生的fd添加到监听集合中，监听数据的读事件
+      }
+      if(--nread == 0){      //只有lfd有新事件，后续读套接字不执行
+      printf("1\n");
+        continue;          
       }
     }
+
+    for(int i = lfd + 1; i <= maxfd; i++){
+      printf("%d\n",i);
+      if(FD_ISSET(i, &r_set)){
+
+        ret = read(i, buf, sizeof(buf));
+        if(ret == -1){
+          sys_err("read err");
+        }
+        if(ret == 0){
+          FD_CLR(i, &all_set);
+          close(i);
+        }
+        if(ret > 0){
+          buf[ret] = '\0';
+          printf("%s\n", buf);
+        }
+        
+      }
+    }
+    
+  }
+
+  return 0;
+}
+```
+
+使用client数组对fd遍历进行优化
+
+```c
+int main(int argc,char *argv[])
+{
+ int lfd, connfd, clientfd[FD_SETSIZE];    //自定义数组client，防止遍历1024个文件描述符
+ int ret, maxfd, nread, maxi, i;
+  char buf[BUFSIZ], str[INET_ADDRSTRLEN];
+
+  lfd = socket(AF_INET, SOCK_STREAM, 0);
+  if(lfd == -1){
+    sys_err("socket err");
+  }
+  int opt = 1;
+  ret = setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+  struct sockaddr_in ser_addr;
+  ser_addr.sin_family = AF_INET;
+  ser_addr.sin_port = htons(12500);
+  ser_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr)); 
+
+  ret = listen(lfd, 255);
+  maxi = -1;
+  for(int i = 0; i < FD_SETSIZE; i++){
+    clientfd[i] = -1;
+  }
+
+  fd_set r_set, all_set;   /* rset 读事件文件描述符集合  allset用来暂存*/
+  maxfd = lfd;
+  FD_ZERO(&all_set);
+  FD_SET(lfd, &all_set);   /*添加lfd到监听集合*/
+  
+  while(1){
+    r_set = all_set;
+
+    // printf("before select\n");
+    // for(int i = lfd + 1; i <= maxfd; i++){
+    //   printf("%d -> %d\n",i, FD_ISSET(i, &r_set));
+    // }
+
+    nread = select(maxfd + 1, &r_set, NULL, NULL, NULL);
+    // printf("after select\n");
+    if(nread < 0){    //判断select监听是否出错
+        sys_err("select err");
+      } 
+    
+      
+    if(FD_ISSET(lfd, &r_set)){    //判断listen套接字满足监听条件，就建立新的连接
+      struct sockaddr_in client_addr;
+      socklen_t client_addr_len = sizeof(client_addr);
+      connfd = accept(lfd, (struct sockaddr*)&client_addr, &client_addr_len);
+      if(connfd == -1){ 
+        sys_err("accept err");
+      }
+      printf("client connect success: ip = %s, port = %d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+      FD_SET(connfd, &all_set);
+      
+      for(i = 0; i < FD_SETSIZE; i++){  // 添加客户端数组
+        if(clientfd[i] == -1){
+          clientfd[i] = connfd;
+          break;
+        }
+      }
+      if(i > maxi){   
+        maxi = i;
+      }
+
+  
+      if(connfd > maxfd){
+        // printf("clientfd > maxfd---\n");
+        maxfd = connfd;   //将产生的fd添加到监听集合中，监听数据的读事件
+      }
+      if(--nread == 0){      //只有lfd有新事件，后续读套接字不执行
+      // printf("1\n");
+        continue;          
+      }
+    }
+
+    for(int i = 0; i <= maxi; i++){
+      // printf("%d\n",i);
+      if(FD_ISSET(clientfd[i], &r_set)){
+
+        ret = read(clientfd[i], buf, sizeof(buf));
+        if(ret == -1){
+          sys_err("read err");
+        }
+        if(ret == 0){
+          FD_CLR(clientfd[i], &all_set);
+          close(clientfd[i]);
+        }
+        if(ret > 0){
+          buf[ret] = '\0';
+          printf("%s\n", buf);
+        }
+        
+      }
+    }
+    
   }
 
   return 0;
@@ -633,3 +741,146 @@ int main(int argc,char *argv[])
 ```
 
 ##### poll
+
+```c
+#include <poll.h>
+int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+// 参数：
+//   fds    监听文件描述符的数组
+//   nfds   监控数组中有多少文件描述符需要被监控
+//   timeout   超时时长  单位毫秒
+//             -1：阻塞等，#define INFTIM -1      Linux中没有定义此宏
+//              0：立即返回，不阻塞进程
+//             >0：等待指定毫秒数，如当前系统时间精度 不够毫秒，向上取值  
+
+
+//   struct pollfd {
+//     int   fd;         /* file descriptor */
+//     short events;     /* requested events */  取值 POLLIN  POLLOUT POLLERR
+//     short revents;    /* returned events */  传入时给0 如果满足对应事件  返回非0
+//   };
+
+// 返回值
+//   返回监听描述符事件的总个数
+
+
+// 如果不再监控某个文件描述符时，可以把pollfd中，fd设置为-1，poll不再监控此pollfd，下次返回时，把revents设置为0。
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <errno.h>
+#include <poll.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+void sys_err(char *str)
+{
+  perror(str);
+  exit(1);
+}
+
+int main(int argc,char *argv[])
+{
+  int i, ret, maxfd = 0, lfd, client_fd, lastfd, nread;
+  char buf[BUFSIZ];
+  struct sockaddr_in ser_addr, client_addr;
+  socklen_t client_addr_len = sizeof(client_addr);
+  struct pollfd fds[FD_SETSIZE];
+  for(i = 0; i < FD_SETSIZE; i++){
+    fds[i].fd = -1;
+  }
+
+  lfd = socket(AF_INET, SOCK_STREAM, 0);
+  if(lfd == -1){
+    sys_err("socket err");
+  }
+  int opt = 1;
+  setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
+  ser_addr.sin_family =AF_INET;
+  ser_addr.sin_port = htons(12500);
+  ser_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+  ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
+  if(ret == -1)
+  {
+   sys_err("bind err"); 
+  }
+
+  listen(lfd, 255);
+
+  
+  fds[0].fd = lfd;
+  fds[0].events = POLLIN;
+  fds[0].revents = 0;
+  
+  lastfd = 0;
+  
+  
+  while(1){
+
+    // printf("before poll----\n");
+    // for(i = 0; i <= maxfd; i++){
+    //     if(fds[i].fd != -1){
+    //       printf("i = %d,fd = %d,return = %d\n", i, fds[i].fd, fds[i].revents&POLLIN);
+    //     }
+
+    //   }
+    nread = poll(fds, lastfd + 1, -1);
+    // printf("after poll----\n");
+    if(nread < 0){
+      sys_err("poll err");
+    }
+
+    if(fds[0].revents & POLLIN){   // 建立通信
+    //  printf("before accept----\n");
+      client_fd = accept(lfd, (struct sockaddr*)&client_addr, &client_addr_len);
+    //  printf("after accept----\n");
+      if(client_fd == -1){
+        sys_err("accept err");
+      }
+      printf("client connect success: ip = %s, port = %d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+      for(i = 1; i < FD_SETSIZE; i++){   //添加监 文件描述符
+        if(fds[i].fd == -1){
+          fds[i].fd = client_fd;
+          fds[i].events = POLLIN;
+          fds[i].revents = 0;
+          maxfd ++;
+          break;
+        }
+      }
+      if(lastfd < i){ 
+        lastfd = i;
+      }
+      if(--nread == 0){
+        continue;
+      }
+    }
+    for(i = 1; i <= maxfd; i++){
+      if(fds[i].revents & POLLIN){
+        ret = read(fds[i].fd, buf, sizeof(buf));
+        if(ret == -1){
+          sys_err("read err");
+        }
+        if(ret == 0){
+          close(fds[i].fd);
+          fds[i].fd = -1;   /* poll中不监控该文件描述符,直接置为-1即可,不用像select中那样移除*/
+        }
+        if(ret > 0){
+          buf[ret] = '\0'; 
+          printf("from client：%s\n", buf);
+        }
+      }
+    }
+  
+
+  }
+  return 0;
+} 
+```
+
+##### epoll
