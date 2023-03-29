@@ -883,4 +883,107 @@ int main(int argc,char *argv[])
 } 
 ```
 
+##### 突破1024文件描述符限制
+
+ulimit  控制linux的最大资源
+
+ulimit <-参数> <数量> 以修改当前资源限制
+
+```shell
+#执行命令 ulimit -a 显示所有资源
+-t: cpu time (seconds)              unlimited
+-f: file size (blocks)              unlimited
+-d: data seg size (kbytes)          unlimited
+-s: stack size (kbytes)             8192
+-c: core file size (blocks)         0
+-m: resident set size (kbytes)      unlimited
+-u: processes                       31542
+-n: file descriptors                1048576
+-l: locked-in-memory size (kbytes)  64
+-v: address space (kbytes)          unlimited
+-x: file locks                      unlimited
+-i: pending signals                 31542
+-q: bytes in POSIX msg queues       819200
+-e: max nice                        0
+-r: max rt priority                 0
+-N 15:                              unlimited
+```
+
 ##### epoll
+
+```c
+#include <sys/epoll.h>
+int epoll_create(int size);   // 创建一颗监听红黑树
+参数：
+  size  创建的红黑树的加内特节点数量
+返回值：
+  成功返回epoll文件描述符，失败返回-1
+
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);  // 操作红黑树
+// 参数：
+//   epfd  epoll文件描述符
+//   op    操作类型
+//     EPOLL_CTL_ADD  注册新的fd到epfd中
+//     EPOLL_CTL_MOD  修改已经注册的fd的监听事件
+//     EPOLL_CTL_DEL  从epfd中删除一个fd
+//   fd    需要监听的文件描述符
+//   event 事件结构体 
+//     struct epoll_event {
+//        __uint32_t     events;      /* Epoll events */
+//        epoll_data_t   data;        /* User data variable */
+//     };
+//     typedef union epoll_data {
+//         void        *ptr;
+//         int          fd;
+//         __uint32_t   u32;
+//         __uint64_t   u64;
+//     } epoll_data_t;
+
+//     EPOLLIN  表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；
+//     EPOLLOUT 表示对应的文件描述符可以写；
+//     EPOLLPRI 表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；
+//     EPOLLERR 表示对应的文件描述符发生错误；
+//     EPOLLHUP 表示对应的文件描述符被挂断；
+//     EPOLLET  表示对应的文件描述符有事件发生；
+//     EPOLLONESHOT 表示只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里
+
+
+// 返回值：
+//   成功返回0，失败返回-1
+
+int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);  //阻塞等待就绪事件
+// 参数：
+//   epfd  epoll文件描述符
+//   events  传出参数 【数组】用于从内核得到事件的集合
+//   maxevents  一次能处理的事件数 数组元素的个数
+//   timeout  超时时间
+//     -1  阻塞等待
+//     0   非阻塞
+//     >0  等待指定的毫秒数
+// 返回值：
+//   > 0  表示就绪事件的个数
+//   = 0  表示超时
+//   < 0  表示出错
+
+
+```
+
+epoll实现多路IO转接思路：
+
+lfd = socket()  // 创建监听套接字
+
+bind();
+
+listen();
+
+int epfd = epoll_create(1024);  // 创建epoll文件描述符    epfd  监听红黑树根
+
+struct epoll_event tep,ep[1024];  // 创建epoll事件结构体  tep 
+
+epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &tep);  // 将lfd添加到epfd中
+
+while()
+
+epoll_wait(epfd, events, 1024, -1);  // 阻塞等待就绪事件
+()
+
