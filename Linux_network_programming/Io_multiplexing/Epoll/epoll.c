@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/epoll.h>
+#include <ctype.h>
 void sys_err(char *str)
 {
   perror(str);
@@ -28,6 +29,8 @@ int main(int argc,char *argv[])
   ser_addr.sin_port = htons(12500);
   ser_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
+  int opt = 1;
+  setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));  // reuse address
   ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
   if(ret == -1){
     sys_err("bind err");
@@ -39,57 +42,58 @@ int main(int argc,char *argv[])
   if(epfd == -1){
     sys_err("epoll_create err");
   }
-  struct epoll_event tep,ep[1024];
-
+  struct epoll_event tep,ep_arr[1024];
+  memset(ep_arr, 0, sizeof(ep_arr));
+  tep.events = EPOLLIN;
+  tep.data.fd = lfd;
+  
   ret = epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &tep);
   if(ret == -1){
     sys_err("epoll_ctl err");
   }
 
   while(1){
-    epoll_wait(epfd, ep, 1024, -1);
+    epoll_wait(epfd, ep_arr, 1024, -1);
     for(int i = 0; i < 1024; i++){
-      if(ep[i].events & EPOLLIN){
-        if(ep[i].data.fd == lfd){   // new client  connection request 
+      if(ep_arr[i].events & EPOLLIN){
+        if(ep_arr[i].data.fd == lfd){   // new client  connection request 
           struct sockaddr_in cli_addr; 
           socklen_t cli_len = sizeof(cli_addr);
           int cfd = accept(lfd, (struct sockaddr*)&cli_addr, &cli_len);
           if(cfd == -1){
             sys_err("accept err");
           }
-          printf("client ip: %s, port: %d", inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port));
+          printf("client connect succsee  ip: %s, port: %d\n", inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port));
           tep.events = EPOLLIN;
           tep.data.fd = cfd;
           ret = epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &tep);
+          
           if(ret == -1){
             sys_err("epoll_ctl err");
           }
         }else{        // client send data
-          int len = read(ep[i].data.fd, buf, sizeof(buf));
+          int len = read(ep_arr[i].data.fd, buf, sizeof(buf));
           if(len == -1){
             sys_err("read err");
           }else if(len == 0){ // client close
-            ret = epoll_ctl(epfd, EPOLL_CTL_DEL, ep[i].data.fd, NULL);
+            ret = epoll_ctl(epfd, EPOLL_CTL_DEL, ep_arr[i].data.fd, NULL);
             if(ret == -1){
               sys_err("epoll_ctl err");
             }
-            close(ep[i].data.fd);
-            printf("client close");
+            close(ep_arr[i].data.fd);
+            printf("client close\n");
           }else{ // read data
-            write(STDOUT_FILENO, buf, len);
+            buf[len] = '\0';
+            // 小写转大写
+            for(int i = 0; i < len; i++){
+              buf[i] = toupper(buf[i]);
+            }
+            
+            printf("read data: %s\n", buf);
           }
-
         }
-
       }
-
     }
-
-
-
   }
-
-
-
   return 0;
 }

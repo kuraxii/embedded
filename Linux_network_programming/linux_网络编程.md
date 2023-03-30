@@ -970,20 +970,128 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 
 epoll实现多路IO转接思路：
 
+```c
 lfd = socket()  // 创建监听套接字
-
 bind();
-
 listen();
-
 int epfd = epoll_create(1024);  // 创建epoll文件描述符    epfd  监听红黑树根
-
 struct epoll_event tep,ep[1024];  // 创建epoll事件结构体  tep 
-
 epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &tep);  // 将lfd添加到epfd中
-
 while()
-
 epoll_wait(epfd, events, 1024, -1);  // 阻塞等待就绪事件
-()
+for(int i = 0; i < 1024; i++){ // 遍历就绪事件
+  if(events[i].event & EPOLLIN){  // 判断就绪事件类型
+    if(events[i].data.fd == lfd){  // 判断就绪事件是不是监听套接字
+      cfd = accept(lfd, NULL, NULL);  // 接收连接
+      tep.events = EPOLLIN;  // 设置事件类型
+      tep.data.fd = cfd;  // 设置文件描述符
+      epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &tep);  // 将cfd添加到epfd中
+    }else{
+      ret = read(events[i].data.fd, buf, sizeof(buf));  // 读取数据
+      if(ret == 0){  // 客户端关闭
+        close(events[i].data.fd);  // 关闭文件描述符
+        epoll_ctl(epfd, EPOLL_CTL_DEL, events[i].data.fd, NULL);  // 从epfd中删除文件描述符
+      }else if(ret > 0){  // 读取数据
+        write(events[i].data.fd, buf, ret);  // 回写数据
+      }
+    }
+  }
+
+}
+```
+
+epoll 代码实现
+
+```c
+int main(int argc,char *argv[])
+{
+  int lfd, ret;
+  
+  char buf[1024];
+  lfd = socket(AF_INET, SOCK_STREAM, 0);
+  if(lfd == -1){
+    sys_err("socket err");
+  } 
+
+  struct sockaddr_in ser_addr;
+  ser_addr.sin_family = AF_INET;
+  ser_addr.sin_port = htons(12500);
+  ser_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+  int opt = 1;
+  setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));  // reuse address
+  ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
+  if(ret == -1){
+    sys_err("bind err");
+  }
+
+  ret = listen(lfd, 255);
+
+  int epfd = epoll_create(1024);
+  if(epfd == -1){
+    sys_err("epoll_create err");
+  }
+  struct epoll_event tep,ep_arr[1024];
+  memset(ep_arr, 0, sizeof(ep_arr));
+  tep.events = EPOLLIN;
+  tep.data.fd = lfd;
+  
+  ret = epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &tep);
+  if(ret == -1){
+    sys_err("epoll_ctl err");
+  }
+
+  while(1){
+    epoll_wait(epfd, ep_arr, 1024, -1);
+    for(int i = 0; i < 1024; i++){
+      if(ep_arr[i].events & EPOLLIN){
+        if(ep_arr[i].data.fd == lfd){   // new client  connection request 
+          struct sockaddr_in cli_addr; 
+          socklen_t cli_len = sizeof(cli_addr);
+          int cfd = accept(lfd, (struct sockaddr*)&cli_addr, &cli_len);
+          if(cfd == -1){
+            sys_err("accept err");
+          }
+          printf("client connect succsee  ip: %s, port: %d\n", inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port));
+          tep.events = EPOLLIN;
+          tep.data.fd = cfd;
+          ret = epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &tep);
+          
+          if(ret == -1){
+            sys_err("epoll_ctl err");
+          }
+        }else{        // client send data
+          int len = read(ep_arr[i].data.fd, buf, sizeof(buf));
+          if(len == -1){
+            sys_err("read err");
+          }else if(len == 0){ // client close
+            ret = epoll_ctl(epfd, EPOLL_CTL_DEL, ep_arr[i].data.fd, NULL);
+            if(ret == -1){
+              sys_err("epoll_ctl err");
+            }
+            close(ep_arr[i].data.fd);
+            printf("client close\n");
+          }else{ // read data
+            buf[len] = '\0';
+            // 小写转大写
+            for(int i = 0; i < len; i++){
+              buf[i] = toupper(buf[i]);
+            }
+            
+            printf("read data: %s\n", buf);
+          }
+        }
+      }
+    }
+  }
+  return 0;
+}
+```
+
+###### epoll进阶
+
+事件模型：
+EPOLL支持两种事件模型：LT（level trigger）和ET（edge trigger）。
+LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。
+ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。
 
