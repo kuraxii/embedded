@@ -1093,3 +1093,5 @@ int main(int argc,char *argv[])
 EPOLL支持两种事件模型：LT（level trigger）和ET（edge trigger）。
 LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。
 ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。
+
+#### 线程池
