@@ -2062,11 +2062,11 @@ pthread_t pthread_self(void);   //获取线程ID。其作用对应进程中getpi
 创建一个新线程。  其作用，对应进程中 fork()函数。
 
 ```c
- #include <pthread.h>
- int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
+#include <pthread.h>
+int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
 // 参数：
 // thread  传出参数 指向线程id的指针
-// attr  传入参数，通常传NULL，表示使用线程默认属性。若想使用具体属性也可以修改该参数。
+// attr  传入参数，通常传NULL，表示使 用线程默认属性。若想使用具体属性也可以修改该参数。
 // start_routine  函数指针，指向线程主控函数（线程体），该函数运行结束，则线程结束。
 // arg  线程主函数执行期间所使用的参数，若不同参数传NULL。
 // 返回值：
@@ -2079,7 +2079,7 @@ pthread_t pthread_self(void);   //获取线程ID。其作用对应进程中getpi
 
 ```c
 #include <pthread.h>
-void pthread_exit(void *retval);  //将单个线程退出  相当于return
+void pthread_exit(void *retval);  //将单个线程退出  相当于return 
 // 参数：
 //   retval  表示线程退出状态 通常传NULL
 ```
