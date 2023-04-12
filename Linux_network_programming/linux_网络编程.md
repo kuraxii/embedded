@@ -209,20 +209,12 @@ int main(int argc,char *argv[])
   struct sockaddr_in ser_addr;
 
   cli_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if(cli_fd == -1){
-    sys_err("socket err");
-  }
   ser_addr.sin_family = AF_INET;
   ser_addr.sin_port = htons(12500);
   ser_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
   ret = connect(cli_fd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
-  if(ret == -1){
-    sys_err("conect err");
-  }
   while(1){
     char buf[1024];
-    
     scanf("%s", buf);
     write(cli_fd, buf, sizeof(buf));
   }
@@ -243,9 +235,6 @@ int main(int argc,char *argv[])
   struct sockaddr_in ser_addr, c_addr;
 
   lfd = socket(AF_INET, SOCK_STREAM, 0);
-  if(lfd == -1){
-    sys_err("socket err");
-  }
 
   ser_addr.sin_family = AF_INET;
   ser_addr.sin_port = htons(12500);
@@ -256,15 +245,9 @@ int main(int argc,char *argv[])
   }
 
   ret = listen(lfd, 255); 
-  if(ret == -1){
-    sys_err("listen err");
-  }
 
   socklen_t cli_addr_len = sizeof(c_addr);
   ser_fd = accept(lfd, (struct sockaddr*)&c_addr, &cli_addr_len);
-  if(ser_fd == -1){
-    sys_err("accept err");
-  }
 
   printf("client connect success: ip = %s port = %d\n",inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
 
@@ -391,23 +374,16 @@ int main(int argc,char *argv[])
   int lfd, cfd;
   signal(SIGCHLD, _waitpid);   //使用信号捕捉，及时处理僵尸进程
   lfd = socket(AF_INET, SOCK_STREAM, 0);
-  if(lfd == -1){
-    sys_err("socket err");
-  }
+
   struct sockaddr_in ser_addr;
   ser_addr.sin_family = AF_INET;
   ser_addr.sin_port = htons(12500);
   ser_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
   
   ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
-  if(ret == -1){
-    sys_err("bind err");
-  }
 
   ret = listen(lfd, 255);
-  if(ret == -1){
-    sys_err("listen err");
-  }
+
   struct sockaddr_in c_addr;
   socklen_t c_addr_len = sizeof(c_addr);
   while (1)
@@ -477,9 +453,6 @@ int main(int argc,char *argv[])
   int lfd, cfd;
   pthread_t tid;
   lfd = socket(AF_INET, SOCK_STREAM, 0);
-  if(lfd == -1){
-    sys_err("socket err");
-  }
 
   struct sockaddr_in ser_addr;
   ser_addr.sin_family = AF_INET;
@@ -487,14 +460,8 @@ int main(int argc,char *argv[])
   ser_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
   ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
-  if(ret == -1){
-    sys_err("bind err");
-  }
 
   ret = listen(lfd, 255);
-  if(ret == -1){
-    sys_err("listen err");
-  }
 
   struct sockaddr_in cli_addr;
   socklen_t cli_addr_len = sizeof(cli_addr);
@@ -558,9 +525,7 @@ int main(int argc,char *argv[])
   char buf[1024];
 
   lfd = socket(AF_INET, SOCK_STREAM, 0);
-  if(lfd == -1){
-    sys_err("socket err");
-  }
+
   int opt = 1;
   ret = setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   struct sockaddr_in ser_addr;
@@ -579,25 +544,13 @@ int main(int argc,char *argv[])
   while(1){
     r_set = all_set;
 
-    // printf("before select\n");
-    // for(int i = lfd + 1; i <= maxfd; i++){
-    //   printf("%d -> %d\n",i, FD_ISSET(i, &r_set));
-    // }
-
-    nread = select(maxfd + 1, &r_set, NULL, NULL, NULL);
-    // printf("after select\n");
-    if(nread < 0){    //判断select监听是否出错
-        sys_err("select err");
-      } 
-    
+    nread = select(maxfd + 1, &r_set, NULL, NULL, NULL); 
       
     if(FD_ISSET(lfd, &r_set)){    //判断listen套接字是否满足监听条件
       struct sockaddr_in client_fd;
       socklen_t client_fd_len = sizeof(client_fd);
       cfd = accept(lfd, (struct sockaddr*)&client_fd, &client_fd_len);
-      if(cfd == -1){
-        sys_err("accept err");
-      }
+   
       printf("client connect success: ip = %s, port = %d\n", inet_ntoa(client_fd.sin_addr), ntohs(client_fd.sin_port));
       FD_SET(cfd, &all_set);
       if(cfd > maxfd){
@@ -646,9 +599,7 @@ int main(int argc,char *argv[])
   char buf[BUFSIZ], str[INET_ADDRSTRLEN];
 
   lfd = socket(AF_INET, SOCK_STREAM, 0);
-  if(lfd == -1){
-    sys_err("socket err");
-  }
+
   int opt = 1;
   ret = setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   struct sockaddr_in ser_addr;
@@ -795,9 +746,7 @@ int main(int argc,char *argv[])
   }
 
   lfd = socket(AF_INET, SOCK_STREAM, 0);
-  if(lfd == -1){
-    sys_err("socket err");
-  }
+
   int opt = 1;
   setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
@@ -806,10 +755,6 @@ int main(int argc,char *argv[])
   ser_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
-  if(ret == -1)
-  {
-   sys_err("bind err"); 
-  }
 
   listen(lfd, 255);
 
@@ -823,13 +768,6 @@ int main(int argc,char *argv[])
   
   while(1){
 
-    // printf("before poll----\n");
-    // for(i = 0; i <= maxfd; i++){
-    //     if(fds[i].fd != -1){
-    //       printf("i = %d,fd = %d,return = %d\n", i, fds[i].fd, fds[i].revents&POLLIN);
-    //     }
-
-    //   }
     nread = poll(fds, lastfd + 1, -1);
     // printf("after poll----\n");
     if(nread < 0){
@@ -837,12 +775,8 @@ int main(int argc,char *argv[])
     }
 
     if(fds[0].revents & POLLIN){   // 建立通信
-    //  printf("before accept----\n");
       client_fd = accept(lfd, (struct sockaddr*)&client_addr, &client_addr_len);
-    //  printf("after accept----\n");
-      if(client_fd == -1){
-        sys_err("accept err");
-      }
+   
       printf("client connect success: ip = %s, port = %d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
       for(i = 1; i < FD_SETSIZE; i++){   //添加监 文件描述符
         if(fds[i].fd == -1){
@@ -1008,9 +942,6 @@ int main(int argc,char *argv[])
   
   char buf[1024];
   lfd = socket(AF_INET, SOCK_STREAM, 0);
-  if(lfd == -1){
-    sys_err("socket err");
-  } 
 
   struct sockaddr_in ser_addr;
   ser_addr.sin_family = AF_INET;
@@ -1020,25 +951,19 @@ int main(int argc,char *argv[])
   int opt = 1;
   setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));  // reuse address
   ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
-  if(ret == -1){
-    sys_err("bind err");
-  }
+
 
   ret = listen(lfd, 255);
 
   int epfd = epoll_create(1024);
-  if(epfd == -1){
-    sys_err("epoll_create err");
-  }
+
   struct epoll_event tep,ep_arr[1024];
   memset(ep_arr, 0, sizeof(ep_arr));
   tep.events = EPOLLIN;
   tep.data.fd = lfd;
   
   ret = epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &tep);
-  if(ret == -1){
-    sys_err("epoll_ctl err");
-  }
+
 
   while(1){
     epoll_wait(epfd, ep_arr, 1024, -1);
@@ -1048,26 +973,20 @@ int main(int argc,char *argv[])
           struct sockaddr_in cli_addr; 
           socklen_t cli_len = sizeof(cli_addr);
           int cfd = accept(lfd, (struct sockaddr*)&cli_addr, &cli_len);
-          if(cfd == -1){
-            sys_err("accept err");
-          }
+     
           printf("client connect succsee  ip: %s, port: %d\n", inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port));
           tep.events = EPOLLIN;
           tep.data.fd = cfd;
           ret = epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &tep);
           
-          if(ret == -1){
-            sys_err("epoll_ctl err");
-          }
+   
         }else{        // client send data
           int len = read(ep_arr[i].data.fd, buf, sizeof(buf));
           if(len == -1){
             sys_err("read err");
           }else if(len == 0){ // client close
             ret = epoll_ctl(epfd, EPOLL_CTL_DEL, ep_arr[i].data.fd, NULL);
-            if(ret == -1){
-              sys_err("epoll_ctl err");
-            }
+   
             close(ep_arr[i].data.fd);
             printf("client close\n");
           }else{ // read data
