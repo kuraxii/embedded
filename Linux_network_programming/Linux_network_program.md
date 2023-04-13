@@ -1015,6 +1015,43 @@ ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应�
 
 #### 线程池
 
+##### 线程池模块分析
+
+![线程池思路分析](Linux_network_program.assets/pthreadpool.png)
+
+1. main
+    创建线程池   pthreadpool_create
+    向线程池添加任务，借助回调处理任务
+    销毁线程池
+2. pthreadpool_create
+    创建线程池结构体 指针
+    初始化线程池结构体
+    创建N个任务线程    threadpool_thread
+    创建1个管理者线程
+    失败时销毁开辟的所有的空间  pthreadpool_free
+3. threadpool_thread
+    进入子线程回调函数
+    接收函数 void *arg --> pool结构体
+    加锁 --> look --> 整个结构体的锁
+    判断条件变量   wait
+4. adjust_thread   管理者线程
+    进入管理者线程回调函数
+    接收函数 void *arg --> pool结构体
+    加锁 --> look --> 整个结构体的锁
+    获取管理者要用到的变量  live_num  busy_num   task_num
+    根据既定算法，使用上述3变量，判断是否应该创建、销毁线程池中指定步长的线程。
+5. threadpool_add
+    模拟产生任务
+    设置回调函数处理任务  sleep(1)   代表处理完成
+
+    内部实现
+        加锁
+        将任务添加到任务队列   回调函数的体 funtion 以及参数 arg
+        利用环形队列机制 实现添加任务  借助队尾指针挪移 实现
+        唤醒阻塞在 条件变量上的线程
+        解锁
+6. threadpool_thread
+
 ##### 线程池数据结构
 
 ```c
@@ -1041,6 +1078,12 @@ struct threadpool_t {
 
     int shutdown;                       /* 标志位，线程池使用状态，true或false */
 };
+
+
+typedef struct {     // 任务结构体
+    void *(*function)(void *);          /* 函数指针，回调函数 */
+    void *arg;                          /* 上面函数的参数 */
+} threadpool_task_t; 
 ```
 
 ##### 线程池操作
