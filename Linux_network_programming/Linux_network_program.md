@@ -888,7 +888,7 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 // 参数：
 //   epfd  epoll文件描述符
 //   events  传出参数 【数组】用于从内核得到事件的集合
-//   maxevents  一次能处理的事件数 数组元素的个数
+//   maxevents  一次能处理的事件数 数组的大小
 //   timeout  超时时间
 //     -1  阻塞等待
 //     0   非阻塞
