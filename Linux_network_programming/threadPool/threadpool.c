@@ -99,7 +99,7 @@ threadpool_t *threadpool_create(int min_thr_num, int max_thr_num, int queue_max_
             break;
         }
 
-        /* 初始化互斥琐、条件变量 */
+        /* 初始化互斥琐、条件变量 */1
         if (pthread_mutex_init(&(pool->lock), NULL) != 0
                 || pthread_mutex_init(&(pool->thread_counter), NULL) != 0
                 || pthread_cond_init(&(pool->queue_not_empty), NULL) != 0
@@ -229,7 +229,7 @@ void *threadpool_thread(void *threadpool)
 }
 
 /* 管理线程 */
-void *adjust_thread(void *threadpool)
+void *adjust_thread(void *threadpool)   // 创建销毁线程
 {
     int i;
     threadpool_t *pool = (threadpool_t *)threadpool;
@@ -297,7 +297,7 @@ int threadpool_destroy(threadpool_t *pool)
         /*通知所有的空闲线程*/
         pthread_cond_broadcast(&(pool->queue_not_empty));
     }
-    for (i = 0; i < pool->live_thr_num; i++) {
+    for (i = 0; i < pool->live_thr_num; i++) {    // 回收忙线程
         pthread_join(pool->threads[i], NULL);
     }
     threadpool_free(pool);
