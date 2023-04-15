@@ -69,7 +69,7 @@ while(1)
     if(i == 0x00)
         i = 0x01;  
 }
-
+    
 // 2
 unsigned char i = 0xFE;   //1111 1110
 while(1)

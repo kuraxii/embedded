@@ -1144,3 +1144,102 @@ int threadpool_busy_threadnum(threadpool_t *pool);
  */
 
 ```
+
+#### UDP 服务器
+
+#### UDP通信过程
+
+server端
+
+##### TCP和UDP通信优缺点
+
+TCP： 面向连接，可靠数据包传输 对于不稳定的网络层，采用完全弥补的通信方式 丢包重传
+
+* 优点：稳定，数据传输速度稳定， 数据传输顺序稳定 
+* 缺点： 传输速度慢 传输效率低 开销大
+* 适应场景： 数据的完整性较高  不追求效率
+  * 大数据传输， 文件传输
+
+UDP： 无连接的，不可靠的数据包传输   对于不稳定的网络层，采用完全不弥补的通信方式  默认还原网络状况
+
+* 优点： 传输速度快 传输效率高 开销小
+
+* 缺点：  不稳定 数据传输速度稳定， 数据传输顺序稳定 
+
+    * 应用场景： 对时效性要求高，稳定性其次   （游戏，视频会议，视频电话）
+
+#### UDP实现的C/S模型
+
+recv()/send()  只能用于TCP通信，代替  read write 
+accept connect  被舍弃
+ 
+```c
+server：
+  lfd =   socket(AF_INET, SOCK_DGRAM);     //报式协议
+  bind
+  listen
+  while(1)
+    read()  // --->  用 recvfrom()  替换 
+
+    write()  // ---> 用 sendto() 替换
+
+client：
+  connfd = socket(AF_INET, SOCK_DGRAM);
+
+  while(1)
+  sendto()
+  recvfrom()
+  close()
+
+
+```
+
+##### TCP UDP 额外的 I/O 函数
+```c
+#include <sys/socket>
+ssize_t recv(int sockfd, void *buf, size_t len, int flags);
+参数：
+    sockfd: 
+    buf
+    len
+    flags
+
+返回值：
+
+ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);  // 接收对端的消息
+参数： 
+    sockfd     监听lfd
+    buf        数据缓冲区
+    len        缓冲区大小
+    flags      一般传0
+    src_addr   传出参数 发送端地址结构
+    addrlen    传入传出  
+
+返回值：
+    成功： 接收数据的字节数
+    失败： -1 errno
+    0 对端关闭
+
+ssize_t send(int sockfd, const void *buf, size_t len, int flags);
+参数：
+
+返回值：
+
+
+ssize_t sendto(int sockfd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen);  // 发送数据给对端
+参数：
+    sockfd     发送端 套接字
+    buf        数据缓冲区
+    len        数据大小
+    flags      一般传0
+    src_addr   传入参数 接收端地址结构
+    addrlen    传入传出  
+
+返回值：
+    成功： 写出数据字节数
+    失败： -1 errno
+
+```
+
+
+
