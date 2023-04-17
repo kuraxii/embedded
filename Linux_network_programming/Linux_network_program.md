@@ -1330,3 +1330,34 @@ struct sockaddr_un {
 
 
 
+
+
+
+### libevent库
+
+开源， 精简， 跨平台(linux maxos windows unix)，专注于网络通信
+
+#### 源码安装
+
+```shell
+./configure  #检查安装环境  生成makefile
+
+make  #生成.o 和 可执行文件
+
+sudo make install
+
+```
+
+#### 特性
+
+- 基于“事件”异步通信  --- 回调
+
+#### libevent
+
+- 创建 event_base
+
+- 释放 event_base
+
+
+
+
