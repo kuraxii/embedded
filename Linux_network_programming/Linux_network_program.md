@@ -1320,15 +1320,97 @@ IPC：pipe  fifo mmap  信号  本地套接字
 int socket(int domain, int type, int protocol);
 // 参数： domain AF_UNIX
 
-int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen); 
+
 // 地址结构： sockaddr_in --> sockaddr_un
 struct sockaddr_un {
         sa_family_t sun_family;               /* AF_UNIX */
         char        sun_path[108];            /* Pathname */
     };
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen); 
+
+
+//bind()函数创建成功，会创建一个socket。因此为保证bind成功，通常我们在bind前，可以使用 unlink("srv.sock")
+
+//客户端不能依赖"隐式绑定"。并且应该在通信建立过程中，创建且初始化2个地址结构
+//  1. client_addr --> bind()
+//  2. server_addr --> connect()
 ```
 
+example
+```c
+//server
+#define SERV_ADDR "serv.socket"
+int main(int argc,char *argv[])
+{
+    int ret, lfd, cfd;
+    char buf[BUFSIZ];
+    memset(buf, '\0', sizeof(buf));
+    lfd = socket(AF_UNIX, SOCK_STREAM, 0);
 
+    struct sockaddr_un ser_addr, cli_addr;
+    socklen_t cli_addr_len = sizeof(cli_addr);
+    memset(&ser_addr, 0, sizeof(ser_addr));
+    memset(&cli_addr, 0, sizeof(cli_addr));
+    ser_addr.sun_family = AF_UNIX;
+    strcpy(ser_addr.sun_path, SERV_ADDR);
+    int len = offsetof(struct sockaddr_un, sun_path) + strlen(ser_addr.sun_path);
+    unlink(SERV_ADDR);
+    bind(lfd, (struct sockaddr*)&ser_addr, len);
+
+    listen(lfd, 255);
+
+    cfd = accept(lfd, (struct sockaddr*)&cli_addr, (socklen_t*)&len);
+    len -= offsetof(struct sockaddr_un, sun_path);
+    cli_addr.sun_path[len] = '\0'; 
+    printf("client connect success path = %s\n", cli_addr.sun_path);
+    int size, i;
+    while((size = read(cfd, buf, sizeof(buf))) > 0 ){
+        for(i = 0; i < size; i ++){
+            buf[i] = toupper(buf[i]);
+        }
+        write(cfd, buf, size);
+    }
+    close(cfd);
+    close(lfd);
+    return 0;
+}
+```
+
+```c
+// client
+#define SERV_ADDR "serv.socket"
+#define CLI_ADDR "cli.sock"
+int main(int argc,char *argv[])
+{
+    int cfd, ser_fd;
+    char buf[BUFSIZ];
+    memset(buf, '\0', sizeof(buf));
+    cfd = socket(AF_UNIX, SOCK_STREAM, 0);
+    struct sockaddr_un ser_addr, cli_addr;
+    memset(&ser_addr, 0, sizeof(ser_addr));
+    memset(&cli_addr, 0, sizeof(cli_addr));
+    cli_addr.sun_family = AF_UNIX;
+    strcpy(cli_addr.sun_path, CLI_ADDR);
+    int len = offsetof(struct sockaddr_un, sun_path) + strlen(cli_addr.sun_path);
+    unlink(CLI_ADDR);
+    bind(cfd, (struct sockaddr*)&cli_addr, len);
+    ser_addr.sun_family = AF_UNIX;
+    strcpy(ser_addr.sun_path, SERV_ADDR);
+    len = offsetof(struct sockaddr_un, sun_path) + strlen(ser_addr.sun_path);
+    connect(cfd, (struct sockaddr*)&ser_addr, len);
+    printf("client connect success\n");
+    while (1)
+    {
+        scanf("%s", buf);
+        write(cfd, buf, strlen(buf));
+        len = read(cfd, buf, sizeof(buf));
+        write(STDOUT_FILENO, buf, len);
+    }
+    close(cfd);
+    close(ser_fd);
+    return 0;
+}
+```
 
 
 
