@@ -4,10 +4,9 @@ obj = $(patsubst %.c,%.out,$(src))
 ALL:$(obj)
 
 $(obj):%.out:%.c
-	gcc $< -o $@
-
-
+	gcc $< -o $(HOME)/desktop/embedded/bin/$@
 
 
 clean:
 	-rm -rf $(obj) 
+

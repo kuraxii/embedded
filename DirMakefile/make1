@@ -10,3 +10,4 @@ $(obj):%.out:%.c
 clean:
 	-rm -rf $(obj) 
 
+	
