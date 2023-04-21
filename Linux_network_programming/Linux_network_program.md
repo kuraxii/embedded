@@ -1432,13 +1432,15 @@ sudo make install
 
 #### 特性
 
-- 基于“事件”异步通信  --- 回调
+- 基于“事件”异步通信模型  --- 主要依赖回调
 
 #### libevent
 
 - 创建 event_base
 
 - 释放 event_base
+
+
 
 
 
