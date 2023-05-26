@@ -21,6 +21,7 @@ int main(int argc,char *argv[])
     }
     char buf[1024] = {0};
     int n;
+  
 
     while((n = read(fd1,buf,sizeof(buf))) != 0)
     {
@@ -40,3 +41,4 @@ int main(int argc,char *argv[])
 
     return 0;
 }
+
