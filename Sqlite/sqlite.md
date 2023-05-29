@@ -17,7 +17,7 @@
 
 一般数据采用固定的静态数据类型，而SQLite采用的是鼎泰数据类型，会根据存入值自定判断
 - SQLite具有以下5中基本数据类型
-    
+  
     1. integer： 带符号的整型（最多64位）
     2. real： 8字节表示的浮点型
     3. text： 字符类型，支持多种编码（如UTF-8，UTF-16），无大小限制
@@ -96,15 +96,54 @@ drop table <表名>;
 drop table nstu;
 ```
 
-> 插入新行 insert into语句（全部赋值）
+> 插入新行 insert into语句
 
 给一行中所有列赋值
 ```sql
 # 插入新行 当列值为字符串时，要加上单引号 ''
-insert into <表名> values (<列值1>,<列值2>,<列值3>,<列值4>,...)
+insert into <表名> values (<列值1>,<列值2>,<列值3>,<列值4>,...);
 # example 
 insert into tbl values(100,'朱芷杰' ,'ahhs');
 ```
+给一行中指定列赋值
+```sql
+# 插入新行 当列值为字符串时，要加上单引号 ''
+insert into <tablename>(<字段1>,<字段2>...) values (<列值1>,<列值2>,...);
+# example 
+INSERT INTO stu(id, name ,grade) values (1, 'zzj', 99);
+```
+
+> 修改行数据 update语句
+修改行信息
+```sql
+# 修该满足条件行的字段的值
+update <tablename> set <字段>=<值> where <条件>; 
+# example  修改满足id=2的行中addr字段的值
+update nstu set addr='cdu' where id=2;
+```
 
 
+> 查询 select语句
+用于从表中选取数据，结果被存储在一个结果表中（称为结果集）
+```sql
+select * from <tablename> <匹配条件>
+select <字段1>,<字段2>,<字段3>... from <tablename> <匹配条件> 
+
+```
+
+where子句用于规定匹配的条件
+
+ 
+
+|   运算符    | 描述                                                       |
+| :---------: | ---------------------------------------------------------- |
+|      =      | 等于                                                       |
+|     <>      | 不等于。**注释：**在 SQL 的一些版本中，该操作符可被写成 != |
+|      >      | 大于                                                       |
+|      <      | 小于                                                       |
+|     >=      | 大于等于                                                   |
+|     <=      | 小于等于                                                   |
+| between and | 在某个范围内                                               |
+|    LIKE     | 模糊查找                                                   |
+|     IN      | 指定针对某个列的多个可能值                                 |
 
