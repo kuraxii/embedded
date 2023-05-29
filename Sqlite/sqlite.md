@@ -1,3 +1,4 @@
+[toc]
 # Sqlile
 
 ## 介绍 
@@ -24,22 +25,22 @@
     4. blob：任意类型的数据，无大小限制。BLOB（binary large object）二进制对象，使用二进制保存数据
     5. null 表示空
 
-## 使用
+### Sql语句
 
->创建打开sqlite数据库
+>### 创建打开sqlite数据库
 
 ```shell
 sqlite *.db 
 # 当*.db不存在时，则创建并打开数据库文件
 # 当*.db存在时，则打开数据库文件 
 ```
->退出数据库
+>### 退出数据库
 
 ```shell
 .quit 或 .exit
 ```
 
->sql的语句格式
+>### sql的语句格式
 ```
 所有的SQL语句都是以分号结尾的，SQL语句不区分大小写。两个减号“--”代表注释
 关系型数据库的核心操作
@@ -48,7 +49,7 @@ sqlite *.db
     3. 查表
 ```
 
->创建表: create语句
+>### 创建表: create语句
 ```sql
 create table <tablename>(<字段> <类型>,<字段> <类型>...);
 #example： 
@@ -61,7 +62,7 @@ create table tab(id integer,name text);
 ```
 ![查看表](./Sqlite.assets/sqlitelooktab.png)
 
-> 设置主键
+>### 设置主键
 
 在用sqlite设计表时，每个表都可以通过primary key手动设置主键，每个表只能有一个主键，设置为主键的列数据不能重复。
 ```sql
@@ -70,7 +71,7 @@ create table <tablename>(<字段> <类型> primary key,<字段> <类型>...);
 create table tab(id integer primary key,name text);
 ```
 
-> 修改表：alter 语句
+>### 修改表：alter 语句
 
 在已有的表中添加或删除字段以及修改表名，无法修改字段属性
 ```sql
@@ -86,7 +87,7 @@ alter table <tablename> add <字段> <属性>;
 alter table stu add grade integer;
 ```
 
->删除表 drop语句
+>### 删除表 drop语句
 
 用于删除表（表的结构，属性，以及表的索引也会被删除）
 ```sql
@@ -96,7 +97,7 @@ drop table <表名>;
 drop table nstu;
 ```
 
-> 插入新行 insert into语句
+>### 插入新行 insert into语句
 
 给一行中所有列赋值
 ```sql
@@ -113,7 +114,8 @@ insert into <tablename>(<字段1>,<字段2>...) values (<列值1>,<列值2>,...)
 INSERT INTO stu(id, name ,grade) values (1, 'zzj', 99);
 ```
 
-> 修改行数据 update语句
+>### 修改行数据 update语句
+
 修改行信息
 ```sql
 # 修该满足条件行的字段的值
@@ -122,8 +124,18 @@ update <tablename> set <字段>=<值> where <条件>;
 update nstu set addr='cdu' where id=2;
 ```
 
+>### 删除行 delete语句
 
-> 查询 select语句
+适应where根据匹配条件，查找一行或多行，根据查找的结果删除表中查找到的行
+```sql
+-- 删除满足条件行的字段的值
+delete from <tablename> where <匹配条件>；
+# example  删除满足pass='123'的行
+delete from newusr where pass='123';
+```
+
+
+>### 查询 select语句
 用于从表中选取数据，结果被存储在一个结果表中（称为结果集）
 ```sql
 select * from <tablename> <匹配条件>
@@ -147,3 +159,28 @@ where子句用于规定匹配的条件
 |    LIKE     | 模糊查找                                                   |
 |     IN      | 指定针对某个列的多个可能值                                 |
 
+>### 复制表以及修改表结构
+
+复制表
+```sql
+-- 复制整张表
+create table <newtable> as select * from <oldtable> 
+-- 复制表的部分内容
+create table <newtable> as select * from <oldtable> where <匹配条件>
+
+```
+
+修改表的结构
+```sql
+-- 第一步 创建新表
+create table <newtable>(<字段> <类型>,<字段> <类型>...);
+-- 第二步 导入数据
+insert into <newtable>(<字段1>,<字段2>,<字段3>...) select <字段1>,<字段2>,<字段3> from <oldtable>;
+-- 第三步 删除旧表
+drop table <oldtable>;
+-- 第四步 修改表名  将新创建的表名修改为旧的表名
+alter table <newtable> rename to <oldtable>;
+```
+
+
+>## 事务
