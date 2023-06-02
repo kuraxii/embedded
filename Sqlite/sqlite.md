@@ -184,3 +184,26 @@ alter table <newtable> rename to <oldtable>;
 
 
 >## 事务
+
+事务(Transaction)可以使用BEGINTRANSACTION命令或简单的BEGIN命令来启动。此类事务通常会持续执行下去，直到遇到下一个COMMIT或ROLLBACK命令。不过在数据库关闭或发生错误时，事务处理也会回滚。
+
+SQLite中，默认情况下，每条sql语句自成事务
+- begin  开始一个事务，之后所有的操作都可以取消
+- commit 使begin后的所有命令的到确认
+- rollback 取消begin后的所有命令。被commit后的命令除外
+
+>## 函数
+
+
+
+>## C编程
+
+> 打开关闭数据库
+```c
+int sqlite3_open(char *db_name, sqlite3 **db);
+
+
+int sqlite3_close(sqlite3 *db);
+```
+
+> 执行sql语句
