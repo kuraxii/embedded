@@ -161,11 +161,18 @@ mov 段寄存器,寄存器     mov ds,ax
 
 
 
-add 加指令
-
-
+add 加指令  双操作数
 sub 减指令
+
 jmp 跳转指令 用于修改cs ip寄存器的值
+
+inc 加1 
+```
+inc bx 的含义是将bx中的内容加1
+mov bx,1
+inc bx
+执行后bx = 2
+```
 
 
 push pop指令
@@ -280,6 +287,54 @@ link <文件名>;
 debug <文件名全称>;
 ```
 
+## 第5章\[BX\]和loop指令
+
+### 5.1 \[BX\]
+
+`mov ax,[bx]`
+
+功能：bx 中存放的数据作为一个偏移地址 EA，段地址SA 默认在ds 中，将SA:EA处的数据送入ax中。即：(ax)=((d5)*16+(bx)。
+
+`mov [bx],ax`
+
+功能：bx 中存放的数据作为一个偏移地址 EA，段地址SA 默认在ds中，将ax 中的数据送入内存 SA:EA 处。即：(ds)*16+(bx))=(ax)。
+
+### 5.2 Loop指令
+
+loop 指令的格式是：loop 标号，CPU 执行 loop 指令的时候，要进行两步操作：
+1. (cx)=(cx)-1
+2. 判断 cx 中的值，不为零则转至标号处执行程序，如果为零则向下执行。
+
+
+### [BX]与loop的联合应用
+
+```asm
+; 计算ffff:0~ffff:b单元中的数据和，结果存储在dx中
+assume cs:code
+
+code segment
+    mov ds,0ffffH
+    mov cx,12
+    mov bx,0
+    mov dx,0
+s: mov al,[bx]
+    mov ah,0
+    add dx,ax
+    
+    loop s
+
+    mov ax,4c00H
+    int 21
+code ends
+end
+
+; 分析
+; 首先考虑dx是否会发生溢出，因为8位数据最大为255，12个255相加，结果远小于16位存储空间的65535.
+; 对于8位的字节型数据，无法直接与16位的dx相加，所以要对8位数据进行处理
+; 这里使用了ax这样的一个中间寄存器，将数据段中的8位数据拓展位16位
+; al存放低8位的数据，ah存放0000
+; 最后让dx与ax进行累加
+```
 
 
 
