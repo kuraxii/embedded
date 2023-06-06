@@ -302,13 +302,15 @@ debug <文件名全称>;
 ### 5.2 Loop指令
 
 loop 指令的格式是：loop 标号，CPU 执行 loop 指令的时候，要进行两步操作：
-1. (cx)=(cx)-1
+1. (cx)=(cx)-1x 
 2. 判断 cx 中的值，不为零则转至标号处执行程序，如果为零则向下执行。
+
+要执行n次，cx应设为n
 
 
 ### [BX]与loop的联合应用
 
-```asm
+```x86asm
 ; 计算ffff:0~ffff:b单元中的数据和，结果存储在dx中
 assume cs:code
 
@@ -337,6 +339,72 @@ end
 ```
 
 ## 第6章 包含多个段的程序
+
+```x86asm
+assume cs:code,ds:data,ss:stack
+
+data segment
+    dw 0123H,0456H,0789H,0abcH,0defH,0fedH,0cbaH,0987H
+data ends
+ 
+stack segment
+    dw 0,0,0,0,0,0,0,0,0,0,0,0,0
+stack ends
+
+code segment
+start:
+
+    mov ax,stack
+    mov ss,ax  
+    mov sp,20H ; 设置栈顶 stack:20
+    
+    mov ax,data
+    mov ds,ax  ; 设置数据段
+    mov bx,0   ; ds:bx 指向data段的第一个单元
+
+    mov cx,8
+
+s:  push [bx]
+    add bx,2
+    loop s
+
+    mov bx,0
+    mov cx,8
+
+s0: pop [bx]
+    add bx,2
+    loop s0
+
+    mov ax,4c00H
+    int 21h
+
+code ends
+end start
+
+
+```
+下面对以上程序作出说明
+1. 定义多个段的方法
+
+    这点，我们从程序中可明显地看出，定义一个段的方法和前面所讲的定义代码段的方法没有区别，只是对于不同的段，要有不同的段名。
+2. 对段地址的引用
+
+    现在，程序中有多个段了，如何访问段中的数据呢？当然要通过地址，而地址是分为两部分的，即段地址和偏移地址。如何指明要访问的数据的段地址呢？在程序中，段名就相当于一个标号，它代表了段地址。所以指令`mov ax,data`的含义就是将名称为`data`的段的段地址送入`ax`。一个段中的数据的段地址可由段名代表，偏移地址就要看它在段中的位置了。程序中`data`段中的数据 `0abch` 的地址就是：`data:6`。要将它送入`bx`中，就要用如下的代码：
+    ```x86asm
+    mov ax, data 
+    mov ds, ax
+     mov bx,ds:[6]
+    ```
+    我们不能用下面的指令：
+    ```x86asm
+    mov ds, data 
+    mov bx,ds:[6]
+    ```
+    其中指令`mov ds,data` 是错误的，因为 `8086CPU`. 不允许将一个数值直接送入段寄存器中。程序中对段名的引用，如指令`mov ds,data` 中的`data`，将被编译器处理为一个表示段地址的数值。
+3. `代码段`、`数据段`、`栈段`完全是我们的安排
+
+    现在，我们以一个具体的程序来再次讨论一下所谓的`代码段`、`数据段`、`栈段`。在汇编源程序中，可以定义许多的段，比如在程序中，定义了了个段，`code`、`data`和`stack`。我们可以分别安排它们存放代码、数据和栈。
+
 
 
 
