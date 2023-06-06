@@ -845,7 +845,6 @@ anybody          indef pron  any person
 anyhow           indef adv  carelessly; unsystematically
 anyone           indef pron = anybody
 anything         indef pron  any thing
-anything more than not merely
 anyway           indef adv = anyhow 2
 anywhere         indef adv  in, at or to any place
 aorta            n. main artery through which blood is carried from the left side of the heart
@@ -1208,7 +1207,7 @@ asymmetrical     not of equal size or similar shape:
 asymptomatic     adj. (of a disease or suspected disease) without symptoms; providing no subjective evidence of existence
 asynchronous     [ asynchronism: ] a lack of synchronism; occurrence at different times
 at               prep  (indicating a point in space )
-at a moment¡äs notice 
+at a momentï¿½ï¿½s notice 
 atavism          n. reappearance in a person of a characteristic or quality that has not been seen in his family for many generations
 atavistic        adj. an atavistic urge
 ate              pt of eat
@@ -2326,7 +2325,7 @@ calibre          n.  diameter of the inside of a tube or gun-barrel
 caliper          = calliper
 calipers         metal supports attached to the legs/measuring instrument
 call             n.  shout; cry
-call ¡­into question 
+call ï¿½ï¿½into question 
 caller           n. person who makes a brief visit or a telephone call
 calligrapher     one who writes a beautiful
 calligraphy      n. beautiful handwriting
@@ -19368,7 +19367,7 @@ whelp            n.  young animal of the dog family; puppy or cub ;
 when             interrog adv at what time; on what occasion
 whenever         conj  at any time, regardless of when
 where            interrog adv in or to what place or position
-where¡­are concerned 
+whereï¿½ï¿½are concerned 
 whereabouts      interrog adv in or near what place; where
 whereas          conj  taking into consideration the fact that ...
 whereby          rel adv  by which
