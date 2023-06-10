@@ -51,7 +51,7 @@ jmp ax  执行后：IP=3H  CPU将从3H开始执行
 
 一个字既可以看成一个1byte数据类型，也可以看成2个8bit数据类型
 
-SI DI SP BP IP PSW 
+S BP  PSW 
 
 > #### 8086cpu给出地址的方法
 
@@ -100,6 +100,10 @@ mov al,[0]
 8086CPU 中，有两个奇存器，段寄存器 sS 和寄存器 SP，栈顶的段地址存放在SS 中，偏移地址存放在SP 中。**任意时刻，SS:SP 指向栈顶元素**。push 指令和 pop 指
 令执行时，CPU 从SS 和SP 中得到栈顶的地址
 
+### DI DI寄存器
+
+SI 和 DI寄存器是8086寄存器中和bx功能相似的寄存器，但SI、DI寄存器无法分成两个8位寄存器来使用
+
 
 
 
@@ -147,8 +151,7 @@ A命令 以汇编的形式在内存中写入指令
 
 ## 汇编指令
 
-mov  mov指令被称为传送指令
-
+> mov  mov指令被称为传送指令
 
 mov指令可以有一下几种形式
 ```asm
@@ -161,12 +164,12 @@ mov 段寄存器,寄存器     mov ds,ax
 
 
 
-add 加指令  双操作数
-sub 减指令
+> add 加指令  双操作数
+> sub 减指令
 
-jmp 跳转指令 用于修改cs ip寄存器的值
+> jmp 跳转指令 用于修改cs ip寄存器的值
 
-inc 加1 
+> inc 加1 
 ```asm
 inc bx 的含义是将bx中的内容加1
 mov bx,1
@@ -174,7 +177,7 @@ inc bx
 执行后bx = 2
 ```
 
-push pop指令
+> push pop指令
 ![push pop指令](./Assembly_language.assets/DF97CB08B788F1395D36066FF86C2C07.png)
 ![push pop指令](./Assembly_language.assets/E35DFF53DE488C798B346DA5ECDA3114.png)
 
@@ -184,6 +187,16 @@ push pop指令
 - 8086CPU 只记录栈顶，栈空间的大小我们要自己管理。
 - 用栈来暂存以后需要恢复的寄存器的内容时，寄存器出栈的顺序要和入栈的顺序相反。
 - push、pop 实质上是一种内存传送指令，注意它们的灵活应用。
+
+> and和or指令  按位与 按位或 双操作数
+
+```asm
+mov al,00100011b
+and al,01100011B
+; 按位与操作后 al中的值为 000100011b
+```
+
+
 
 
 ## 第一个程序
@@ -263,11 +276,11 @@ end 是一个汇编程序的结束标记，编译器在编译汇编程序的过�
 mov ax, 4c00H
 int 21H
 ```
-这两条指令所实现的功能就是程序返回。
+这两条指令所实现的功能就是程序返回给操作系统。
 
 ![和结束相关的概念](./Assembly_language.assets/B7A024802FA6BA49A7FC03A85DCC1E59.png)
 
-#### 编译连接
+### 编译连接
 
 编译使用masm程序。在命令行中输入 
 ```shell
@@ -279,7 +292,7 @@ masm <文件名>;
 link <文件名>;
 ```
 
-#### 跟踪
+### 跟踪
 
 跟踪使用debug程序。在命令行中输入 
 ```shell
@@ -404,6 +417,169 @@ end start
 
     现在，我们以一个具体的程序来再次讨论一下所谓的`代码段`、`数据段`、`栈段`。在汇编源程序中，可以定义许多的段，比如在程序中，定义了了个段，`code`、`data`和`stack`。我们可以分别安排它们存放代码、数据和栈。
 
+## 第7章 更灵活的定位内存地址的方法
+
+>### 以字符形式给出的数据
+
+在汇编语言中，用`'...'`的方式指明的数据是以字符的形式给出的，编译器将把他们转化为`ascii码`
+```asm
+assume cs:code,ds:data
+data segment
+    db 'unIX'
+    db 'foRK'
+data ends
+
+code segment
+
+start:  mov al,'a'
+        mov bl,'b'
+        mov ax,4c00H
+        int 21H
+code ends
+end start
+```
+
+>### [bx + idata]
+
+在前面，我们用`[bx]`的方式来指明一个内存单元，还可以用一种更为灵活的方式来指明内存单元：`[bx + idata]`表示一个内存单元，它的偏移地址为`(bx)+idata`(bx 中的数值加上idata)
+
+我们看一下指令`mov ax,[bx+200]`的含义：
+
+将一个内存单元的内容送入ax，这个内存单元的长度为2个字节(字单元)，存放一个字，偏移地址为bx 中的数值加上 200，段地址在ds中。
+
+数学化的描述为：(ax)=((ds)*16+(bx)+200)
+
+该指令也可以写成如下格式（常用）：
+```asm
+mov ax, [200+bx]
+mov ax, 200 [bx]
+mov ax, [bx].200
+```
+
+
+
+>### SI DI寄存器
+
+SI 和 DI寄存器是8086寄存器中和bx功能相似的寄存器，但SI、DI寄存器无法分成两个8位寄存器来使用
+
+>### [bx+si] 和 [bx+di]
+
+在前面，我们用`[bx(si或di)]`和`[bx(si或di)+idata]`的方式来指明一个内存单元，我们还可以用更为灵活的方式：`[bx+si]`和`[bxtdi]`。
+
+`[bxtsi]`和`[bx+di]`的含义相似，我们以`[bx+si]`为例进行讲解。
+
+`bx+si`表示一个内存单元，它的偏移地址为`(bx)+(si)`（即 bx 中的数值加上 si 中的数值）。
+
+指令 mov ax,[bx+si]的含义如下：
+
+将一个内存单元的内容送入 `ax`，这个内存单元的长度为 2字节(字单元)，存放一个字，偏移地址为 `bx`中的数值加上`si`中的数值，段地址在`ds`中。
+数学化的描述为：(ax)=((ds)*16+(bx)+(si))
+该指令也可以写成如下格式(常用)：
+```asm
+mov ax, [bx][si]
+```
+
+代码示例
+
+```asm
+assume cs:code,ds:data
+data segment 
+    db 'welcome to masm'
+    db '...............'
+data ends
+code segment
+start:  
+        mov ax, data
+        mov ds, ax
+        mov di, 0
+        mov si, 16
+        mov cx, 8
+s:      mov ax, ds:[di]
+        mov ds:[si], ds:[di]
+        add si, 2
+        add di, 2
+        loop s
+        mov ax, 4c00H
+        int 21H
+code ends
+end start
+```
+
+>### [bx+si+idata] 和 [bx+di+idata]
+
+将`si`和`idata`结合起来，可以做到更加灵活的内存取地址方式
+
+代码示例
+
+```asm
+assume cs:code,ds:data
+data segment 
+    db 'welcome to masm'
+    db '...............'
+data ends
+code segment
+start:        
+        mov ax, data
+        mov ds, ax
+        mov di, 0
+        mov cx, 8
+s:      mov ax, ds:[di]
+        mov ds:[di+16], ax
+        add di, 2
+        loop s
+        mov ax, 4c00H
+        int 21H
+code ends
+end start
+```
+
+
+>### 不同寻址方式的灵活应用
+
+1. `[idata]`用一个常量来表示地址，可用于直接定位一个内存单元；
+2. `[bx]`用一个变量来表示内存地址，可用于间接定位一个内存单元；
+3. `[bx+idata]`用一个变量和常量表示地址，可在一个起始地址的基础上用变量间接定位一个内存单元；
+4. `[bx+si]`用两个变量表示地址：
+5. `[bx+si+idata]`用两个变量和一个常量表示地址。
+可以看到，从`[idata]`一直到`[bx+si+idata]`，我们可以用更加灵活的方式来定位一个内存单元的地址。这使我们可以从更加结构化的角度来看待所要处理的数据。
+
+```asm
+; 编程，将 data 段中每个单词的头一个字母改为大写字母。
+assume cs:code, ds:data
+data segment
+    db '1. file      '
+    db '2. edit      '
+    db '3. search    '
+    db '4. view      '
+    db '5. options   '
+    db '6. help      '
+data ends
+code segment
+start:  mov ax, data
+        mov ds, ax
+        mov cx, 6
+        mov si, 13
+        mov di, 3
+    s:  mov al, ds:[bx + di]
+        and al, 11011111b
+        mov ds:[bx + di], al
+        add bx, si
+        loop s
+        mov ax, 4c00h
+        int 21H
+code ends
+end start    
+    
+```
+
+## 第8章 数据处理的两个基本问题
+
+
+
+
+
+
+
 
 
 ## 实验代码
@@ -493,6 +669,103 @@ end start
 
 ### 实验6
 
+(1) 
+```asm
+; 将数据段中的小写字母转成大写字母
+; 重点在于两次循环中cx的处理
+assume cs:code, ds:data
+
+data segment 
+    db '1. display     '
+    db '2. brows       '
+    db '3. replace     '
+    db '4. modify      '
+
+data ends
+
+code segment
+start:  mov ax, data  ; 使ds寄存器指向设定好的数据段
+        mov ds, ax
+
+        mov ax, 4H         
+        mov ds:[40H], ax
+        mov ax, 3H
+        mov ds:[42H], ax   ; 将两层循环的循环次数存入内存中，从而减少寄存器的占用
+
+        mov cx, ds:[40H]   ; 先看下一条，   因为最初cx未初始化，所以模拟一次外层循环结束
+    s1:     
+        mov ds:[40H], cx   ; 在外层每次循环结束，将外层的cx放入内存
+        mov cx, ds:[42H]
+        mov si, 0
+
+    s2: mov al, ds:[bx+si]  ; 将指定数据段中的小写字母转化为大写 
+        and al, 11011111b
+        mov ds:[bx+si], al
+        inc si
+        loop s2
+
+        mov cx, ds:[40H]    ; 将外层循环的cx取出 
+        add bx, 10H         ; 转到下一行数据
+        loop s1
+
+
+    mov ax, 4c00H
+    int 21H
+
+code ends
+end start
+```
+
+(2)
+
+```asm
+; 将数据段中的每行前4个字母转化成大写， 用栈实现cx的存储
+; 对于内部循环的cx可以使用立即数在每次循环前进行初始化，
+; 而内部循环直接push进栈中，就不用记忆数据存储在内存的地址了
+
+; 代码结构以上节代码类似，就不再赘述
+assume cs:code,ds:data,ss:stack
+data segment 
+    db '1. display      '
+    db '2. brows        '
+    db '3. replace      '
+    db '4. modify       '
+data ends
+
+stack segment
+    dw 0,0,0,0,0,0,0,0
+stack ends
+
+code segment
+start:  mov ax, data
+        mov ds, ax
+
+        mov ax, stack
+        mov ss, ax
+        mov sp, 10H
+
+        mov cx, 4
+    
+    s1: push cx
+
+        mov cx, 4
+        mov si, 0
+    s2: mov al, ds:[bx+si+3] 
+        and al, 11011111b
+        mov ds:[bx+si+3], al
+
+        inc si
+        loop s2
+
+        pop cx       
+        add bx, 10H
+        loop s1
+
+    mov ax, 4c00H
+    int 21H
+code ends
+end start
+```
 
 
 

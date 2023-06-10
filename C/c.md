@@ -1,4 +1,4 @@
-# C语言查缺补漏
+# C语言查缺补漏 以《c primer plus》为主
 
 ## 基础
 
@@ -262,6 +262,11 @@ int func5(const int * const arr){
 
 ![常量形参](c.assets/常量形参.png)
 
+## 复杂类型声明
+
+
+3
+
 
 ## 存储类别，链接和内存管理
 
@@ -299,6 +304,55 @@ c变量有三种属性的链接：
 > 关键概念
 
 C 提供多种管理内存的模型。除了熟悉这些模型外，还要学会如何选择 不同的类别。大多数情况下，最好选择自动变量。如果要使用其他类别，应 该有充分的理由。通常，使用自动变量、函数形参和返回值进行函数间的通 信比使用全局变量安全。但是，保持不变的数据适合用全局变量。应该尽量理解静态内存、自动内存和动态分配内存的属性。尤其要注意:静态内存的数量在编译时确定;静态数据在载入程序时被载入内存。在程序运行时，自动变量被分配或释放，所以自动变量占用的内存数量随着程序的运行会不断变化。可以把自动内存看作是可重复利用的工作区。动态分配的内存也会增加和减少，但是这个过程由函数调用控制，不是自动进行的。
+
+## 标准文件IO
+
+```c
+#include <stdio.h>
+```
+
+fopen
+```c
+FILE *fopen(const char *pathname, const char *mode);
+FILE *fdopen(int fd, const char *mode);
+FILE *freopen(const char *pathname, const char *mode, FILE *stream);
+```
+
+fgetc
+```c
+int fgetc(FILE *stream);
+char *fgets(char *s, int size, FILE *stream);
+int getc(FILE *stream); // getc() is equivalent to fgetc() except that it may be implemented as a macro which evaluates stream more  than once.
+int getchar(void);
+int ungetc(int c, FILE *stream);
+```
+
+fputc
+```c
+int fputc(int c, FILE *stream);
+int fputs(const char *s, FILE *stream);
+int putc(int c, FILE *stream);//  putc()  is equivalent to fputc() except that it may be implemented as a macro which evaluates stream more than once.
+int putchar(int c);
+int puts(const char *s);
+```
+
+fprintf fscanf
+```c
+int printf(const char *format, ...);
+int fprintf(FILE *stream, const char *format, ...);
+int dprintf(int fd, const char *format, ...);
+int sprintf(char *str, const char *format, ...);
+int snprintf(char *str, size_t size, const char *format, ...);
+```
+
+fseek ftell
+```c
+int fseek(FILE *stream, long offset, int whence); // offste SEEK_SET, SEEK_CUR，或SEEK_END
+long ftell(FILE *stream);
+void rewind(FILE *stream);
+int fgetpos(FILE *stream, fpos_t *pos);
+int fsetpos(FILE *stream, const fpos_t *pos);
+```
 
 
 
