@@ -1065,6 +1065,7 @@ start:  mov ax, data
 
         mov ax, ds:[84+di]   ; 收入
         mov es:[bx+si], ax    ; 这里的整体思路和上述相同
+        
         add si, 2
         add di, 2
         mov ax, ds:[84+di]
@@ -1087,7 +1088,10 @@ start:  mov ax, data
         mov byte ptr es:[bx+si], ' '
         inc si
 
-        mov word ptr es:[bx+si], '? '   
+        mov ax, es:[bx+5]   ; 做除法   ax放低16位  dx放高16位
+        mov dx, es:[bx+7]
+        div word ptr es:[bx+0AH]   
+        mov es:[bx+si], ax      ; 除法的结果 商在低位寄存器，余数在高位寄存器
         add si, 2
 
         mov byte ptr es:[bx+si], ' '
@@ -1095,12 +1099,10 @@ start:  mov ax, data
         add bx, 10H      ; 每轮结束，使table指向下一行
         loop s1
 
-        ax ax, 4c00H
+        mov ax, 4c00H
         int 21H
 code ends
 end start
-
-
 ```
 
 
