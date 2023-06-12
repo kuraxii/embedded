@@ -1009,6 +1009,102 @@ code ends
 end start
 ```
 
+### 实验7 寻址方式在结构化数据访问中的应用
+
+![实验7](./Assembly_language.assets/F07791B03317DE42ADB58D1A55B30A71.png)
+
+**注意，这个程序是到目前为止最复杂的程序，它几乎用到了我们以前学过的所有知识和编程技巧。所以，这个程序是对我们从前学习的最好的实践总结。请认真完成。**
+
+```asm
+assume cs:code
+data segment
+db '1975', '1976', '1977', '1978', '1979', '1980', '1981', '1982', '1983'   ; 21*4
+db '1984', '1985', '1986', '1987', '1988', '1989', '1990', '1991', '1992'
+db '1993', '1994', '1995'
+; 以上是表示21年的 21 个字符串
+dd 16,22,382,1356,2390,8000,16000,24486,50065, 97479,140417,197514   ; 21 * 4
+dd 345980,590827,803530,1183000,1843000,2759000,3753000,4649000,5937000
+;以上是表示21年公司总收入的21个dword型数据
+dw 3,7,9,13,28,38,130,220,476,778,1001,1442,2258,2793,4037,5635,8226   ; 21 * 2
+dw 11542,14430,15257,17800
+;以上是表示 21年公司雇员人数的 21 个word 型数据
+data ends
+table segment
+db 21 dup ('year summ ne ?? ') 
+table ends
+
+stack segment 
+    dw 0,0,0,0,0,0,0,0
+stack ends
+
+code segment
+
+start:  mov ax, data   
+        mov ds, ax    ; 将ds指向data
+        mov ax, table
+        mov es, ax    ; es指向table
+        mov ax, stack
+        mov ss, ax    ; ss指向栈区，用于存储data区中的三种类型数组的偏移量
+        
+        mov cx, 21    ; 设置循环总次数
+    s1: 
+        mov si, 0     ; 每轮开始。设置table的偏移量为0
+        mov di, ss:[0] ; 每轮开始。将data段中前两个数组的偏移量取出来
+            
+        mov ax, ds:[0+di] ; 年份   
+        mov es:[bx+si], ax   ; 因为前两个数组元素都是4字节的，而8086汇编最多支持16位的传送，故这里将将数据分两次传送
+        add si, 2
+        add di, 2
+        mov ax, ds:[0+di] 
+        mov es:[bx+si], ax
+        add si, 2
+        sub di, 2            ; 因为该偏移量后续还会使用，撤销掉前面的+2操作
+
+        mov byte ptr es:[bx+si], ' '   ; 补充空格间隔
+        inc si
+
+        mov ax, ds:[84+di]   ; 收入
+        mov es:[bx+si], ax    ; 这里的整体思路和上述相同
+        add si, 2
+        add di, 2
+        mov ax, ds:[84+di]
+        mov es:[bx+si], ax
+        add si, 2
+        add di, 2               
+        mov word ptr ss:[0], di    ; 前两个数组操作完成，将偏移量保存至栈中
+
+        mov byte ptr es:[bx+si], ' '
+        inc si
+
+        mov di, ss:[2]        ; 雇员   
+        mov ax, ds:[168+di]      ; 对于第3个数组每个元素只有2字节，就可以使用ax寄存器直接传送
+        mov word ptr es:[bx+si], ax   ; 数组操作完成后就是后续收尾操作
+
+        add si, 2
+        add di, 2
+        mov word ptr ss:[2], di
+
+        mov byte ptr es:[bx+si], ' '
+        inc si
+
+        mov word ptr es:[bx+si], '? '   
+        add si, 2
+
+        mov byte ptr es:[bx+si], ' '
+
+        add bx, 10H      ; 每轮结束，使table指向下一行
+        loop s1
+
+        ax ax, 4c00H
+        int 21H
+code ends
+end start
+
+
+```
+
+
+
 
 
 
