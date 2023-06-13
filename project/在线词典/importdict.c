@@ -52,11 +52,11 @@ int main()
 
 
     char buf[1024] = {'\0'};
-    FILE *p = fopen("./dict.txt", "r");
+    FILE *fp = fopen("./dict.txt", "r");
 
-    while (!feof(p))
+    while (!feof(fp))
     {
-        fgets(buf, sizeof(buf), p);
+        fgets(buf, sizeof(buf), fp);
         insert(db, buf, strlen(buf));
     }
 }

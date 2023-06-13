@@ -321,7 +321,7 @@ FILE *freopen(const char *pathname, const char *mode, FILE *stream);
 fgetc
 ```c
 int fgetc(FILE *stream);
-char *fgets(char *s, int size, FILE *stream);
+char *fgets(char *s, int size, FILE *stream);   // fgets 会读取行中的 \n
 int getc(FILE *stream); // getc() is equivalent to fgetc() except that it may be implemented as a macro which evaluates stream more  than once.
 int getchar(void);
 int ungetc(int c, FILE *stream);

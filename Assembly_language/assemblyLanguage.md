@@ -816,6 +816,65 @@ stack ends
 
 
 
+## 转移指令的原理
+
+可以修改`IP`,或同时修改`CS和IP`的指令统称为**转移指令**
+
+8086CPU的转移行为有以下几类
+- 只修改IP时，称为段内转移，比如：jmp ax
+- 同时修改CS 和IP时，称为段间转移，比如：jmp 1000:0
+
+由于转移指令对IP 的修改范围不同，段内转移又分为：短转移和近转移
+- 短转移卫 的修改范围为-128~127
+- 近转移I的修改范围为-32768~32767
+
+8086CPU 的转移指令分为以下几类
+- 无条件转移指令(如：jmp)
+- 条件转移指令
+- 循环指令(如：1oop)
+- 过程
+- 中断
+这些转移指令转移的前提条件可能不同，但转移的基本原理是相同的。我们在这一章主要通过深入学习无条件转移指令jmp 来理解 CPU 执行转移指令的基本原理
+
+>### 操作符 offset
+
+操作符 offset 在汇编语言中是由编译器处理的符号，它的功能是取得标号的偏移地止。比如下面的程序：
+```asm
+assume cs: codesg codesg segment
+start:mov ax,offset start
+s: mov ax, offset s
+codesg ends 
+end start
+;相当于 mov ax,0
+;相当于 mov ax,3
+```
+在上面的程序中，offset 操作符取得了标号 start 和s的偏移地址0和了，所以指令：
+`mov ax,offset start` 相当于指令`mov ax,0`，因为`start` 是代码段中的标号，它所标记的指令是代码段中的第一条指令，偏移地址为 0；
+`mov ax,offset` 相当于指令`mov ax,3`，因为s是代码段中的标号，它所标记的指令是代码段中的第二条指令，第一条指令长度为了个字节，则`s` 的偏移地址为`3`。
+
+
+```asm
+; 将该程序中s处的一条指令转移到s0处
+assume cs:code
+code segment
+
+    s:  mov ax, bx
+        mov si, offset s
+        mov di, offset s0
+
+        mov ax, cs:[si]
+        mov cs:[di], ax 
+    
+    s0: nop
+        nop
+code ends
+end
+```
+>### jmp指令
+
+**jmp为无条件转移指令，可以只修改IP，也可以同时修改CS和IP**
+
+
 
 
 
