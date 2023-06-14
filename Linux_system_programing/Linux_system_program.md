@@ -1,316 +1,8 @@
 [TOC]
 
-### linux基础
+# Linux 系统编程
 
-##### 根目录介绍
-
-- bin  存放二进制可执行文件
-- boot  存放开机启动程序
-- dev  存放设备文件
-- etc  用户信息和系统配置
-- home  用户目录
-- lib   库路径
-- media/mnt   磁盘挂载相关
-- opt proc
-- root  root用户目录
-- usr  用户资源管理目录
-
-##### cd用法（change directory）
-
--
-  cd       切换目录
-
-- cd ~     切换到家目录
-- cd /etc  切换到etc目录
-- cd -     回到上一次操作的路径
-- cd ..    回到上级目录
-
-##### 文件操作
-
-```shell
-ls（list）  #作用：列出当前目录下的文件
-#用法：
-ls  #查看当前目录
-ls -l #列出当前目录下的文件详细信息
-ls -a #查看当前目录所有文件
-ls -lh #带单位显示文件大小
-#.（点） 当前目录
-#..（点点） 上一级目录
-#../../ 上上级目录
-
-touch   #作用：创建普通文件、更新文件时间
-#用法：
-touch <filename> #如果filename存在，更新文件时间
-      #如果不存在，就创建文件
-
-file  #作用：查看文件属性
-#用法：
-file <filename>
-
-cat#作用：查看文件内容，不打开文件
-#用法：
-cat <filename>
-cat <filename> -n：#带行号
-
-#其他查看命令
-tac <filename> #按行倒序查看内容
-more <filename> #分屏查看内容
-less <filename> #分屏查看内容（不显示行号）
-head <-num> <filename> #显示前num行,默认10行
-tail <-num> <filename> #显示后num行,默认10行
-tree #显示当前文件树状结构
-
-mkdir（make dierctory）#作用：创建目录
-#用法：
-mkdir dirname：#创建一个目录
-
-rm（remove） #作用：删除文件或目录
-#用法：
-rm filename  #删除文件
-rm dirname -r #删除目录，删除目录及子目录
-
-rmdir  #作用：删除空目录
-#用法：
-rmdir <directory>
-
-cp（copy）    #作用：复制文件或目录
-#用法：
-cp file1 file2    #文件到文件，如果没有file2文件，则创建文件
-cp file dir     #文件到目录（操作文件到目录里面去不用加-r，本质是操作文件）
-cp dir1/ dir2 -r  #目录复制到目录
-#注意：对目录的操作要加 -r 选项   递归作用
-#-f   强制操作
-chmod     #修改文件权限
-用法：
-chmod  <八进制数>  <filename>
-chmod 777 3.txt  #修改3.txt拥有所有权限
-chmod u+x 3.txt  #给3.txt的user用户添加执行权限
-chmod g+w 3.txt  #给3.txt的group组添加写权限
-chmod o+r 3.txt  #给3.txt的other其他人添加读权限
-#r ：读权限  w：写权限  x：可执行权限
-u（user）#文件所属用户
-g（group） # 文件所属用户组
-o（other） #其他人
-八进制数表示 :  r  w  x
-     4 2 1
-
-```
-
-##### linux文件类型
-
-```shell
--  #普通文件
-d  #目录文件
-c  #字符设备文件
-b  #块设备文件
-l  #软连接
-p  #管道文件
-s  #套接字
-#其他未知文件
-```
-
-##### linux系统目录
-
-- bin：存放二进制文件
-- boot：存放开机启动程序
-- dev：存放设备文件 ：字符设备，鼠标键盘
-- home：存放普通用户
-- etc：用户信息和系统配置文件
-- lib：库文件
-- root：管路员宿主目录（家目录）
-- usr：用户资源管路目录
-
-##### 文件系统
-
-- inode
-  - 本质为结构体，存储文件的存储信息 如：权限，类型，大小，时间，用户，盘块位置，大多数的inode都存储在磁盘上
-
-- dentry
-  - 目录项，本质依然是结构体，重要的成员变量有两个，{文件名，inode...},而文件内容保存在磁盘盘块中
-
-##### 基本命令
-
-- echo $SHELL  #查看当前命令解析器
-- which    #查看指定命令所在路径
-- pwd      #查看当前目录
-- wc    #计算文件的Byte数，字数或列数
-- od    #指定数据的显示格式
-- du    #显示磁盘大小
-- df    #查看磁盘使用情况
-
-##### 用户管理
-
-```shell
-whoami   #查看当前登录用户
-sudo adduser <用户名>     #创建用户 
-sudo addgroup <用户组名>  #创建用户组
-sudo chown <新用户名>   <文件名> #修改文件所属用户
-sudo chgrp <用户组名>  <文件名>   #修改文件所属用户组
-```
-
-##### 查找与检索
-
-```shell
-stat   #查看文件的状态（修改时间，大小，权限。。。）
-find     #查找文件
-用法：
-find  <路径目录>  <-maxdepth>  <搜索类型> <搜索字符串> ...  
-#搜索类型： -name 按名字     -type 按文件类型  -size 按文件大小 -maxdepth 指定搜索深度
-example:
-find <路径目录>  -size <+20M> -size <-50M>   #查找文件大小>20 <50的文件
-find ./ -type 'f' -maxdepth 1 -exec(运行命令) ls -l {} \;   #将前面得到的结果集合进行ls操作 exec执行后面的操作
-find ./ -type 'f' -maxdepth 1 -ok rm -r         {} \;    #将前面得到的结果集合进行rm操作并询问是否执行操作
-
-grep #查找文件内容或筛选结果集
-grep -r 'copy' ./ -n
-     -r递归查找     -n  显示行号
-
-ps aux | grep 'cupsd'   #检索进程结果集
-```
-
-##### 压缩与解压
-
-```shell
-#gzip命令压缩  gizp压缩只会压缩目录下的文件
-gzip <-r> <failename> #压缩
-gzip -d <failename>  #解压
-
-#tar命令压缩解压
-tar -zcvf <压缩包名> <压缩源文件>。。。   #以gzip方式压缩
-tar -zxvf <压缩包名>   #以gzip方式解压缩
-
-tar -jcvf <压缩包名> <压缩源文件>。。。   #以bzip2方式压缩
-tar -jxvf <压缩包名>   #以bzip2方式解压缩
-
-```
-
-##### vi
-
-```shell
-
-```
-
-##### gcc
-
-```shell
--I    #制定头文件所在的目录
--c   #只做预处理，编译，汇编，得到二进制文件
--g   #编译时添加调试文件，主要用于gdb调试
--On n=0~3 #编译优化，n越大，优化越多
--Wall  #显示所有警告信息
--D   #在程序中注册一个宏
-```
-
-##### 静态库
-
-```shell
-ar rcs libmylib.a file.o  #将file.o加入到libmyllib.a中
-
-#静态库制作步骤,及使用
-1.将.c文件用gcc -c命令生成.o文件
-2.使用ar命令加入静态库文件
-  ar rcs <静态库文件名> <编译好的.o文件>...
-3.编译静态库文件到可执行文件中
-  gcc test.c lib<库名>.a -o a.out
-```
-
-##### 动态库
-
-```shell
-#动态库的制作及使用
-1.将.c文件生成.o文件 (生成与位置无关的代码 -fPIC)
-  gcc -c add.c -o add.o -fPIC
-2.使用gcc -shared 制作动态库
-  gcc -shared <-o> lib<库名>.so <编译好的.o文件>...
-  #如果没有库文件用-o创建
-3.编译可执行程序时指定使用的动态库。 -l 指定库名  -L指定库路径
-  gcc test.c -o a.out -l<mymath> -L<./lib>
-4.运行可执行程序  ./out （会出错）
-    #原因：
-      #链接器：工作于链接阶段，需要-l -L
-      #动态链接器：工作于运行阶段，工作时需要提供动态库所在目录
-    #解决：
-    #通过环境变量： export LD_LIBRARY_PATH=<动态库路径> 临时生效
-    #要使永久生效（写入终端配置文件）
-      #1.vim ~/.zshrc
-      #2.写入 export LD_LIBRARY_PATH=<动态库路径>
-      #3.source .zshrc / 重启终端 ->使配置生效
-    #滥竽充数法：拷贝动态库到/lib下
-    #配置文件法
-      #1.sudo vi /etc/ld.so.config
-      #2.写入动态库绝对路径 保存
-      #3.sudo ldconfig -v 使配置文件生效
-
-
-```
-
-##### gdb
-
-```shell
-gcc -g <文件名> -o a.out 使用-g参数编译可执行文件，得到调试表
-gdb a.out  #开始调试
-
-list：list <1>/ l <1> #列出源码，
-break： break 20 / b 20  #在20行位置设置断点
-run/r   #运行程序
-n/next  #下一条指令
-s/step  #下一条指令（会进入函数）
-p/print #查看变量的值
-continue  #继续执行断点后续指令
-quit #退出
-
-段错误排查
-直接gdb run
-
-其他命令介绍
-
-
-
-```
-
-##### makefile项目管理
-
-```shell
-命名：makefile Makefile
-1个规则
-  目标：依赖条件
-          （一个tab缩进）
-  目标的时间必须晚于依赖的时间，否则更新目录
-  依赖条件不存在，找寻新的规则去产生为依赖
-
-2个函数
-src = $(wildcard *.c)   $(wildcard *.c)
-#找到当前目录下所有后缀为.c的文件，赋值给src
-obj(可修改名称) = $(patssubst %.c, %.o, $(src))
-#把src变量里所有后缀为.c的文件替换为.o赋值给obj
-
-clean: #（没有依赖）
-    -rm -rf $(obj)  #"第一个-"作用是删除不存在的文件时不报错
-
-3个自动变量
-$@  在规则的命令中表示规则的目标
-$^  在规则的命令中表示所有依赖条件
-$<  在规则的命令中表示第一个依赖条件。 如果将变量应用于模式规则中，他可将依赖条件中的依赖依次取出，套用模式规则
-
-模式规则
-%.o:%.c
-  gcc -c $< -o $@
-
-静态模式规则
-$(obj):%.o:%.c
-  gcc -c $< -o $@
-%.o:%.s
-  gcc -S $< -o $@
-
-伪目标
-.PHONY: clean ALL
-
-参数
-  -n 模拟执行make clean命令
-  -f 指定makefile文件执行
-```
-
-### 文件I/O
+## 文件I/O
 
 ```c
 open #include <unistd.h>所包含
@@ -331,7 +23,7 @@ O_APPEND O_CREAT O_EXCL O_TRUNC O_NONBLOCK
 
 ```
 
-#### read write
+### read write
 
 ```c
 ssize_t read(int fd,void *buf,size_t count)
@@ -402,7 +94,7 @@ int main(int argc, char *argv[])
 
 ```
 
-##### 文件描述符
+### 文件描述符
 
 ```shell
 PCB(process control block) 进程控制块  本质：结构体
@@ -413,7 +105,7 @@ PCB(process control block) 进程控制块  本质：结构体
 3 - STDERR_FILENO
 ```
 
-##### 阻塞，非阻塞  
+### 阻塞，非阻塞  
 
 ```shell
 阻塞，非阻塞  是设备文件，网络文件的属性
@@ -422,7 +114,7 @@ PCB(process control block) 进程控制块  本质：结构体
 
 ```
 
-##### fcntl 改打开文件属性
+### fcntl 改打开文件属性
 
 ```c
 int flags = fcntl(fd, F_GETFL);
@@ -470,7 +162,7 @@ tryagain:
 
 ```
 
-##### lseek函数
+### lseek函数
 
 ```c
 off_t lseek(int fd, off_t offset, int whence);
@@ -566,11 +258,11 @@ int main(int argc,char *argv[])
 }
 ```
 
-##### ioctl函数
+### ioctl函数
 
 对设备的I/O通道进行管理，控制设备特性
 
-##### 传入传出参数
+### 传入传出参数
 
 - 传入参数
 
@@ -600,7 +292,7 @@ char *strcpy(char *dest, const char *src);
 
 ```
 
-##### stat与lstat函数
+### stat与lstat函数
 
 获取文件属性(从inode结构体中获取)
 
@@ -666,7 +358,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-##### link和ulink函数
+### link和ulink函数
 
 ```c
 int link(const char* oldpath, const char* newpath); //创建硬链接
@@ -739,13 +431,13 @@ int main(void)
 
 隐式回收：当进程结束运行时，所有该进程打开的文件会被关闭，申请的内存空间会被释放。被称为隐式回收系统资源
 
-##### getcwd和chdir函数
+### getcwd和chdir函数
 
-##### 文件和目录权限
+### 文件和目录权限
 
 打开文件夹需要x权限
 
-##### 目录操作函数 opendir、closedir、readdir
+#### 目录操作函数 opendir、closedir、readdir
 
 ```c
 //#include <dirent.h>
@@ -831,7 +523,7 @@ int main(int argc, char *argv[])
 }
 ```
 
-##### dup(重定向)
+### dup(重定向)
 
 ```c
 int dup(int oldfd);  //返回值为新的文件描述符
@@ -895,16 +587,16 @@ int main(int argc,char *argv[])
 }
 ```
 
-### 进程控制
+## 进程控制
 
 程序：死的，只占用磁盘空间
 进程：活得，运行起来的程序。占用内存，cpu等系统资源
 
-##### 虚拟内存和物理内存的映射关系
+### 虚拟内存和物理内存的映射关系
 
 ```https://www.bilibili.com/video/BV1KE411q7ee?p=77&spm_id_from=pageDriver&vd_source=a1edf3ad63e77272acbd0c1f89c365d6```
 
-##### pcb进程控制块
+### pcb进程控制块
 
 每个进程在内核中都有一个进程控制块（PCB）来维护进程相关信息，Linux内核的进程控制块是task_struct结构体
 /usr/src/linux-headers-3.16.0-30/include/linux/sched.h文件中可以查看struct task_struct结构体定义。其内部成员有很多，我们重点掌握以下部分即可:
@@ -921,7 +613,7 @@ int main(int argc,char *argv[])
 - 会话（session）和进程组
 - 进程可使用的资源上限（Resource Limit）
 
-##### 环境变量
+### 环境变量
 
 - PATH
 
@@ -930,7 +622,7 @@ int main(int argc,char *argv[])
 - LANG  查看当前语言
 - HOME  查看当前用户家目录
 
-##### fork函数
+### fork函数
 
 ```c
 //include <unistd.h>
@@ -970,14 +662,14 @@ int main(int argc,char *argv[])
 }
 ```
 
-###### getpid & getppid函数
+#### getpid & getppid函数
 
 ```c
 pid_t getpid(void);  //返回当前进程的pid
 pid_t getppid(void); //返回父进程的pid
 ```
 
-###### 循环创建进程
+#### 循环创建进程
 
 ```c
 int main(int argc,char *argv[])
@@ -1009,7 +701,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-###### 进程共享
+#### 进程共享
 
 | 父子相同之处 | 父子不相同之处 | 父子进程共享 |
 | :----------: | :------------: | :------------: |
@@ -1029,7 +721,7 @@ int main(int argc,char *argv[])
 
 fork之后父子进程运行顺序由操作系统的调度算法决定
 
-##### exec函数族
+### exec函数族
 
 fork创建的程序执行的是父进程相同的程序（但又可能执行不同的代码分支），子进程往往要调用一种exec函数以执行另一个程序。当进程调用一种exec函数时，该进程的用户空间代码和数据完全被新程序替换，从新程序的启动开始执行。调用exec并不会创建新进程，所以调用exec前后台该进程的id并未改变。
 
@@ -1044,11 +736,11 @@ int execvp(const char *file, char *const argv[]);
 int execvpe(const char *file, char *const argv[],char *const envp[]);
 ```
 
-###### execlp函数
+#### execlp函数
 
 加载一个进程，借助PATH环境变量
 
-###### exexl函数
+#### exexl函数
 
 加载一个进程，借助路径 （相对路径，绝对路径）
 
@@ -1067,17 +759,17 @@ int execlp(const char *file, const char *arg, .../* (char  *) NULL */);
 //该函数通常用来调用系统程序。如:ls、date、cp、 cat等命令。
 ```
 
-###### 孤儿进程
+### 孤儿进程
 
 孤儿进程:父进程先于子进程结束，则子进程成为孤儿进程，子进程的父进程成为init进程，称为init进程领养孤儿进程。
 
-###### 僵尸进程
+### 僵尸进程
 
 僵尸进程:进程终止，父进程尚未回收，子进程残留资源（PCB）存放于内核中，变成僵尸（zombie）进程。
 特别注意，僵尸进程是不能使用kill命令清除掉的。因为 kill命令只是用来终止进程的,而僵尸进程已经终止。
 思考!用什么办法可清除掉僵尸进程呢?  杀掉父进程让init进程回收  wait函数回收
 
-##### wait函数
+### wait函数
 
 一个进程在终止时会关闭所有文件描述符，释放在用户空间分配的内存，但它的 PCB还保留着，内核在其中保存了一些信息:如果是正常终止则保存着退出状态，如果是异常终止则保存着导致该进程终止的信号是哪个。这个进程的父进程可以调用wait或 waitpid_获取这些信息，然后彻底清除掉这个进程。我们知道一个进程的退出状态可以在 shell中用特殊变量$?查看，因为shell是它的父进程，当它终止时shell 调用wait或waitpid得到它的退出状态同时彻底清除掉这个进程。
 父进程调用wait函数可以回收子进程终止信息。该函数有3个功能：
@@ -1246,7 +938,7 @@ int main(int argc,char *argv[])
 
 ```
 
-##### 进程通信
+## 进程通信
 
 现用常用的进程间通信方式
 
@@ -1255,7 +947,7 @@ int main(int argc,char *argv[])
 3. 共享映射区（无血缘关系）
 4. 本地套接字（最稳定）
 
-###### 管道
+### 管道
 
 管道是一种最基本的IPC(Inter Process Communication)机制，作用于有血缘关系的进程之间，完成数据传递。调用pipe系统函数即可创建一个管道。有如下特质:
 
@@ -1327,7 +1019,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-##### fifo命名管道
+### fifo命名管道
 
 fifo命名管道的创建
 命令行方式
@@ -1399,9 +1091,9 @@ int main(int argc,char *argv[])
 }
 ```
 
-##### 存储映射
+### 存储映射
 
-###### mmap函数原理
+#### mmap函数原理
 
 ```c
 #include <sys/mman.h>
@@ -1424,7 +1116,7 @@ int munmap(void *addr, size_t length); //释放共享内存映射区
 
 ```
 
-###### mmap注意事项
+#### mmap注意事项
 
 1. 用于创建映射区的大小为0，实际指定非0大小创建有映射区，出"总线错误" bus error
 2. 实际制定0大小创建映射区，出"无效参数错误" Invalid argument  (映射区大小不能为0)
@@ -1440,7 +1132,7 @@ mmap函数的保险调用方式
   1.open(O_RDER)
   2.mmap(NULL,<filesize>, PROT_READ |PROT_WRITE，MAP_SHARED,fd，0);
 
-###### 父子进程使用mmap实现进程间通信
+#### 父子进程使用mmap实现进程间通信
 
 父进程先创建映射区。 open(O_RDWR) mmap()
 指定MAP_SHARE 权限
@@ -1490,7 +1182,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-###### 无血缘关系进程使用mmap实现进程间通信
+#### 无血缘关系进程使用mmap实现进程间通信
 
 通过打开相同文件实现
 读
@@ -1561,7 +1253,7 @@ int main(int argc,char *argv[])
 信号是软件层面的`中断`。一旦信号产生，无论程序执行到什么位置，必须立刻停止运行，处理信号 ，处理结束，在继续执行后续命令
 所有的信号的产生及处理全部都是由 内核 完成的
 
-###### 与信号相关的事件与状态
+#### 与信号相关的事件与状态
 
 产生信号
 
@@ -1638,7 +1330,7 @@ Linux内核的进程控制块PCB是一个结构体，task_struct,除了包含进
 31. SIGSYS:无效的系统调用。默认动作为终止进程并产生core文件。
 32. SIGRTMIN ～(64)SIGATMAX  LINUX的实时信号，它们没有固定的含义(可以由用户自定义)。所有的实时信号的默认动作都为终止进程。
 
-###### kill函数与kill命令
+#### kill函数与kill命令
 
 kill命令
 kill -<sign> <pid>
@@ -1677,7 +1369,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-###### alarm函数   setitimer函数
+#### alarm函数   setitimer函数
 
 time 命令 查看程序运行时间  实际时间 = 用户时间 + 内核时间 + 等待时间  --》优化瓶颈 I/O
 
@@ -1719,9 +1411,9 @@ int setitimer(int which, const struct itimerval *new_value, struct itimerval *ol
 假如`it_value`为0是不会触发信号的，所以要能触发信号，`it_value`得大于0；如果`it_interval`为零，只会延时，不会定时(也就是说只会触发一次信号)。
 old_value参数，通常用不上，设置为NULL，它是用来存储上一次setitimer调用时设置的new_value值。
 
-##### 信号集操作函数
+### 信号集操作函数
 
-###### 信号集设定
+#### 信号集设定
 
 ```c
 signset_t set;   //typedef unsigned long sigset t;
@@ -1734,7 +1426,7 @@ int sigismember(const sigset .t *set, int signum);  //判断某个信号是否�
 sigset_t //类型的本质是位图。但不应该直接使用位操作，而应该使用上述函数，保证跨系统操作有效。
 ```
 
-###### sigprocmask函数
+#### sigprocmask函数
 
 用来屏蔽信号、解除屏蔽也使用该函数。其本质，读取或修改进程的 信号屏蔽字(PCB中)
 **严格注意，屏蔽信号。只是将信号处理延后执行(延至解除屏蔽);而忽略表示将信号丢处理。**
@@ -1754,7 +1446,7 @@ int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 //     失败 -1 errno
 ```
 
-###### sigpending函数
+#### sigpending函数
 
 读取当前进程的未决信号集
 
@@ -1768,7 +1460,7 @@ int sigpending(sigset_t *set);
 //     失败 -1 errno
 ```
 
-###### 信号集处理案例
+#### 信号集处理案例
 
 ```c
 void printset(sigset_t *set){
@@ -1814,9 +1506,9 @@ int main(int argc,char *argv[])
 }
 ```
 
-##### 信号捕捉
+### 信号捕捉
 
-###### signal与sigaction函数
+#### signal与sigaction函数
 
 signal
 `signal`函数用来在进程中指定当一个信号到达进程后该做什么处理，主要的两种方式有忽略某些信号，(监听到`SIGTERM`/`SIGINT`)退出前的打扫工作。信号处理函数的`handler`有两个默认值，分别是`SIG_IGN`和`SIG_DFL`，表示忽略和默认行为。而且`signal`函数是阻塞的，比如当进程正在执行`SIGUSR1`信号的处理函数，此时又来一个`SIGUSR1`信号，`signal`会等到当前信号处理函数处理完后才继续处理后来的`SIGUSR1`，不管后来的多少个`SIGUSR1`信号，统一看做一个来处理。还有`SIGKILL`和`SIGSTOP`这两个信号是`signal`函数捕捉不到的。
@@ -1929,7 +1621,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-##### 慢速系统调用中断
+### 慢速系统调用中断
 
 系统调用可分为两类:慢速系统调用和其他系统调用。
 
@@ -1949,9 +1641,9 @@ Daemon(精灵)进程，是Linux 中的后台服务进程，通常独立于控制
 Linux后台的一些系统服务进程，没有控制终端，不能直接和用户交互。不受用户登录、注销的影响，一直在运行着，他们都是守护进程。如:预读入缓输出机制的实现;ftp服务器;nfs服务器等。
 创建守护进程，最关键的一步是调用setsid函数创建一个新的Session，并成为Session leader
 
-##### 进程组与会话
+#### 进程组与会话
 
-###### 进程组
+##### 进程组
 
 进程组，也称之为作业。BSD于1980年前后向Unix中增加的一个新特性。代表一个或多个进程的集合。每个进程都属于一个进程组。在waitpid函数和kill函数的参数中都曾使用到。操作系统设计的进程组的概念，是为了简化对多个进程的管理。
 当父进程，创建子进程的时候，默认子进程与父进程属于同一进程组。进程组ID = 第一个进程ID(组长进程)。所以，组长进程标识,其进程组ID = 其进程ID
@@ -1961,7 +1653,7 @@ Linux后台的一些系统服务进程，没有控制终端，不能直接和用
 
 进程组生存期:进程组创建到最后一个进程离开(终止或转移到另一个进程组)。一个进程可以为自己或子进程设置进程组ID
 
-###### 创建会话
+##### 创建会话
 
 会话（多个进程组的集合）
 创建一个会话需要注意以下6点注意事项;,
@@ -1973,7 +1665,7 @@ Linux后台的一些系统服务进程，没有控制终端，不能直接和用
 5. 该调用进程是组长进程，则出错返回，
 6. 建立新会话时，先调用fork,父进程终止，子进程调用setsid
 
-###### getsid函数
+##### getsid函数
 
 ```c
 pid_t getsid(pid_t pid);   //获取进程所属的会话ID
@@ -1986,7 +1678,7 @@ pid_t getsid(pid_t pid);   //获取进程所属的会话ID
 ps ajx,命令查看系统中的进程。参数a表示不仅列当前用户的进程，也列出所有其他用户的进程，参数x表示不仅列有控制终端的进程，也列出所有无控制终端的进程，参数j表示列出与作业控制相关的信息。
 组长进程不能成为新会话首进程，新会话首进程必定会成为组长进程。+
 
-###### setsid函数
+##### setsid函数
 
 ```c
 pid_t setsid(void);   //创建一个会话，并以自己的ID设置进程组ID，同时也是新会话的ID
@@ -2015,14 +1707,14 @@ pid_t setsid(void);   //创建一个会话，并以自己的ID设置进程组ID�
 5. 关闭文件描述符  根据需要
 6. 开始执行守护进程核心工作守护进程，退出处理程序模型
 
-### 线程
+## 线程
 
 概念
 进程  有独立的进程地址空间，有独立的pcb
 线程  有独立的pcb 没有独立 的进程地址空间
 查看线程  ps -Lf <pid>  ->线程号 lwp -->  cpu执行的最小单位
 
-###### linux内核线程实现原理
+### linux内核线程实现原理
 
 类Unix系统中，早期是没有“线程”概念的，80年代才引入，借助进程机制实现出了线程的概念，因此在这类系统中，进程和线程关系密切。
 
@@ -2032,7 +1724,7 @@ pid_t setsid(void);   //创建一个会话，并以自己的ID设置进程组ID�
 4. 线程可看做寄存器和栈的集合
 5. 在linux 下，线程最是小的执行单位﹔进程是最小的分配资源单位。察看Lwp 号: ps  -Lf pid查看指定线程的lwp号。
 
-###### 线程共享资源
+### 线程共享资源
 
 1. 文件描述符
 2. 每种信号的处理方式
@@ -2040,7 +1732,7 @@ pid_t setsid(void);   //创建一个会话，并以自己的ID设置进程组ID�
 4. 用户id 和组 id
 5. 内存地址空间(.text .data .bss .heap 共享库)
 
-###### 线程非共享资源
+### 线程非共享资源
 
 1. 线程id。
 2. 处理器现场和栈指针(内核栈)
@@ -2049,9 +1741,9 @@ pid_t setsid(void);   //创建一个会话，并以自己的ID设置进程组ID�
 5. 信号屏蔽字
 6. 调度优先级
 
-### 线程控制原语
+## 线程控制原语
 
-###### pthread_self函数
+### pthread_self函数
 
 ```c
 #include <pthread.h>
@@ -2063,7 +1755,7 @@ pthread_t pthread_self(void);   //获取线程ID。其作用对应进程中getpi
 线程ID: pthread_t类型，本质:在Linux下为无符号整数(%lu)，其他系统中可能是结构体实现.线程ID是进程内部，识别标志。(两个进程间，线程ID允许相同)
 注意:不应使用全局变量 pthread_t tid，在子线程中通过 pthread_create传出参数来获取线程ID，而应使用pthread_self。v
 
-###### pthread_create函数
+### pthread_create函数
 
 创建一个新线程。  其作用，对应进程中 fork()函数。
 
@@ -2081,7 +1773,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
 //   ---Linux环境下，所有线程特点，失败均直接返回错误号
 ```
 
-###### pthread_exit函数
+### pthread_exit函数
 
 ```c
 #include <pthread.h>
@@ -2095,7 +1787,7 @@ void pthread_exit(void *retval);  //将单个线程退出  相当于return
 所以，多线程环境中，应尽量少用，或者不使用exit 函数，取而代之使用`pthread_exit` 函数，将单个线程退出。任何线程里exit 导致进程退出，其他线程未工作结束，主控线程退出时不能return或exit。
 另注意，`pthread_exit`.或者`return`返回的指针所指向的内存单元必须是全局的或者是用`malloc`分配的，不能在线程函数的栈上分配，因为当其它线程得到这个返回指针时线程函数已经退出了。
 
-###### pthread_join函数
+### pthread_join函数
 
 阻塞等待线程退出，获取线程退出状态   起作用，对应进程 wait()函数
 
@@ -2150,7 +1842,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-###### pthread_cancel函数
+### pthread_cancel函数
 
 杀死线程（线程必须在取消点，进入内核）  作用对应进程中的kill函数
 
@@ -2194,7 +1886,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-###### pthread_detach函数
+### pthread_detach函数
 
 实现线程分离
 
@@ -2244,12 +1936,12 @@ int main(int argc,char *argv[])
 
 ```
 
-#### 线程同步(锁)
+## 线程同步(锁)
 
 同步即协同步调，按预定的先后次序运行。
 线程同步，指一个线程发出某一功能调用时，在没有得到结果之前，该调用不返回。同时其它线程为保证数据一致性,不能调用该功能。
 
-##### 互斥锁(mutex)
+### 互斥锁(mutex)
 
 建议锁!对公共数据进行保护。所有线程【应该】在访问公共数据前先拿锁再访问。但，锁本身不具备强制性。
 使用mutex(互斥量，互斥锁)一般步骤
@@ -2323,13 +2015,13 @@ int pthread_mutex_destroy(pthread_mutex_t *mutex);   //销毁互斥锁，被销�
 
 ```
 
-###### 死锁
+### 死锁
 
 使锁不恰当使用的
 
 1. 反复加锁
 
-##### 读写锁
+### 读写锁
 
 于互斥量类似，但读写锁允许更高的并行性。其特性为  
 
@@ -2343,7 +2035,7 @@ int pthread_mutex_destroy(pthread_mutex_t *mutex);   //销毁互斥锁，被销�
 1. 读模式下加锁状态（读锁）
 2. 写模式下加锁状态（写锁）
 
-###### 读写锁函数
+#### 读写锁函数
 
 ```c
 #include <pthread.h>
@@ -2367,7 +2059,7 @@ pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER; //静态初始化
 
 ```
 
-##### 条件变量
+### 条件变量
 
 本身不是锁，但它也可以造成线程阻塞。通常与互斥锁配合使用。给多线程提供一个会合的场所。
 
@@ -2519,7 +2211,7 @@ void* consumer(void* arg){  //消费者
 
 ```
 
-#### 信号量（semaphore）
+### 信号量（semaphore）
 
 相当于初始化值为 N 的互斥量  N值表示可以同时访问共享数据区的线程数
 可以应用于进程与线程
@@ -2599,7 +2291,7 @@ struct timespec {
 
 ```
 
-##### 信号量基本操作
+#### 信号量基本操作
 
 ```c
 sem_wait()     // 1. 信号量大于0 则信号量--    (类比pthread_mutex_lock)
@@ -2613,7 +2305,7 @@ sem_post()     // 将信号量++ 同时隐藏阻塞在信号量上的线程  （
 
 ```
 
-##### 信号量实现生产者消费者模型
+#### 信号量实现生产者消费者模型
 
 ![信号量实现生产者消费者模型](Linux_system_program.assets/sem_product_consumer.png)
 
