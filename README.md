@@ -2,6 +2,7 @@
 ## 嵌入式基础
 
 - [c语言](C/c.md)
+- [linux基础](Linux_base/Linux_base.md)
 - [汇编语言 王爽](Assembly_language/assemblyLanguage.md)
 
 ## LINUX应用层
