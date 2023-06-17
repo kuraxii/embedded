@@ -254,10 +254,12 @@ sudo apt-get install cmatrix 代码雨；
 
 ```shell
 -I    #制定头文件所在的目录
+-l    #指定链接库
 -c   #只做预处理，编译，汇编，得到二进制文件
 -g   #编译时添加调试文件，主要用于gdb调试
 -On n=0~3 #编译优化，n越大，优化越多
--Wall  #显示所有警告信息
+-w     # 忽视警告
+-Wall -W #显示所有警告信息
 -D   #在程序中注册一个宏
 ```
 
@@ -334,7 +336,8 @@ quit #退出
 命名：makefile Makefile
 1个规则
   目标：依赖条件
-          （一个tab缩进）
+          （一个tab缩进）指令
+
   目标的时间必须晚于依赖的时间，否则更新目录
   依赖条件不存在，找寻新的规则去产生为依赖
 
@@ -345,7 +348,7 @@ obj(可修改名称) = $(patssubst %.c, %.o, $(src))
 #把src变量里所有后缀为.c的文件替换为.o赋值给obj
 
 clean: #（没有依赖）
-    -rm -rf $(obj)  #"第一个-"作用是删除不存在的文件时不报错
+    -rm -rf $(obj)  # "第一个-"作用是删除不存在的文件时不报错
 
 3个自动变量
 $@  在规则的命令中表示规则的目标
@@ -368,6 +371,32 @@ $(obj):%.o:%.c
 参数
   -n 模拟执行make clean命令
   -f 指定makefile文件执行
+```
+
+```shell
+app:fun.o main.o
+    gcc fun.o main.o -o app
+fun.o:./src/fun.c
+    gcc -c ./src/fun.c -I ./inc/ -o fun.o
+main.o:./src/main.c
+	gcc -c ./src/main.c  -I ./inc/ -o main.o 
+clean:
+	rm *.o
+
+```
+```shell
+C=gcc
+OO=fun.o main.o
+ln=-I ./inc/ 
+
+app:$(OO)
+	$C $^ -o $@
+fun.o:./src/fun.c
+	$C -c $^ $(ln) -o $@
+main.o:./src/main.c
+	$C -c $^ $(ln) -o $@
+clean:
+	rm *.o
 ```
 
 
