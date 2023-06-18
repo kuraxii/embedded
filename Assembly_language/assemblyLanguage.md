@@ -1017,7 +1017,7 @@ CPU执行retf指令时，进行下面四步操作：
 (SP)=(SP)+2
 ```
 
-### 1.2 call指令
+### 10.2 call指令
 
 CPU执行call指令时，进行两步操作
 
@@ -1200,6 +1200,53 @@ end start
 1. 在编写调用子程序的程序时，注意看看子程序中有没有用到会产生冲突的寄存器，如果有，调用者使用别的寄存器；
 2. 在编写子程序的时候，不要使用会产生冲突的寄存器。
 
+我们来分析一下上面两个方案的可行性：
+
+1. 这将给调用子程序的程序的编写造成很大的麻烦，因为必须要小心检查所调用的子程 序中是否有将产生冲突的寄存器。比如说，在上面的例子中，我们在编写
+
+    主程序的循环的时候就得检查子程序中是否用到了 bx 和cx，因为如果子程序中用到了这两个寄存器就会出现问题。如果采用这种方案来解决冲突的话，那么
+
+    在主程序的循环中，就不能使用ex 寄存器，因为子程序中己经用到。
+
+2. 这个方案是不可能实现的，因为编写子程序的时候无法知道将来的调用情况。
+
+可见，我们上面所设想的两个方案都不可行。我们希望：
+
+1. 编写调用子程序的程序的时候不必关心子程序到底使用了哪些寄存器；
+2.  编写子程序的时候不必关心调用者使用了哪些奇存器：
+3.  不会发生寄存器冲突。
+
+解决这个问题的简捷方法是，**在子程序的开始将子程序中所有用到的寄存器中的内容都保存起来，在子程序返回前再恢复**。可以用**栈**来保存寄存器中的内容。
+
+以后，我们编写子程序的标准框架如下：
+
+子程序开始：子程序中使用的寄存器入栈
+
+​						子程序内容
+
+​						子程序中使用的寄存器出栈
+
+​						返回(ret、retf)
+
+我们改进一下子程序 capital 的设计：
+
+```asm
+capital:	push cx
+         	 push si
+change:
+        	mov cl, [si] 
+            mov ch, O 
+            jcxz ok
+            and byte ptr [sil, 11011111b 
+            inc si 
+            jmp short change
+        ok:
+            pop si
+            pop cX
+            ret
+ ; 要注意寄存器入栈和出;栈的顺序。     
+```
+
 
 
 
@@ -1209,8 +1256,8 @@ end start
 
 ## 实验代码
 
-### 实验5
-(5):
+### 实验5 编写调试具有多个段的程序
+(5): 编写code段中的代码，将a段和b段中的数据一次相加，并将结果存储于c段中
 
 ```asm
 assume cs:code
@@ -1257,7 +1304,7 @@ code ends
 end start
 ```
 
-(6):
+(6): 编写code段中的代码，用push指令将a段中的前8个字型数据，逆序存储到b段中
 
 ```asm
 assume cs:code
@@ -1292,11 +1339,10 @@ end start
 ```
 
 
-### 实验6
+### 实验6 课程时间中的成语
 
-(1) 
+(1)   将数据段中的小写字母转成大写字母
 ```asm
-; 将数据段中的小写字母转成大写字母
 ; 重点在于两次循环中cx的处理
 assume cs:code, ds:data
 
@@ -1341,10 +1387,9 @@ code ends
 end start
 ```
 
-(2)
+(2); 将数据段中的每行前4个字母转化成大写， 用栈实现cx的存储
 
 ```asm
-; 将数据段中的每行前4个字母转化成大写， 用栈实现cx的存储
 ; 对于内部循环的cx可以使用立即数在每次循环前进行初始化，
 ; 而内部循环直接push进栈中，就不用记忆数据存储在内存的地址了
 
@@ -1488,7 +1533,7 @@ code ends
 end start
 ```
 
-### 实验9 
+### 实验9 根据材料编程
 
 **编程：在屏幕中间分别显示绿色、绿底红色、白底蓝色的宇符串 'welcome tomasm!'.**
 
@@ -1538,6 +1583,248 @@ start:  mov ax, data
 code ends
 end start
 ```
+
+### 实验10 编写子程序
+
+1 显示字符串
+
+在该实验中遇到不少问题
+
+```asm
+assume cs:code
+
+data segment
+    db 'welcome to masm!',0
+data ends
+
+stack segment
+    dw 0,0,0,0,0,0,0,0
+stack ends
+
+code segment
+
+start:  mov dh, 8
+        mov dl, 3
+        mov cl, 2
+        mov ax, data
+        mov ds, ax
+
+        mov ax, stack
+        mov ss, ax
+        mov sp, 10H 
+
+        mov si, 0
+        
+        call show_str
+
+        mov ax, 4c00H
+        int 21H
+
+show_str:               ; 函数起址
+		push cx
+		push sp
+		push si
+		push di
+		push es     ; 主函数参数入栈
+
+
+        mov bl, cl
+        mov ax, 0B800H
+        mov es, ax
+        mov di, 0    ; 显存地址
+
+        ; 计算位置
+        mov al, dh
+        mov ah, 160
+        mul ah
+        mov bp, ax
+        mov dh, 0
+        add bp, dx
+        add bp, dx
+
+
+    s:  mov al, ds:[si]   ; 字符
+        mov ah, bl         ; 属性
+        mov es:[bp+di], ax   ; 字符写入显存
+        add di, 2
+        inc si
+        
+        mov cl, ds:[si]
+        jcxz zero         ; 循环的结束条件         
+        jmp s      ;这里是一个循环
+zero:   
+		pop cx
+		pop sp
+		pop si
+		pop di
+		pop es
+        ret             ; 函数的结束
+
+    
+code ends
+end start    
+```
+
+
+
+2 解决除法溢出问题
+
+```asm
+assume cs:code
+
+stack segment 
+dw 0 dup(8)
+stack ends
+
+data segment
+dw 0 dup(8)
+data segment
+
+code segment 
+    mov ax, stack
+    mov ss, ax
+    mov sp, 32
+
+    mov ax, data
+    mov ds, ax
+
+    mov ax, 4240H   ; 低16位
+    mov dx, 000fH   ; 高16位
+
+    mov cx, 0aH     ; 除数
+
+    call divdw    ; x/n = int(H/N)*65536 + (rem(H/N)*65536+L)/N
+
+    mov ax, 4c00H
+    int 21H
+
+divdw:  
+    push dx
+    push ax
+    push cx
+
+    mov bx, ax  ; 临时存储低位值，在第二步会使用
+    mov ax, dx   
+    mov dx, 0    ; 将高位转移至低位进行高位除除数运算
+    div cx    ; 商在 ax中  余数在 dx中
+
+    push ax   ; 将商存入栈中
+
+
+    mov ax, bx  ; 将bx中的低位取回， 这一步ax对应 *65536+L  
+    div cx   ; 商在ax中
+    pop dx ; 将第一步的商取出，放至高位 相当于 *65536
+
+    ret
+
+code ends
+```
+
+3 数值显示
+
+将data段中的数据以十进制的形式显示出来
+
+```asm
+assume cs:code, ss:stack
+
+stack segment
+    dw 16 dup (0)
+stack ends
+
+data segment
+    db 10 dup (0)
+data ends
+
+code segment
+start:  mov ax, data
+        mov ds, ax
+        mov ax, stack
+        mov ss, ax
+        mov sp, 32
+        mov ax, 12666
+        mov si, 0
+        call dtoc
+
+        mov dh, 8
+        mov dl, 3
+        mov cl, 2
+        call show_str
+
+        mov ax, 4c00h
+        int 21h
+
+dtoc:   push ax
+        push si
+        push di
+        push dx
+        push bx
+        push cx
+        mov di, 0
+        mov dx, 0
+        mov bx, 10
+
+devide: mov cx, ax
+        jcxz stop
+        div bx
+        inc di
+        push dx
+        mov dx, 0
+        jmp devide
+stop:   mov cx, di
+string: pop bx
+        add bx, 30h
+        mov [si], bl
+        inc si
+        loop string
+
+        pop cx
+        pop bx
+        pop dx
+        pop di
+        pop si
+        pop ax
+        ret
+
+show_str:
+        push cx
+        push bx
+        push ax
+        push si
+        push di
+        push es
+                ;using cx, bx, ax, si, di, es
+        mov ax, 0b800h
+        mov es, ax
+        mov bx, 0
+        mov di, 0
+        mov al, 160
+        mul dh
+        add bx, ax
+        mov al, 2
+        mul dl
+        add bx, ax ;bx stores address of start character
+        mov al, cl ;al stores the color of character
+        char:   mov ch, 0
+        mov cl, ds:[si]
+        jcxz zero
+        mov ch, al
+        mov es:[bx+di], cx
+        add di, 2
+        inc si
+        jmp char
+zero:   pop es
+        pop di
+        pop si
+        pop ax
+        pop bx
+        pop cx
+        ret
+
+code ends
+end start
+```
+
+
 
 
 
