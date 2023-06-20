@@ -2,6 +2,7 @@
 ## 嵌入式基础
 
 - [c语言](C/c.md)
+- [数据结构](DataStructure/DataStructure.md)
 - [linux基础](Linux_base/Linux_base.md)
 - [汇编语言 王爽](Assembly_language/assemblyLanguage.md)
 
@@ -9,7 +10,7 @@
 
 - [linux系统编程](Linux_system_programing/Linux_system_program.md)
 - [linux网络编程](Linux_network_programming/Linux_network_program.md)
-- [sqlite](./Sqlite/sqlite.md)
+- [sqlite](Sqlite/sqlite.md)
 
 
 ## 单片机
