@@ -567,13 +567,13 @@ int fsetpos(FILE *stream, const fpos_t *pos);
 ## 条件编译
 
 ```c
-#undef
+#undef  // 取消宏定义
 
 
 // 条件编译
 #ifdef 
 #else 
-#endif7
+#endif
 
 #ifndef
 
@@ -583,23 +583,15 @@ int fsetpos(FILE *stream, const fpos_t *pos);
 
 ```
 
-## 预定义宏
 
 
+## blog
 
+setbuf
 
-## 内联函数
+io缓冲输出与内核缓冲
 
-
-
-
-## 调试技巧
-
-### 断言库 assert
-
-
-
-
+signal
 
 
 

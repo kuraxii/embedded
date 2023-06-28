@@ -47,3 +47,18 @@
 定义 
 - 头指针指向对头元素，尾指针指向队尾的下一个位置。(这里的指针都是为指针，实际是数组序号)
 - 为了区分队满与对空，则定义一个存储空间为MAX_QSIZE大小的队列只允许存放MAX_QSIZE-1个数据
+
+```c
+typedef struct node{
+    Data data;
+    struct node* next;
+}NODE;
+
+typedef struct stack{
+    NODE *head;
+    NODE *top;
+    int len;
+}STACK;
+
+```
+
