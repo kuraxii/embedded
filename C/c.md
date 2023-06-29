@@ -459,7 +459,7 @@ day = one; // 为枚举类型赋值
 
 
 
-## 标准文件IO
+## STD I/O
 
 ```c
 #include <stdio.h>
@@ -468,26 +468,49 @@ day = one; // 为枚举类型赋值
 fopen
 ```c
 FILE *fopen(const char *pathname, const char *mode);
+// mode：打开的方式
+// 	r：只读的方式打开
+// 	r+：读写的方式打开
+// 	w：文件存在则清空，文件不存在则创建。以只写的方式打开
+// 	w+：文件存在则清空，文件不存在则创建。以读写的方式打开
+// 	a：文件存在则在文件末尾写入，文件不存在则创建。只写
+// 	a+：文件存在则在文件末尾写入，文件不存在则创建。读写
 FILE *fdopen(int fd, const char *mode);
+// fd：要转换的文件描述符。
+// mode：指定文件流的访问模式，可以是以下之一："r"（读取）、"w"（写入）、"a"（追加写入）和 "b"（二进制模式）。
+// 函数返回一个指向 FILE 结构的指针，该结构代表了与给定文件描述符相关联的文件流。我们可以通过这个指针来执行各种文件操作，比如读取、写入、关闭等。
+// 使用 fdopen 可以将底层的文件描述符绑定到高级的文件流，这样就可以使用标准库提供的更多文件操作函数，如 fprintf、fscanf 等，方便对文件进行读写操作。
 FILE *freopen(const char *pathname, const char *mode, FILE *stream);
+// 当调用 freopen 函数时，它会做以下操作：
+// 打开或创建一个新的文件，这取决于提供的文件名和模式。
+// 关联文件描述符（stdin、stdout 或 stderr）与新打开的文件。
+// 返回指向 FILE 结构体的指针，以便后续对流的操作。
 ```
 
 fgetc
 ```c
 int fgetc(FILE *stream);
+// 按流从文件中读取一个字符
+int getc(FILE *stream); 
+// getc() is equivalent to fgetc() except that it may be implemented as a macro which evaluates stream more  than once.
 char *fgets(char *s, int size, FILE *stream);   // fgets 会读取行中的 \n
-int getc(FILE *stream); // getc() is equivalent to fgetc() except that it may be implemented as a macro which evaluates stream more  than once.
+// str：指向字符数组的指针，用于存储读取的字符串数据。
+// n：要读取的最大字符数（包括终止空字符）。
+// stream：指向要读取的文件的指针。
+// fgets 函数会从指定的文件流（通常是 stdin 标准输入流或打开的文件）中读取一行数据，并将其存储到提供的字符数组中。它会连同换行符一起读取并存储，因此可以处理包含空格的输入。
 int getchar(void);
+// 从标准输入中读取一个字符，通常用于清掉缓冲区中的\n
 int ungetc(int c, FILE *stream);
+// ungetc 常用于将字符推回到输入流中。它是在 <stdio.h> 头文件中声明的，并常用于在读取字符后进行回退操作。
 ```
 
 fputc
 ```c
 int fputc(int c, FILE *stream);
-int fputs(const char *s, FILE *stream);
 int putc(int c, FILE *stream);//  putc()  is equivalent to fputc() except that it may be implemented as a macro which evaluates stream more than once.
+int fputs(const char *s, FILE *stream);
 int putchar(int c);
-int puts(const char *s);
+int puts(const char *s);  // 会在字符串末尾自动加上\n
 ```
 
 fprintf fscanf
@@ -515,7 +538,7 @@ int fsetpos(FILE *stream, const fpos_t *pos);
 
 格式
 ```c
-#define MAX(a, b) (a > b? a : b)
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 ```
 
 ### 用宏参数创建字符串 #运算符
