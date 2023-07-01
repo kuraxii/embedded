@@ -4,7 +4,7 @@ obj = $(patsubst %.c,%.out,$(src))
 ALL:$(obj)
 
 $(obj):%.out:%.c
-	gcc $< -o $@
+	gcc $< -o $@ -g
 
 
 

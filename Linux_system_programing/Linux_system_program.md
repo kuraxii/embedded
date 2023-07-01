@@ -2,16 +2,69 @@
 
 # Linux 系统编程
 
+## time
+```c
+#include <time.h>
+time_t time(time_t *tloc);
+// 功能：计算从1970-1-1 00:00:00	到现在过了多少秒
+// 返回值：成功返回这个秒数
+// tloc：作为实参也可以获取秒数
+```
+
+时间格式
+```c
+char *ctime(const time_t *timep);
+// 功能：把过了多少秒的数据直接转换成年月日这种格式的字符串
+// 返回值：成功返回字符串的地址，失败返回NULL
+// timep：通过time函数得到的秒数
+
+char *asctime(const struct tm *tm);
+// 功能：将存储为结构的时间转换为字符串
+// 返回值：成功返回字符串的地址，失败返回NULL
+// tm：时间结构体
+// 		struct tm {
+//                int tm_sec;    /* Seconds (0-60) */
+//                int tm_min;    /* Minutes (0-59) */
+//                int tm_hour;   /* Hours (0-23) */
+//                int tm_mday;   /* Day of the month (1-31) */
+//                int tm_mon;    /* Month (0-11) */
+//                int tm_year;   /* Year - 1900 */
+//                int tm_wday;   /* Day of the week (0-6, Sunday = 0) */
+//                int tm_yday;   /* Day in the year (0-365, 1 Jan = 0) */
+//                int tm_isdst;  /* Daylight saving time */
+//            };
+```
+```c
+struct tm *gmtime(const time_t *timep);
+// 功能：转换时间格式，把秒数转换成结构体（世界标准时间）
+// 返回值：成功返回结构体的地址，失败NULL
+// timep：time函数得到的秒数
+
+
+struct tm *localtime(const time_t *timep);
+// 功能：转换时间格式，把秒数转换成结构体（本地时间）
+// 返回值：成功返回结构体的地址，失败NULL
+// timep：time函数得到的秒数
+```
+
+
 ## 文件I/O
 
 ```c
-open #include <unistd.h>所包含
+open #include <fcntl.h>
 int open(const char *pathname, int flags);
 int open(const char *pathname, int flags, mode_t mode);
 //flag常用参数(使用头文件fcntl.h)
-O_RDONLY  O_WRONLY  O_RDWR #读 写 读写权限 
-O_APPEND O_CREAT O_EXCL O_TRUNC O_NONBLOCK
+// O_RDONLY  O_WRONLY  O_RDWR #读 写 读写权限 
+// O_APPEND 以追加的方式打开
+// O_CREAT  文件不存在则创建
+// O_EXCL  和creat一起用，文件不存在报错
+// O_TRUNC  从0截断文件
+// O_DIRECTORY 如果不是目录则出错
+// O_NONBLOCK  设置非阻塞
+// O_DIRECT 跳过内核缓冲区高速缓存
 //创建文件时，指定文件访问权限。权限同时受umask影响。结论为
+
 //文件权限 = mod & ~umask
 
 //常见错误
@@ -117,7 +170,8 @@ PCB(process control block) 进程控制块  本质：结构体
 ### fcntl 改打开文件属性
 
 ```c
-int flags = fcntl(fd, F_GETFL);
+int flags = int fcntl(int fd, int cmd, ... /* arg */ );
+// cmd
 //获取文件状态 F_GETFL
 //设置文件状态 F_SETFL
 ```
@@ -129,35 +183,35 @@ demo
 
 int main(void)
 {
- char buf[10];
- int flags, n;
+    char buf[10];
+    int flags, n;
 
- flags = fcntl(STDIN_FILENO, F_GETFL); //获取stdin属性信息
- if(flags == -1){
-  perror("fcntl error");
-  exit(1);
- }
- flags |= O_NONBLOCK;
- int ret = fcntl(STDIN_FILENO, F_SETFL, flags);
- if(ret == -1){
-  perror("fcntl error");
-  exit(1);
- }
+    flags = fcntl(STDIN_FILENO, F_GETFL); //获取stdin属性信息
+    if(flags == -1){
+        perror("fcntl error");
+        exit(1);
+    }
+    flags |= O_NONBLOCK;
+    int ret = fcntl(STDIN_FILENO, F_SETFL, flags);
+    if(ret == -1){
+        perror("fcntl error");
+        exit(1);
+    }
 
 tryagain:
- n = read(STDIN_FILENO, buf, 10);
- if(n < 0){
-  if(errno != EAGAIN){  
-   perror("read /dev/tty");
-   exit(1);
-  }
-  sleep(3);
-  write(STDOUT_FILENO, MSG_TRY, strlen(MSG_TRY));
-  goto tryagain;
- }
- write(STDOUT_FILENO, buf, n);
+    n = read(STDIN_FILENO, buf, 10);
+    if(n < 0){
+        if(errno != EAGAIN){  
+            perror("read /dev/tty");
+            exit(1);
+        }
+        sleep(3);
+        write(STDOUT_FILENO, MSG_TRY, strlen(MSG_TRY));
+        goto tryagain;
+    }
+    write(STDOUT_FILENO, buf, n);
 
- return 0;
+    return 0;
 }
 
 ```
@@ -302,6 +356,27 @@ int lstat(const char *path, struct stat *buf);
 // 参数：
 // path: 文件路径
 // buf: (传出参数) 存放文件属性
+// statbuf：获取的属性存放的结构体
+// 		struct stat {
+//                dev_t     st_dev;         /* ID of device containing file */
+//                ino_t     st_ino;         /* Inode number */
+//                mode_t    st_mode;        /* File type and mode */
+//                nlink_t   st_nlink;       /* Number of hard links */
+//                uid_t     st_uid;         /* User ID of owner */
+//                gid_t     st_gid;         /* Group ID of owner */
+//                dev_t     st_rdev;        /* Device ID (if special file) */
+//                off_t     st_size;        /* Total size, in bytes */
+//                blksize_t st_blksize;     /* Block size for filesystem I/O */
+//                blkcnt_t  st_blocks;      /* Number of 512B blocks allocated */
+
+//                struct timespec st_atim;  /* Time of last access */
+//                struct timespec st_mtim;  /* Time of last modification */
+//                struct timespec st_ctim;  /* Time of last status change */
+
+//            #define st_atime st_atim.tv_sec      /* Backward compatibility */
+//            #define st_mtime st_mtim.tv_sec
+//            #define st_ctime st_ctim.tv_sec
+//           };
 // 返回值:
 //   成功 0
 //   失败 -1 errno
@@ -445,6 +520,15 @@ int main(void)
 DIR *opendir(const char* name); //打开文件夹  成功返回DIR*  失败返回NULL
 int closedir(DIR *dirp);  //关闭文件夹 
 struct dirent *readdir(DIR* dirp); //读文件夹  获取目录     失败返回NULL
+
+// struct dirent {
+//        ino_t          d_ino;       /* Inode number */
+//        off_t          d_off;       /* Not an offset; see below */
+//        unsigned short d_reclen;    /* Length of this record */
+//        unsigned char  d_type;      /* Type of file; not supported
+//                                       by all filesystem types */
+//        char           d_name[256]; /* Null-terminated filename */
+//    };
 ```
 
 ###### 递归遍历目录
@@ -469,7 +553,7 @@ void read_dir(char *dir)
   while ((sdp = readdir(dp)) != NULL)
   {
     // 去除掉 . .. 目录，以防止无线递归
-    if (!strcmp(sdp->d_name, ".") | !strcmp(sdp->d_name, ".."))
+    if (!strcmp(sdp->d_name, ".") || !strcmp(sdp->d_name, ".."))
     {
       continue;
     }
@@ -527,7 +611,8 @@ int main(int argc, char *argv[])
 
 ```c
 int dup(int oldfd);  //返回值为新的文件描述符
-int dup2(int oldfd,int newfd); //dupto 使newfd指向oldfd指向的文件 newfd->oldfd oldfd必须为有效的文件描述符 返回值为newfd
+int dup2(int oldfd,int newfd); //dupto 使oldfd覆盖new指向的文件，并关闭newfd newfd->oldfd oldfd必须为有效的文件描述符 返回值为newfd
+// 使用dup得到的的新的文件描述符均指向同一个文件表
 ```
 
 example
