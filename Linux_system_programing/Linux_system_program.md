@@ -45,6 +45,13 @@ struct tm *localtime(const time_t *timep);
 // 功能：转换时间格式，把秒数转换成结构体（本地时间）
 // 返回值：成功返回结构体的地址，失败NULL
 // timep：time函数得到的秒数
+
+size_t strftime(char *buf, size_t max, const char *format, const struct tm *tm);
+// 功能：转换时间格式，将结构体中的时间数据格式化转换为字符串
+// 返回值,成功返回字符串大小 失败-1设置errno
+
+char *strptime(const char *s, const char *format, struct tm *tm);
+// 功能：将字符串格式化转换为tm中的各种值
 ```
 
 
