@@ -684,6 +684,28 @@ int main(int argc,char *argv[])
 程序：死的，只占用磁盘空间
 进程：活得，运行起来的程序。占用内存，cpu等系统资源
 
+## 进程相关命令
+
+```shell
+ps # 显示进程
+
+top 
+
+nice # Linux nice命令以更改过的优先序来执行程序，如果未指定程序，则会印出目前的排程优先序，内定的 adjustment 为 10，范围为 -20（最高优先序）到 19（最低优先序）
+
+renice # 新调整进程执行的优先
+
+kill   # 发送信号
+
+bg  # 用于将作业放到后台运行，使前台可以执行其他任务
+
+fg # 用于将后台运行的或挂起的任务（或作业）切换到前台运行
+
+
+jobs # 显示后台程序
+
+```
+
 ### 虚拟内存和物理内存的映射关系
 
 ```https://www.bilibili.com/video/BV1KE411q7ee?p=77&spm_id_from=pageDriver&vd_source=a1edf3ad63e77272acbd0c1f89c365d6```
@@ -826,6 +848,20 @@ int execle(const char *pathname, const char *arg, .../* 可写多个参数 */);
 int execv(const char *pathname, char *const argv[]);
 int execvp(const char *file, char *const argv[]); 
 int execvpe(const char *file, char *const argv[],char *const envp[]);
+
+// 可执行文件查找方式
+// 表中的前四个函数的查找方式都是指定完整的文件目录路径，而最后两个函数(以p结尾的函
+// 数)可以只给出文件名，系统会自动从环境变量“$PATH”所包含的路径中进行查找。
+
+// 参数表传递方式
+// 两种方式：逐个列举或是将所有参数通过指针数组传递
+// 以函数名的第五位字母来区分，字母为“l”(list)的表示逐个列举的方式；字母为
+// “v”(vertor)的表示将所有参数构造成指针数组传递，其语法为char *const argv[]
+
+// 环境变量的使用
+// exec函数族可以默认使用系统的环境变量，也可以传入指定的环境变量。这里，以
+// “e”(Enviromen)结尾的两个函数execle、execve就可以在envp[]中传递当前进程所使用的
+// 环境变量
 ```
 
 #### execlp函数
@@ -867,13 +903,13 @@ int execlp(const char *file, const char *arg, .../* (char  *) NULL */);
 父进程调用wait函数可以回收子进程终止信息。该函数有3个功能：
 
 1. 阻塞等待子进程退出
-2. 回收子进程残留资源‘
+2. 回收子进程残留资源
 3. 回去子进程结束状态（退出原因）
 
 ```c
 
 #include <sys/types.h>
-#include <sys/wait.h>
+#include <sys/wait.h>v
 pid_t wait(int *status); 
 /*函数作用 1.阻塞等待子进程退出
           2.清理子进程残留的pcb资源
@@ -911,7 +947,7 @@ WIFEXITED(status);  //为非0 -> 进程正常结束
   WEXITSTATUS(status); //如上宏为非0 -> 获取进程退出状态
 
 WIFSIGNALED(status); //为非0 -> 进程异常终止
-  WTERMSIGN(status);  //如上宏为真-> 取得进程暂停的那个信号
+  WTERMSIGN(status);  //如上宏为真-> 取得进程终止的那个信号
 
 WIFSTOPPED(status);   //为非0 -> 进程暂停
   WSTOPSIG(status);  //如上宏为真 -> 取得进程暂停的那个信号
@@ -1029,6 +1065,10 @@ int main(int argc,char *argv[])
 
 
 ```
+
+### exit函数
+
+
 
 ## 进程通信
 
@@ -1407,8 +1447,8 @@ Linux内核的进程控制块PCB是一个结构体，task_struct,除了包含进
 16. SIGSTKFLT  Linux早期版本出现的信号，现仍保留向后兼容。默认动作为终止进程。
 17. `SIGCHLD`  子进程状态发生变化时，父进程会收到这个信号。默认动作为忽略这个信号
 18. SIGCONT  如果进程已停止，则使其继续运行。默认动作为继续/忽略。
-19. **`S0lGSTOP`**  停止进程的执行。信号不能被忽略，处理和阻塞。默认动作为暂停进程。
-20. SIGTSTP  停止终端交互进程的运行。按下<ctrltz>组合键时发出这个信号。默认动作为暂停进程。
+19. **`SIGSTOP`**  停止进程的执行。信号不能被忽略，处理和阻塞。默认动作为暂停进程。
+20. SIGTSTP  停止终端交互进程的运行。按下<ctrl + z>组合键时发出这个信号。默认动作为暂停进程。
 21. SIGTTIN  后台进程读终端控制台。默认动作为暂停进程。
 22. SIGTTOU  该信号类似于SIGTTIN，在后台进程要向终端输出数据时发生。默认动作为暂停进程。
 23. SIGURG  套接字上有紧急数据时，向当前正在运行的进程发出些信号，报告有紧急数据到达。如网络带清收据到达，默认动作为忽略该信号。
