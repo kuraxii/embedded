@@ -915,7 +915,7 @@ pid_t wait(int *status);
           2.清理子进程残留的pcb资源
           3.通过传出参数，得到走进从结束状态
           */
-//返回 -1表示失败
+//返回 -1表示失败或者没有子进程
 //传出参数 status 表示子进程退出状态 
 //运行时会阻塞，当子进程结束时才会继续运行
 
@@ -1522,8 +1522,8 @@ setitimer
 int setitimer(int which, const struct itimerval *new_value, struct itimerval *old_value);
 // 参数：which 指定计时方式
 //      1. 自然定时  ITIMER_REAL -> SIGALRM   计算自然时间
-//      2. 虚拟空间计时(用户空间) -> SIGVTALRM   只计算进程占用cpu的时间
-//      3. 运行时计时(用户+内核) -> SIGPROF  计算占用cpu及执行系统调用的时间,
+//      2. 虚拟空间计时(用户空间)ITIMER_VIRTUAL -> SIGVTALRM   只计算进程占用cpu的时间
+//      3. 运行时计时(用户+内核)ITIMER_PROF -> SIGPROF  计算占用cpu及执行系统调用的时间,
 // new_val 定时秒数
 // old_val 传出参数。上次定时剩余时间
     // it_interval 用来设定两次定时任务之间间隔的时间
