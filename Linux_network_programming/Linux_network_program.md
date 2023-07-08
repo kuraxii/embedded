@@ -50,7 +50,7 @@ IP地址+端口号:可以在网络环境中，唯一标识一个进程。
 一个文件描述符指向一个套接字（该套接字内部由内核借助两个缓冲区实现）
 在通信过程中，套接字一定使成对出现的
 
-### 网络字节序
+### 字节序
 
 我们已经知道，内存中的多字节数据相对于内存地址有大端和小端之分，磁盘文件中的多字节数据相对于文件中的偏移地址也有大端小端之分。网络数据流同样有大端小端之分，那么如何定义网络数据流的地址呢﹖发送主机通常将发送缓冲区中的数据按内存地址从低到高的顺序发出，接收主机把从网络上接到的字节依次保存在接收缓冲区中，也是按内存地址从低到高的顺序保存，因此，网络数据流的地址应这样规定:先发出的数据是低地址，后发出的数据是高地址。
 TCP/IP 协议规定，网络数据流应采用大端字节序，即低地址高字节。例如上一节的UDP段格式，地址0-1是16位的源端口号，如果这个端口号是1000
@@ -91,7 +91,7 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 //   size：传出参数的大小
 
 // 返回值：
-//   成功：电视台
+//   成功：返回地址字符串指针
 //   失败：NULL 
 ```
 
@@ -101,6 +101,7 @@ sockaddr地址结构
 ![sockaddr地址结构](Linux_network_program.assets/sockaddr.png)
 
 ```c
+// IPv4域用sockaddr_in
 struct sockaddr_in {
   sa_family_t    sin_family; /*address family: AF_INET*/
   in_port_t      sin_port;   /*port in network byte order*/
@@ -147,13 +148,17 @@ bind(fd, (struct sockaddr*)&addr, size);
 |                          | close()                        |
 |                          |                                |
 
-#### 函数介绍
+#### 建立连接
 
 ```c
 #include <sys/socket.h>
 int socket(int domain, int type, int protocol);  // 创建套接字
 // 参数：
-//   domain  指定ip地址协议  AF_INET、AF_INET6、AF_UNIX
+//   domain  指定ip地址协议    AF: address family
+//              AF_INET IPv4因特网域
+//              AF_INET6 IPv6伊因特网域
+//              AF_UNIX UNIX域，本地套接字
+//              AF_UPSPEC 未指定
 //   type   指定数据传输协议  SOCK_STREAM（TCP）   SOCK_DGRAM（UDP）
 //   protocol   一般传0
 // 返回值：
@@ -161,14 +166,16 @@ int socket(int domain, int type, int protocol);  // 创建套接字
 //   失败：-1 errno
 
 int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen); // 给socket绑定一个地址结构（ip port）
-参数：
-  socketfd 套接字的文件描述符
-  addr 传入参数 地址结构
-  addrlen 地址结构大小 sizeof()
+// 对于因特网域，如果指定卫地址为 INADDR_ ANY (<netinet/in.h>中定义的），套接字端点可以技我定到所有的系统网络接口.上。这意味着可以接收这个系统所安装的任何一个网卡的数据包。在下一节中可以看到，如果调用 connect 或 1isten，但没有将地址鄉定到套接字上，系统会选一个地址綁定到套接字上。
+// 可以调用 getsockname 函数来发现鄉定到套接字上的地址。
+// 参数：
+//   socketfd 套接字的文件描述符
+//   addr 传入参数 地址结构
+//   addrlen 地址结构大小 sizeof()
 
-返回值：
-  成功 0
-  失败 -1 errno 
+// 返回值：
+//   成功 0
+//   失败 -1 errno 
 
 int listen(int sockfd, int backlog);  // 设置同时与服务器建立链接的上限数
 // 参数：
@@ -190,12 +197,13 @@ int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);  // 阻塞等
 
 
 int connect(int sockfd, const struct sockaddr *addr,socklen_t addrlen);  //连接服务端
-参数：
-  socket :socket函数返回值
-  addr： 服务器的地址结构
-  addrlen: 服务器地址结构大小
-返回值：
-
+// 参数：
+//   socket :socket函数返回值
+//   addr： 服务器的地址结构
+//   addrlen: 服务器地址结构大小
+// 返回值：
+//     成功：0
+//     失败：-1
 
 ```
 
@@ -740,6 +748,7 @@ int main(int argc,char *argv[])
   char buf[BUFSIZ];
   struct sockaddr_in ser_addr, client_addr;
   socklen_t client_addr_len = sizeof(client_addr);
+  
   struct pollfd fds[FD_SETSIZE];
   for(i = 0; i < FD_SETSIZE; i++){
     fds[i].fd = -1;
@@ -1200,46 +1209,54 @@ client：
 ```c
 #include <sys/socket>
 ssize_t recv(int sockfd, void *buf, size_t len, int flags);
-参数：
-    sockfd: 
-    buf
-    len
-    flags
+// 参数：
+//     sockfd 套接字
+//     buf 数据缓冲区
+//     len 缓冲区大小
+//     flags 一般传0
 
-返回值：
+// 返回值：
+//     成功： 接收数据的字节数
+//     失败：-1 errno
+//     0 对端关闭
 
 ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);  // 接收对端的消息
-参数： 
-    sockfd     监听lfd
-    buf        数据缓冲区
-    len        缓冲区大小
-    flags      一般传0
-    src_addr   传出参数 发送端地址结构
-    addrlen    传入传出  
+// 参数： 
+//     sockfd     监听lfd
+//     buf        数据缓冲区
+//     len        缓冲区大小
+//     flags      一般传0
+//     src_addr   传出参数 发送端地址结构
+//     addrlen    传入传出  
 
-返回值：
-    成功： 接收数据的字节数
-    失败： -1 errno
-    0 对端关闭
+// 返回值：
+//     成功： 接收数据的字节数
+//     失败： -1 errno
+//     0 对端关闭
 
 ssize_t send(int sockfd, const void *buf, size_t len, int flags);
-参数：
-
-返回值：
+// 参数：
+//     sockfd 发送端对应套接字
+//     buf 数据缓冲区
+//     len 发送数据的大小
+//     flags 一般传0
+// 返回值：
+//     成功：发送的数据大小
+//     失败：-1 errno
 
 
 ssize_t sendto(int sockfd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen);  // 发送数据给对端
-参数：
-    sockfd     发送端 套接字
-    buf        数据缓冲区
-    len        数据大小
-    flags      一般传0
-    src_addr   传入参数 接收端地址结构
-    addrlen    传入传出  
+// 参数：
+//     sockfd     发送端 套接字
+//     buf        数据缓冲区
+//     len        数据大小
+//     flags      一般传0
+//     src_addr   传入参数 接收端地址结构
+//     addrlen    传入传出  
 
-返回值：
-    成功： 写出数据字节数
-    失败： -1 errno
+// 返回值：
+//     成功： 写出数据字节数
+//     失败： -1 errno
 
 ```
 
@@ -1256,6 +1273,7 @@ int main(int argc, char *argv[])
 
     int opt = 1;
     setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
     struct sockaddr_in ser_addr, cli_addr;
     socklen_t cli_addr_len = sizeof(cli_addr); 
     ser_addr.sin_family = AF_INET;
@@ -1314,7 +1332,7 @@ int main(int argc,char *argv[])
 
 ### 本地套接字 CS模型
 
-IPC：pipe  fifo mmap  信号  本地套接字
+IPC：pipe  fifo mmap 信号 信号量  本地套接字
 
 对比网络编程TCP CS模型，注意一下几点
 
@@ -1413,12 +1431,3 @@ int main(int argc,char *argv[])
     return 0;
 }
 ```
-
-
-
-
-
-
-
-
-
