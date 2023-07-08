@@ -1225,6 +1225,112 @@ int main(int argc,char *argv[])
 
 ### 存储映射
 
+#### shm函数
+
+- 键和标识符
+
+每个内核中的IPC结构（消息队列，信号量，或共享存储段）都用一个非负整数的标识符加以应用
+
+ftok函数的唯一服务就是由一个路径和项目id生成一个键
+```c
+#include<sys/ipc.h>
+key_t ftok(const char* path, int id);
+
+```
+
+```c
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+int shmget(key_t key, size_t size, int shmflg);  // 创建内存共享区，并生成与键相关联的标识符
+//参数：
+    // key 共享内存的唯一标识， 可使用ftok函数生成，也可以自定义
+    // size 共享内存的大小
+    // shmflag shmflg是权限标志， 当使用ICP_CREAT标志时，应或上内存共享区的权限
+// 返回值
+    // 返回键对应的标识符
+    // 失败 -1
+int shmctl(int shmid, int cmd, struct shmid_ds *buf);
+// 参数：
+//  shmid: 共享内存唯一标识的别名，shmget的返回值
+//  cmd: 指定下列5种命令的一种
+//         IPC_STAT  取此段的shmid_ds结构，并将它存储在由buf指向的结构体中
+//         IPC_SET   按buf中的值设置shmid_ds
+//         IPC_RMID  从系统中删除该共享段
+//        下面两种linux提供
+//         SHM_LOCK   对共享存储段加锁
+//         SHM_UNLOCK
+//  返回值：
+//      返回：共享内存的标识符
+//      失败： -1
+void *shmat(int shmid, const void *shmaddr, int shmflg); // 打开内存共享区
+// 参数：
+//  shmid: 享内存唯一标识的别名，shmget的返回值
+//  shmaddr: 一般传0，指定由内核选择共享内存在第一个可用的地址上
+//  shmflag: 
+// 返回值：
+// 成功：返回指向共享内存的首地址
+// 失败：-1
+int shmdt(const void *shmaddr);  // 关闭内存共享区
+// 参数：shmaddr 之前shmat的返回值
+//  返回值：0
+//  失败： -1
+
+```
+
+example
+
+```c
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+#include <sys/ipc.h>
+#include <stdio.h>
+#define shmSIZ 4096
+
+int main()
+{
+    // 创建共享内存区
+    key_t key = ftok(".", 'a');  // 生成一个比容易重复的键值
+    if(key == -1)
+    {
+        perror("ftok");
+        exit(-1);
+    }
+
+    int shmid = shmget(key, shmSIZ, 0666 | IPC_CREAT); // 获得共享内存的标识符，如果没有则创建
+    if(shmid == -1)
+    {
+        perror("shmget");
+        exit(-1);
+    }
+
+    // 打开共享内存
+    char* shm = shmat(shmid, 0, 0);  // 以读写方式打开
+    if(shm == (char*)-1)
+    {
+        perror("shmat");
+        exit(-1);
+    }
+    // 这里可以对共享内存进型读写操作
+    
+
+    int ret = shmdt(shm);   // 关闭共享内存
+    if(ret == -1)
+    {
+        perror("shmdt");
+        exit(-1);
+    }
+
+
+    // 对共享内存进行设置
+    ret = shmctl(shmid, IPC_RMID, NULL); // 删除共享内存
+
+}
+```
+
+
 #### mmap函数原理
 
 ```c
@@ -1245,6 +1351,8 @@ int munmap(void *addr, size_t length); //释放共享内存映射区
 //参数
 // addr （映射区的首地址）mmap的返回值
 // length 映射区的大小
+
+
 
 ```
 
@@ -1379,13 +1487,153 @@ int main(int argc,char *argv[])
 }
 ```
 
-### 信号
+### 信号量
+
+在linux中，有posix标准信号量和sxi标准信号量
+
+posix标准信号量，见线程章节
+
+sxi标准信号量
+
+```c
+#include <sys/sem.h>
+
+int semget(key_t key, int nsems, int semflg);   // 创建打开信号量
+// 参数：
+//     key  信号量的键值，可用过ftok获取
+//     nsems sxi信号量为信号量集，可以有多个信号量，该参数设置信号量的个数
+//     semflg 设置信号量的权限 与 IPC_CTEAT相或则不存在则创建
+int semctl(int semid, int semnum, int cmd, .../* union semun arg */);   // 设置信号量
+union semun{
+    int val;
+    struct semid_ds *buf;
+    unsigned short *array;
+};
+// 参数：
+//      semid 信号标识符
+//      semnum 标识符下第几个信号
+//      cmd 控制命令可以有如下选项
+//          IPC_STAT    从信号量集中获取semid_ds,由arg.buf返回
+//          IPC_SET     按arg.buf中的值设置信号量集buf
+//          IPC_RMID    删除信号量集
+//          GETVAL      获取信号量semnum的值
+//          GETPID      获取信号量semnum的成员SEMPID
+//          GETNCNT     获取信号量semnum的成员SEMNCNT  
+//          GETZCNT     获取信号量semnum的成员SEMZCNT
+//          GETALL     取集合中信号量所有的semnum的值，存储在arg.array中返回
+//          SETALL     设置集合中信号量所有的semnum的值，存储在arg.array中返回
+int semop(int semid, struct sembuf *sops, size_t nsops);   //信号量操作函数
+
+// 参数
+//     semid  信号量集标识符，通过semget获取
+//     sembuf 信号量操作数组
+//     nsops  信号量操作数组的个数
+struct sembuf{
+    unsigned short sem_num;
+    short som_op; // 对信号量操作的数值，为正则加，为负则减
+    short sem_flg;
+};
+
+
+```
+example
+
+使用信号量实现进程的读写同步
+
+```c
+#include <sys/sem.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdlib.h>
+
+int main()
+{
+    struct sembuf p_sb, v_sb;
+
+    int read_semid = semget(128, 1, 0664 | IPC_CREAT);
+    int write_semid = semget(129, 1, 0664 | IPC_CREAT);
+    semctl(read_semid, 0, SETVAL, 0);
+    semctl(write_semid, 0, SETVAL, 1);
+    
+    p_sb.sem_op = -1;
+    p_sb.sem_num = 0;
+    p_sb.sem_flg = 0;
+
+    v_sb.sem_op = 1;
+    v_sb.sem_num = 0;
+    v_sb.sem_flg = 0;
+
+    while(1)
+    {
+        if(semop(read_semid, &p_sb, 1) < 0)
+        {
+            perror("semop");
+        }
+
+        sleep(1);
+        printf("read!\n");
+
+
+        if(semop(write_semid, &v_sb, 1) < 0)
+        {
+            perror("semop");
+        }
+    }
+    return 0;
+}
+```
+
+```c
+#include <sys/sem.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdlib.h>
+
+int main()
+{
+    struct sembuf p_sb, v_sb;
+
+    int read_semid = semget(128, 1, 0664 | IPC_CREAT);
+    int write_semid = semget(129, 1, 0664 | IPC_CREAT);
+    
+    p_sb.sem_op = -1;
+    p_sb.sem_num = 0;
+    p_sb.sem_flg = 0;
+
+    v_sb.sem_op = 1;
+    v_sb.sem_num = 0;
+    v_sb.sem_flg = 0;
+
+    while(1)
+    {
+        if(semop(write_semid, &p_sb, 1) < 0)
+        {
+            perror("semop");
+        }
+        sleep(2);
+        printf("write!\n");
+
+        if(semop(read_semid, &v_sb, 1) < 0)
+        {
+            perror("semop");
+        }
+    }
+    return 0;
+}
+```
+
+
+
+
+## 信号
 
 信号的共性：简单，不能携带大量信息，满足条件才能发送
 信号是软件层面的`中断`。一旦信号产生，无论程序执行到什么位置，必须立刻停止运行，处理信号 ，处理结束，在继续执行后续命令
 所有的信号的产生及处理全部都是由 内核 完成的
 
-#### 与信号相关的事件与状态
+### 与信号相关的事件与状态
 
 产生信号
 
@@ -1462,7 +1710,7 @@ Linux内核的进程控制块PCB是一个结构体，task_struct,除了包含进
 31. SIGSYS:无效的系统调用。默认动作为终止进程并产生core文件。
 32. SIGRTMIN ～(64)SIGATMAX  LINUX的实时信号，它们没有固定的含义(可以由用户自定义)。所有的实时信号的默认动作都为终止进程。
 
-#### kill函数与kill命令
+### kill函数与kill命令
 
 kill命令
 kill -<sign> <pid>
@@ -1501,7 +1749,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-#### alarm函数   setitimer函数
+### alarm函数   setitimer函数
 
 time 命令 查看程序运行时间  实际时间 = 用户时间 + 内核时间 + 等待时间  --》优化瓶颈 I/O
 
@@ -1753,6 +2001,51 @@ int main(int argc,char *argv[])
 }
 ```
 
+使用sigaction实现signal
+
+```c
+#include <stdint.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <signal.h>
+#include <string.h>
+
+__sighandler_t _signal(int signo, __sighandler_t func)
+{
+    struct sigaction nact, oact;
+    nact.sa_handler = func;
+    sigemptyset(&nact.sa_mask);
+
+    if(SIGALRM == signo)
+    {
+#ifdef SA_INTERRUPT
+        nact.sa_flags = SA_INTERRUPT;
+#endif
+    }
+    else
+    {
+        nact.sa_flags = SA_RESTART;
+    }
+
+    sigaction(signo, &nact, &oact);
+    return oact.sa_handler;
+
+}
+
+void handler(int signo)
+{
+    printf("catch the signal: %s\n", strsignal(signo));
+    alarm(2);
+}
+
+int main()
+{
+    _signal(SIGINT, SIG_IGN);
+    while(1);
+    return 0;
+}
+```
+
 ### 慢速系统调用中断
 
 系统调用可分为两类:慢速系统调用和其他系统调用。
@@ -1767,7 +2060,7 @@ int main(int argc,char *argv[])
 2. 信号的处理方式必须是捕捉(默认、忽略都不可以)，中断后返回-1，设置`errno`为`EINTR`(表“被信号中断”)
 3. 可修改sa_flags,参数来设置被信号中断后系统调用是否重启。`SA_INTERRURT` 不重启   `SA_RESTART` 重启。
 
-### 进程守护
+### 进程
 
 Daemon(精灵)进程，是Linux 中的后台服务进程，通常独立于控制终端并且周期性地执行某种任务或等待处理某些发生的事件。一般采用以d结尾的名字。
 Linux后台的一些系统服务进程，没有控制终端，不能直接和用户交互。不受用户登录、注销的影响，一直在运行着，他们都是守护进程。如:预读入缓输出机制的实现;ftp服务器;nfs服务器等。
@@ -1838,6 +2131,51 @@ pid_t setsid(void);   //创建一个会话，并以自己的ID设置进程组ID�
     增加守护进程的灵活性
 5. 关闭文件描述符  根据需要
 6. 开始执行守护进程核心工作守护进程，退出处理程序模型
+
+emample
+```c
+#include <signal.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+int main()
+{
+    pid_t pid;
+    int ret;
+    pid = fork();
+
+    if(pid == -1)
+    {
+        perror("fork");
+        exit(-1);
+    }
+
+    if(pid == 0)
+    {
+        ret = setsid();  // 创建会话，使子进程完全脱离终端
+        if(ret == -1)
+        {
+            perror("setsid");
+            exit(-1);
+        }
+        chdir("./"); // 切换路径到守护进程的工作路径
+
+        umask(0);  //按需求重设umask
+        
+        // 关闭所有的文件描述符
+        for(int i = 0; i < __FD_SETSIZE; i++)
+        {
+            close(i);
+        }
+    }
+    exit(0);  // 父进程退出 使该进程组脱离终端
+
+    return 0;
+}
+
+```
 
 ## 线程
 
@@ -2348,15 +2686,26 @@ void* consumer(void* arg){  //消费者
 相当于初始化值为 N 的互斥量  N值表示可以同时访问共享数据区的线程数
 可以应用于进程与线程
 
+posix标准信号量有未命名信号量命名信号量，类似于管道
+而它们之间的区别也只有创建和销毁有所不同
+
 ```c
 #include <semaphore.h>
 //主要应用函数
-  sem_init()  // 初始化信号量
-  sem_destroy()  // 销毁信号量
-  sem_wait()   //给信号量加锁  信号量--
-  sem_trywait() //非阻塞
-  sem_timewait()  //定时
-  sem_post()  // 给信号量解锁，并发送信号  信号量++
+// 未命名信号量
+sem_init()  // 初始化信号量
+sem_destroy()  // 销毁信号量
+
+// 命名信号量
+
+sem_t *sem_open(const char *name, int oflag, mode_t mode, unsigned int value); // 打开信号量
+int sem_close(sem_t *sem);
+int sem_unlink(const char *name);
+
+int sem_wait()   //给信号量加锁  信号量--
+int sem_trywait() //非阻塞
+int sem_timewait()  //定时
+int sem_post()  // 给信号量解锁，并发送信号  信号量++
 ```
 
 ```c
@@ -2367,7 +2716,7 @@ int sem_init(sem_t *sem, int pshared, unsigned int value);
 // 参数：
 //   sem： 信号量
 //   pshare： 0：线程间同步   1：进程间同步
-//   value：指定同时访问的线程数（N值）
+//   value：指定同时访问的线程数（N值）信号量的初始值
 // 返回值：
 //   成功 0
 //   失败 -1 errno
@@ -2378,6 +2727,28 @@ int sem_destroy(sem_t *sem);
 // 返回值：
 //   成功 0
 //   失败 -1 errno
+
+
+sem_t *sem_open(const char *name, int oflag, mode_t mode, unsigned int value);
+// 参数 name  信号量在文件系统的名字
+//     oflag 当为O_CREAT时，如果信号量不存在，则创建新的
+//     mode  权限
+//     value 指定信号量的初始值
+
+int sem_close(sem_t *sem);  // 关闭信号量
+// 参数：
+//  sem： 信号量
+// 返回值：
+//   成功 0
+//   失败 -1 errno
+
+int sem_unlink(const char *name); // 删除信号量文件，参考ulink
+// 参数：
+//  sem： 信号量
+// 返回值：
+//   成功 0
+//   失败 -1 errno
+
 
 int sem_post(sem_t *sem);  //sem_t ++
 // 参数：
