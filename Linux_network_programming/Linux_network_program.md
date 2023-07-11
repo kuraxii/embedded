@@ -21,7 +21,7 @@
 应用层: http,ftp,nfs,ssh,telnet...
 传输层: TCP UDP
 网络层: IP ICMP IGMP
-链路层: 以太网帧协议, arp协议
+网络接口层: 以太网帧协议, arp协议（ip->mac）
 
 #### 网络传输流程
 
@@ -39,6 +39,7 @@ ARP协议:根据Ip地址获取mac地址。
 TTL: time to live 。设置数据包在路由节点中的跳转上限。每经过一个路由节点，该值-1，减为o的路由，有义务将该数据包丢弃
 源IP:32位。--- 4字节   192.168.1.108---点分十进制IP地址(string) ---二进制
 目的IP:32位。--- 4字节
+ip数据报：
 
 IP地址:可以在网络环境中，唯一标识一台主机。
 端口号:可以网络的一台主机上，唯一标识一个进程。
@@ -93,6 +94,9 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 // 返回值：
 //   成功：返回地址字符串指针
 //   失败：NULL 
+
+in_addr_t inet_addr(const char *cp);
+// ipv4本地字节序转换为网络字节序
 ```
 
 ### sockaddr数据结构
