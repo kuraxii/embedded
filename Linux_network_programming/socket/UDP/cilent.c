@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <errno.h>
@@ -39,7 +40,7 @@ int main(int argc,char *argv[])
 
     }
 
-
+    bzero("x", 5);
 
     return 0;
 }

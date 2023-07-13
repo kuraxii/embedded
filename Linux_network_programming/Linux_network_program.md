@@ -95,6 +95,8 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 //   成功：返回地址字符串指针
 //   失败：NULL 
 
+char *inet_ntoa(struct in_addr in);
+
 in_addr_t inet_addr(const char *cp);
 // ipv4本地字节序转换为网络字节序
 ```
@@ -135,6 +137,22 @@ bind(fd, (struct sockaddr*)&addr, size);
 
 
 ```
+
+### 网络信息检索
+
+gethostname() 获得主机名
+getpeername() 获得与套接口相连的远程协议地址
+getsockname() 获得本地套接口协议地址
+gethostbyname() 根据主机名取得主机信息
+gethostbyaddr() 根据主机地址取得主机信息
+getprotobyname() 根据协议名取得主机协议信息
+getprotobynumber() 根据协议号取得主机协议信息
+getservbyname() 根据服务名取得相关服务信息
+getservbyport() 根据端口号取得相关服务信息
+getsockopt()/setsockopt() 获取/设置一个套接口选项
+ioctl()/fcntl() 设置套接口的工作
+
+
 
 ### socket模型创建流程
 
@@ -381,54 +399,54 @@ void _waitpid(int sig){
 
 int main(int argc,char *argv[])
 {
-  int ret, pid;
-  char buf[1024];
-  int lfd, cfd;
-  signal(SIGCHLD, _waitpid);   //使用信号捕捉，及时处理僵尸进程
-  lfd = socket(AF_INET, SOCK_STREAM, 0);
+    int ret, pid;
+    char buf[1024];
+    int lfd, cfd;
+    signal(SIGCHLD, _waitpid);   //使用信号捕捉，及时处理僵尸进程
+    lfd = socket(AF_INET, SOCK_STREAM, 0);
 
-  struct sockaddr_in ser_addr;
-  ser_addr.sin_family = AF_INET;
-  ser_addr.sin_port = htons(12500);
-  ser_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
-  
-  ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
+    struct sockaddr_in ser_addr;
+    ser_addr.sin_family = AF_INET;
+    ser_addr.sin_port = htons(12500);
+    ser_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+    
+    ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
 
-  ret = listen(lfd, 255);
+    ret = listen(lfd, 255);
 
-  struct sockaddr_in c_addr;
-  socklen_t c_addr_len = sizeof(c_addr);
-  while (1)
-  {
-    cfd = accept(lfd, (struct sockaddr*)&c_addr, &c_addr_len);
-    printf("client connect success: ip = %s port = %d\n",inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
-    pid = fork();
-    if(pid == 0){   //子进程
-      close(lfd);   //fock后立即退出循环，防止后续逻辑混乱
-      break;
-    }else if (pid > 0)   //父进程
+    struct sockaddr_in c_addr;
+    socklen_t c_addr_len = sizeof(c_addr);
+    while (1)
     {
-      close(cfd);
-      continue;
-      
-    }else{   //fork err
-      sys_err("fork err");
+        cfd = accept(lfd, (struct sockaddr*)&c_addr, &c_addr_len);
+        printf("client connect success: ip = %s port = %d\n",inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
+        pid = fork();
+        if(pid == 0){   //子进程
+        close(lfd);   //fock后立即退出循环，防止后续逻辑混乱
+        break;
+        }else if (pid > 0)   //父进程
+        {
+        close(cfd);
+        continue;
+        
+        }else{   //fork err
+        sys_err("fork err");
+        }
+        
+    }
+    if(pid == 0){
+        while(1){
+            ret = read(cfd, buf, sizeof(buf));
+            buf[ret] = '\0';
+            if(ret == 0){
+            break;
+            }
+            printf("from clint: %s", buf);
+        }
+        close(cfd);
     }
     
-  }
-  if(pid == 0){
-     while(1){
-        ret = read(cfd, buf, sizeof(buf));
-        buf[ret] = '\0';
-        if(ret == 0){
-          break;
-        }
-        printf("from clint: %s", buf);
-      }
-      close(cfd);
-  }
-  
-  return 0;
+    return 0;
 }
 ```
 
@@ -494,7 +512,7 @@ int main(int argc,char *argv[])
 
 路IO转接服务器也叫做多任务IO服务器。该类服务器实现的主旨思想是，不再由应用程序自己监视客户端连接，取而代之由内核替应用程序监视文件。
 
-##### sleect
+##### select
 
 解决1024以下客户端时使用select是很合适的，但如果链接客户端过多，select采用的是轮询模型，会大大降低服务器响应效率，不应在select上投入更多精力
 优缺点：
@@ -1187,7 +1205,7 @@ UDP： 无连接的，不可靠的数据包传输   对于不稳定的网络层�
 
 recv()/send()  只能用于TCP通信，代替  read write 
 accept connect  被舍弃
- 
+
 ```c
 server：
   lfd =   socket(AF_INET, SOCK_DGRAM);     //报式协议
@@ -1435,3 +1453,4 @@ int main(int argc,char *argv[])
     return 0;
 }
 ```
+
