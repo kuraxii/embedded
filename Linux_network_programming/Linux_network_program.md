@@ -1,10 +1,10 @@
 [toc]
 
-## linux网络基础
+# linux网络基础
 
-### 七层模型与四层模型及代表协议
+## 七层模型与四层模型及代表协议
 
-#### OSI七层模型
+### OSI七层模型
 
 | OSI参考模型 |      |     TCP/IP模型     |
 | :---------: | :--: | :----------------: |
@@ -16,24 +16,24 @@
 | 数据链路层  | ---> | 网络接口层(链路层) |
 |   物理层    |  ⌋   |                    |
 
-#### TCP/IP协议代表协议
+### TCP/IP协议代表协议
 
 应用层: http,ftp,nfs,ssh,telnet...
 传输层: TCP UDP
 网络层: IP ICMP IGMP
 网络接口层: 以太网帧协议, arp协议（ip->mac）
 
-#### 网络传输流程
+### 网络传输流程
 
 数据没有封装之前，是不能在网络中传递。
 **数据**--封装-->**应用层**--封装-->**传输层**--封装-->**网络层**--封装-->**链路层**
 
-#### 以太网帧协议
+### 以太网帧协议
 
 ARP协议:根据Ip地址获取mac地址。
 以太网帧协议:根据mac地址，完成数据包传输。
 
-#### IP协议
+### IP协议
 
 版本:IPv4、IPv6 -- 4位
 TTL: time to live 。设置数据包在路由节点中的跳转上限。每经过一个路由节点，该值-1，减为o的路由，有义务将该数据包丢弃
@@ -45,13 +45,13 @@ IP地址:可以在网络环境中，唯一标识一台主机。
 端口号:可以网络的一台主机上，唯一标识一个进程。
 IP地址+端口号:可以在网络环境中，唯一标识一个进程。
 
-## Socket编程
+# Socket编程
 
 套接字概念
 一个文件描述符指向一个套接字（该套接字内部由内核借助两个缓冲区实现）
 在通信过程中，套接字一定使成对出现的
 
-### 字节序
+## 字节序
 
 我们已经知道，内存中的多字节数据相对于内存地址有大端和小端之分，磁盘文件中的多字节数据相对于文件中的偏移地址也有大端小端之分。网络数据流同样有大端小端之分，那么如何定义网络数据流的地址呢﹖发送主机通常将发送缓冲区中的数据按内存地址从低到高的顺序发出，接收主机把从网络上接到的字节依次保存在接收缓冲区中，也是按内存地址从低到高的顺序保存，因此，网络数据流的地址应这样规定:先发出的数据是低地址，后发出的数据是高地址。
 TCP/IP 协议规定，网络数据流应采用大端字节序，即低地址高字节。例如上一节的UDP段格式，地址0-1是16位的源端口号，如果这个端口号是1000
@@ -101,7 +101,7 @@ in_addr_t inet_addr(const char *cp);
 // ipv4本地字节序转换为网络字节序
 ```
 
-### sockaddr数据结构
+## sockaddr数据结构
 
 sockaddr地址结构
 ![sockaddr地址结构](Linux_network_program.assets/sockaddr.png)
@@ -138,7 +138,7 @@ bind(fd, (struct sockaddr*)&addr, size);
 
 ```
 
-### 网络信息检索
+## 网络信息检索
 
 gethostname() 获得主机名
 getpeername() 获得与套接口相连的远程协议地址
@@ -154,7 +154,7 @@ ioctl()/fcntl() 设置套接口的工作
 
 
 
-### socket模型创建流程
+## socket模型创建流程
 
 ![socket创建流程](Linux_network_program.assets/socket_create.png)
 
@@ -170,7 +170,7 @@ ioctl()/fcntl() 设置套接口的工作
 |                          | close()                        |
 |                          |                                |
 
-#### 建立连接
+### 建立连接
 
 ```c
 #include <sys/socket.h>
@@ -229,7 +229,7 @@ int connect(int sockfd, const struct sockaddr *addr,socklen_t addrlen);  //连�
 
 ```
 
-#### tcp客户端
+### tcp客户端
 
 ```c
 int main(int argc,char *argv[])
@@ -253,7 +253,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-#### tcp服务端
+### tcp服务端
 
 ```c
 
@@ -296,9 +296,9 @@ int main(int argc,char *argv[])
 }
 ```
 
-### TCP协议
+## TCP协议
 
-#### TCP通信时序
+### TCP通信时序
 
 ![TCP通信时序](Linux_network_program.assets/TCP_Communication_Timing.png)
 
@@ -307,13 +307,13 @@ int main(int argc,char *argv[])
 上标出，例如段2的箭头上标着SYN, 8000(0), ACK1001, ，表示该段中的SYN位置1，32位序号是8000，该段不携带有效载荷（数据字节数为0），
 ACK位置1，32位确认序号是1001，带有一个mss（Maximum Segment Size，最大报文长度）选项值为1024。
 
-##### 三次握手
+#### 三次握手
 
 1. 客户端向主动服务端发送请求。SYN标志位为1，并附带当前包号（1000（0）），以及一个mss（Maximum Segment Size，最大报文长度）
 2. 服务端收到客户端请求，同时对客服端发送连接请求，SYN标志位为1，并附带当前包号（8000（0）），以及缓冲区大小，并且做出应答，ACK标志位为1 附带接收后的对方的包号
 3. 客户端应答服务端请求，发送ACK 附带接收到的包号
 
-##### 数据传输
+#### 数据传输
 
 1. 客户端发出段4，包含从序号1001开始的20个字节数据。
 2. 服务器发出段5，确认序号为1021，对序号为1001-1020的数据表示确认收到，同时请求发送序号1021开始的数据，服务器在应答的同时也向客户端发送从序号8001开始的10个字节数据，这称为piggyback。
@@ -323,7 +323,7 @@ ACK位置1，32位确认序号是1001，带有一个mss（Maximum Segment Size�
 ACK段才知道该数据包确实发到了对方，可以从发送缓冲区中释放掉了，如果因为网络故障丢失了数据包或者丢失了对方发回的ACK段，经过等待超时后TCP协议自动
 将发送缓冲区中的数据包重发
 
-##### 四次挥手
+#### 四次挥手
 
 由于TCP连接是全双工的，因此每个方向都必须单独进行关闭。这原则是当一方完成它的数据发送任务后就能发送一个FIN来终止这个方向的连接。收到一个 FIN只
 意味着这一方向上没有数据流动，一个TCP连接在收到一个FIN后仍能发送数据。首先进行关闭的一方将执行主动关闭，而另一方执行被动关闭。
@@ -336,7 +336,7 @@ ACK段才知道该数据包确实发到了对方，可以从发送缓冲区中�
 建立连接的过程是三方握手，而关闭连接通常需要4个段，服务器的应答和关闭连接请求通常不合并在一个段中，因为有连接半关闭的情况，这种情况下客户端关闭
 连接之后就不能再发送数据给服务器了，但是服务器还可以发送数据给客户端，直到服务器也关闭连接为止。
 
-#### 滑动窗口(TCP流量控制)
+### 滑动窗口(TCP流量控制)
 
 介绍UDP时我们描述了这样的问题：如果发送端发送的速度较快，接收端接收到数据后处理的速度较慢，而接收缓冲区的大小是固定的，就会丢失数据。TCP协议通
 过“滑动窗口（Sliding Window）”机制解决这一问题。看下图的通讯过程：
@@ -356,15 +356,15 @@ ACK段才知道该数据包确实发到了对方，可以从发送缓冲区中�
 上图在接收端用小方块表示1K数据，实心的小方块表示已接收到的数据，虚线框表示接收缓冲区，因此套在虚线框中的空心小方块表示窗口大小，从图中可以看出，随着应用程序提走数据，虚线框是向右滑动的，因此称为滑动窗口。
 从这个例子还可以看出，发送端是一K一K地发送数据，而接收端的应用程序可以两K两K地提走数据，当然也有可能一次提走3K或6K数据，或者一次只提走几个字节的数据。也就是说，应用程序所看到的数据是一个整体，或说是一个流（stream），在底层通讯中这些数据可能被拆成很多数据包来发送，但是一个数据包有多少字节对应用程序是不可见的，因此TCP协议是面向流的协议。而UDP是面向消息的协议，每个UDP段都是一条消息，应用程序必须以消息为单位提取数据，不能一次提取任意字节的数据，这一点和TCP是很不同的。
 
-#### TCP状态转换
+### TCP状态转换
 
-#### 半关闭
+### 半关闭
 
-#### 2MSL
+### 2MSL
 
-#### TCP异常断开
+### TCP异常断开
 
-##### 端口复用
+### 端口复用
 
 在server的TCP连接没有完全断开之前不允许重新监听是不合理的。因为，TCP连接没有完全断开指的是connfd（127.0.0.1:6666）没有
 完全断开，而我们重新监听的是lis-tenfd（0.0.0.0:6666），虽然是占用同一个端口，但IP地址不同，connfd对应的是与某个客户端通
@@ -377,9 +377,9 @@ int opt = 1;
 setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 ```
 
-### 高并发服务器
+## 高并发服务器
 
-#### 多进程并发服务器
+### 多进程并发服务器
 
 使用多进程并发服务器时要考虑以下几点：
 
@@ -450,7 +450,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-#### 多线程并发服务器
+### 多线程并发服务器
 
 在使用线程模型开发服务器时需考虑以下问题：
 
@@ -508,11 +508,11 @@ int main(int argc,char *argv[])
 }
 ```
 
-#### 多路IO转接服务器
+### 多路IO转接服务器
 
 路IO转接服务器也叫做多任务IO服务器。该类服务器实现的主旨思想是，不再由应用程序自己监视客户端连接，取而代之由内核替应用程序监视文件。
 
-##### select
+#### select
 
 解决1024以下客户端时使用select是很合适的，但如果链接客户端过多，select采用的是轮询模型，会大大降低服务器响应效率，不应在select上投入更多精力
 优缺点：
@@ -721,7 +721,7 @@ int main(int argc,char *argv[])
 }
 ```
 
-##### poll
+#### poll
 
 ```c
 #include <poll.h>
@@ -847,7 +847,7 @@ int main(int argc,char *argv[])
 } 
 ```
 
-##### 突破1024文件描述符限制
+#### 突破1024文件描述符限制
 
 ulimit  控制linux的最大资源
 
@@ -873,7 +873,7 @@ ulimit <-参数> <数量> 以修改当前资源限制
 -N 15:                              unlimited
 ```
 
-##### epoll
+#### epoll
 
 ```c
 #include <sys/epoll.h>
@@ -1037,18 +1037,18 @@ int main(int argc,char *argv[])
 }
 ```
 
-###### epoll补充
+##### epoll补充
 
 事件模型：
 EPOLL支持两种事件模型：LT（level trigger）和ET（edge trigger）。
 LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。
 ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。
 
-#### 线程池
+## 线程池
 
 自行理解 [线程池](threadPool/)
 
-##### 线程池模块分析
+### 线程池模块分析
 
 ![线程池思路分析](Linux_network_program.assets/pthreadpool.png)
 
@@ -1097,7 +1097,7 @@ ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应�
     * 解锁
 
 
-##### 线程池数据结构
+### 线程池数据结构
 
 ```c
 struct threadpool_t {
@@ -1131,7 +1131,7 @@ typedef struct {     // 任务结构体
 } threadpool_task_t; 
 ```
 
-##### 线程池操作
+### 线程池操作
 
 ```c
 threadpool_t *threadpool_create(int min_thr_num, int max_thr_num, int queue_max_size);
@@ -1178,13 +1178,13 @@ int threadpool_busy_threadnum(threadpool_t *pool);
 
 ```
 
-#### UDP 服务器
+## UDP 服务器
 
-#### UDP通信过程
+### UDP通信过程
 
 server端
 
-##### TCP和UDP通信优缺点
+### TCP和UDP通信优缺点
 
 TCP： 面向连接，可靠数据包传输 对于不稳定的网络层，采用完全弥补的通信方式 丢包重传
 
@@ -1201,7 +1201,7 @@ UDP： 无连接的，不可靠的数据包传输   对于不稳定的网络层�
 
     * 应用场景： 对时效性要求高，稳定性其次   （游戏，视频会议，视频电话）
 
-#### UDP实现的C/S模型
+### UDP实现的C/S模型
 
 recv()/send()  只能用于TCP通信，代替  read write 
 accept connect  被舍弃
@@ -1227,7 +1227,7 @@ client：
 
 ```
 
-##### TCP UDP 额外的 I/O 函数
+### TCP UDP 额外的 I/O 函数
 ```c
 #include <sys/socket>
 ssize_t recv(int sockfd, void *buf, size_t len, int flags);
@@ -1352,7 +1352,111 @@ int main(int argc,char *argv[])
 }
 ```
 
-### 本地套接字 CS模型
+
+
+### udp多播与组播
+
+udp多播创建模型
+
+发送端
+
+```tex
+socket()
+setsockopt();//设置允许发送广播的选项
+sendto();//地址:广播地址 "192.168.2.255" 端口号:接收方的端口号
+```
+
+接收端
+
+```tex
+socket();
+bind();//ip地址：广播地址或"0.0.0.0" 端口号:与发送端设置的相同
+recvfrom();
+```
+
+
+
+example
+
+```c
+// client
+int main()
+{
+    int ret;
+    int cfd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    struct sockaddr_in ser_addr;
+    ser_addr.sin_addr.s_addr = htonl(0);
+    ser_addr.sin_family = AF_INET;
+    ser_addr.sin_port = htons(9999);
+    socklen_t len = sizeof(ser_addr);
+
+    ret = bind(cfd, (struct sockaddr*)&ser_addr, len);
+    if(ret == -1)
+    {
+        perror("bind");
+        exit(-1);
+    }
+    char buf[1024] = {0};
+    read(cfd, buf, sizeof(buf));
+
+    printf("%s\n", buf);
+    return 0;
+}
+```
+
+```c
+// server
+int main(int argc, char *argv[])
+{
+    int ret;
+    int sfd = socket(AF_INET, SOCK_DGRAM, 0);
+    
+    int opt = 1;
+    ret = setsockopt(sfd, SOL_SOCKET, SO_BROADCAST, &opt, sizeof(opt));
+
+    struct sockaddr_in cli_addr;
+    bzero(&cli_addr, sizeof(cli_addr));
+    cli_addr.sin_addr.s_addr = inet_addr("172.28.111.255");
+    cli_addr.sin_family = AF_INET;
+    cli_addr.sin_port = htons(9999);
+
+    ret = sendto(sfd, "broadcast message", sizeof("broadcast message"), 0, (struct sockaddr*)&cli_addr, sizeof(cli_addr));
+    printf("send to %d\n", ret);
+
+
+
+
+
+    return 0;
+}
+```
+
+
+
+### 超时检测(很有必要)
+
+```tex
+1.方法一
+	setsockopt设置套接字的选项: SO_RCVTIMEO/SO_SNDTIMEO 示例：见timeout/setsockopt
+2.方法二
+	select/poll设置超时 示例:见 timeout/select
+3.设置定时器(timer), 捕捉SIGALRM信号
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 本地套接字 CS模型
 
 IPC：pipe  fifo mmap 信号 信号量  本地套接字
 
