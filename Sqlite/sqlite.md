@@ -204,6 +204,29 @@ int sqlite3_open(char *db_name, sqlite3 **db);
 
 
 int sqlite3_close(sqlite3 *db);
+
+typedef int (*sqlite3_callback)(void *args, int f_num, char **f_value, char **f_name);
+// args 传入回调的参数
+// f_num 记录中字段数目
+// f_value 包含每个字段的值指针数组
+// f_name 字段名称的指针数组
+
+int sqlite3_exec(sqlite3 *db, const char *sql, sqlite3_callback callback, void *, char **errmsg);
+// 功能：执行SQL操作
+// db：数据库句柄
+// sql：SQL语句
+// callback：回调函数
+// errmsg：错误信息指针的地址
+// 返回值：成功返回0，失败返回错误码
+
+int sqlite3_get_table(sqlite3 *db, const char *sql, char ***resultp, int*nrow, int *ncolumn, char **errmsg);
+// 功能：执行SQL操作
+// db：数据库句柄
+// sql：SQL语句
+// resultp：用来指向sql执行结果的指针
+// nrow：满足条件的记录的数目
+// ncolumn：每条记录包含的字段数目
+// errmsg：错误信息指针的地址
+// 返回值：成功返回0，失败返回错误码
 ```
 
-> 执行sql语句

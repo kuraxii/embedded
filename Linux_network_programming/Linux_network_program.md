@@ -1356,9 +1356,9 @@ int main(int argc,char *argv[])
 
 ### udp多播与组播
 
-udp多播创建模型
+#### udp多播创建模型
 
-发送端
+-   发送端
 
 ```tex
 socket()
@@ -1366,7 +1366,7 @@ setsockopt();//设置允许发送广播的选项
 sendto();//地址:广播地址 "192.168.2.255" 端口号:接收方的端口号
 ```
 
-接收端
+-   接收端
 
 ```tex
 socket();
@@ -1432,6 +1432,25 @@ int main(int argc, char *argv[])
 }
 ```
 
+#### udp组播模型
+
+-   发送端
+
+```tex
+chuang'jian
+```
+
+
+
+-   接收端
+
+```tex
+创建用户数据报套接字
+加入多播组
+绑定ip地址(加入组的组ip或0.0.0.0)
+等待接收数据
+```
+
 
 
 ### 超时检测(很有必要)
@@ -1475,7 +1494,7 @@ struct sockaddr_un {
 int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen); 
 
 
-//bind()函数创建成功，会创建一个socket。因此为保证bind成功，通常我们在bind前，可以使用 unlink("srv.sock")
+//bind()函数创建成功，会创建一个socket文件。因此为保证bind成功，通常我们在bind前，可以使用 unlink("srv.sock")
 
 //客户端不能依赖"隐式绑定"。并且应该在通信建立过程中，创建且初始化2个地址结构
 //  1. client_addr --> bind()
