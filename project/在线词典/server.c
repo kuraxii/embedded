@@ -22,20 +22,25 @@ typedef struct
     struct sockaddr_in cli_addr;
     socklen_t addrlen;
 } SOCKMSG;
+
 typedef struct
 {
+    char type;
     char id[20];
-    char passwd[20];
+    char name[20];
+    char data[128];
 } USERMSG;
+
 sqlite3 *db;
 
-int login(int cfd);                                                // 登录
-int signin(int cfd);                                               // 注册
+void WriteCond(int cfd, char c);                                // 写状态封装
+void Write(int cfd, USERMSG msg);                                  // 写数据报封装
+int login(int cfd, USERMSG msg);                                   // 登录
+int signin(int cfd, USERMSG msg);                                  // 注册
 void opendb();                                                     // 打开数据库
 int sockinit(char *ipaddr, unsigned short port);                   // 套接字初始化
-void *thread(void *msg);                                           // 客户端处理线程
+void *thread(void *sockmsg);                                       // 客户端处理线程
 int callback(void *data, int argc, char **argv, char **azColName); // sqlite回调
-void Write(int cfd, char *str);                                    // 写数据封装
 void querydic();                                                   // 查字典
 
 int main(int argc, char *argv[])
@@ -78,10 +83,11 @@ int main(int argc, char *argv[])
     pthread_exit(NULL);
 }
 
-void *thread(void *msg)
+void *thread(void *sockmsg)
 {
-    SOCKMSG *p = (SOCKMSG *)msg;
+    SOCKMSG *p = (SOCKMSG *)sockmsg;
     SOCKMSG climsg;
+    USERMSG usermsg;
     climsg.cfd = p->cfd;
     climsg.cli_addr = p->cli_addr;
     climsg.addrlen = p->addrlen;
@@ -90,7 +96,12 @@ void *thread(void *msg)
     char buf[1024] = {0};
     while (1)
     {
-        ret = read(climsg.cfd, buf, sizeof(buf));
+        ret = read(climsg.cfd, &usermsg, sizeof(usermsg));
+        if (ret != sizeof(usermsg))
+        {
+            printf("read err: ret != sizeof(usermsg)\n");
+            exit(-1);
+        }
         printf("recv: %s\n", buf);
         if (ret == -1)
         {
@@ -104,60 +115,54 @@ void *thread(void *msg)
             close(climsg.cfd);
             pthread_exit(NULL);
         }
-        if (strncmp(buf, "login", 5) == 0) // 登录
+
+        switch (usermsg.type)
         {
-            if ((ret = login(climsg.cfd)) == 0)
+        case 'L': {
+            if ((ret = login(climsg.cfd, usermsg)) == 0)
             {
-                Write(climsg.cfd, "success"); // 登录成功
+                WriteCond(climsg.cfd, 't'); // 登录成功
+                printf("登录成功\n");
+                querydic();
             }
             else if (ret < 0)
             {
-                Write(climsg.cfd, "err"); // 账密错误
+                WriteCond(climsg.cfd, 'f'); // 账密错误
+                printf("账密错误\n");
             }
             else
             {
-                Write(climsg.cfd, "nonexist"); // 账号不存在
+                WriteCond(climsg.cfd, 'n'); // 账号不存在
+                printf("账号不存在\n");
             }
         }
-        else if (strncmp(buf, "signin", 6) == 0) // 注册
-        {
-            if (!signin(climsg.cfd))
-                Write(climsg.cfd, "exist");
+        break;
 
-            Write(climsg.cfd, "success");
+        case 'S': {
+            if (!signin(climsg.cfd, usermsg))
+            {
+                printf("用户存在\n");
+                WriteCond(climsg.cfd, 'e'); // 账号存在
+            }
+            printf("用户不存在\n");
+            WriteCond(climsg.cfd, 't'); // 成功
         }
-        else
-        { // 输入错误
-            write(climsg.cfd, "err", strlen("err"));
+        break;
+        default:
+            WriteCond(climsg.cfd, 'i'); // 输入错误
         }
     }
 }
 
-int login(int cfd)
+int login(int cfd, USERMSG msg)
 {
-    char buf[64] = {0}, sql[255] = {0}, id[20] = {0}, passwd[20] = {0},
-         name[15] = {0}; // 读缓冲区，sql语句，id，passwd，name
-    char *ptr = buf;
-    char *ptrid = id;
-    char **result = NULL;
+    char sql[255] = {0};
     int ret, row, col;
+    char **result = NULL;
+
     char *errmsg = NULL;
 
-   bzero(buf, sizeof(buf));  
-    ret = read(cfd, buf, sizeof(buf));
-    buf[ret] = 0;
-    strcpy(id, ptr);
-    while (*ptr != ' ')
-    {
-        *ptrid++ = *ptr++;
-    }
-    *ptrid = 0;
-    while (*(++ptr) == ' ');
-    strcpy(passwd, ptr);
-
-    printf("-%s-%s-\n", id, passwd);
-
-    sprintf(sql, "select id from user_login where id=\"%s\";", id);
+    sprintf(sql, "select id from user_login where id=\"%s\";", msg.id);
     if (sqlite3_get_table(db, sql, &result, &row, &col, &errmsg) != SQLITE_OK) // 查表检测用户是否已存在
     {
         printf("%s\n", errmsg);
@@ -166,40 +171,32 @@ int login(int cfd)
     printf("row= %d, col= %d\n%p\n", row, col, result);
 
     if (row == 0) // 用户不存在
-    {  
+    {
+        
         return 1; // 不存在
     }
 
     // 用户存在，检查密码是否正确
-    if (strcmp(result[1 * col], passwd) == 0) // 正确
-    { 
-       return 0; // 账密正确
+    if (strcmp(result[1 * col], msg.data) == 0) // 正确
+    {
+        return 0; // 账密正确
     }
     else
-    { 
+    {
         return -1; // 账密错误
-   }
-    
+    }
 }
 
-int signin(int cfd) // 注册
+int signin(int cfd, USERMSG msg) // 注册
 {
 
-    char buf[64] = {0}, sql[255] = {0}, id[20] = {0}, passwd[20] = {0},
-         name[15] = {0}; // 读缓冲区，sql语句，id，passwd，name
-    char *ptr = buf;
-
-    char **result;
+    char sql[255] = {0};
     int ret, row, col;
-    char *errmsg;
+    char **result = NULL;
 
-    read(cfd, buf, sizeof(buf));
-    strcpy(id, ptr);
-    while (*(++ptr) == 0)
-        ;
-    strcpy(passwd, ptr);
+    char *errmsg = NULL;
 
-    sprintf(sql, "select id from user_login where id=\"%s\";", id);
+    sprintf(sql, "select id from user_login where id=\"%s\";", msg.id);
     if (sqlite3_get_table(db, sql, &result, &row, &col, &errmsg) != SQLITE_OK) // 查表检测用户是否已存在
     {
         printf("sqlite3_get_table: %s\n", errmsg);
@@ -212,7 +209,7 @@ int signin(int cfd) // 注册
     }
 
     // 用户不存在，插入表
-    sprintf(sql, "insert into user_login values(\"%s\", \"%s\", \"%s\", %d)", id, passwd, name, 0);
+    sprintf(sql, "insert into user_login values(\"%s\", \"%s\", \"%s\", %d)", msg.id, msg.data, msg.name, 0);
     if (sqlite3_get_table(db, sql, NULL, NULL, NULL, &errmsg) != SQLITE_OK)
     {
         printf("sqlite3_get_table: %s\n", errmsg);
@@ -237,7 +234,7 @@ int sockinit(char *ipaddr, unsigned short port) // 初始化服务端套接字
 
     int opt = 1, ret;
     setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-    if(ret == -1)
+    if (ret == -1)
     {
         perror("setsockopt");
         exit(-1);
@@ -285,11 +282,26 @@ int callback(void *data, int argc, char **argv, char **azColName) // sqlite 回�
     return 0;
 }
 
-void Write(int cfd, char *str)
+void Write(int cfd, USERMSG msg)
 {
     int ret;
-    ret = write(cfd, str, strlen(str));
-    if (ret != strlen(str))
+    ret = write(cfd, &msg, sizeof(msg));
+    if (ret != sizeof(msg))
+    {
+        printf("translate error\n");
+        exit(-1);
+    }
+}
+
+void WriteCond(int cfd, char c)
+{
+    int ret;
+    USERMSG msg;
+    bzero(&msg, sizeof(msg));
+    msg.type = c;
+    
+    ret = write(cfd, &msg, sizeof(msg));
+    if (ret != sizeof(msg))
     {
         perror("write");
         exit(-1);
