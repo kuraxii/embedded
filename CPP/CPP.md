@@ -1,12 +1,50 @@
 # CPP
 
-## 新增特性
+## 从c到c++
 
+### 强制类型转换
+
+```cpp
+static_cast
+const_cast
+reinterpret_cast
+dynamic_cast
+
+float a;
+int b = static_cast<int>(a);
+```
 
 
 ### 带有默认参数的函数
 
+为函数的形参的形参指定默认的参数
+
+默认参数只能写在声明中
+
+```cpp
+void func1(int a, float b = 3.14);
+```
+
+默认参数的使用的规则：
+- 默认参数必须出现在非默认参数之后
+- 一旦出现了一个默认参数，它后面的参数必须是默认参数
+- 一个函数可以全是默认参数
+
+```cpp
+void func1(int a, int b = 5);
+```
+使用规则: 
+    默认参数必须
+
 ### 函数重载
+
+函数名一定相同，参数的个数，参数的顺序一定有某一项不同，返回值不影响函数重载
+```cpp
+int add(int a, int b) { return a + b;}
+float add(float a, float b) { return a + b;}  // 重载
+int add(float a, int b) { return a + b;}    // 重载
+float add(int a, int b) { return a + b;}  // 不是重载
+```
 
 ### 内联函数
 
@@ -33,7 +71,7 @@ inline
     字符替换容易出现意想不到的结果
 
     内联函数由编译器实现，展开在编译时完成
-    内联函数具有函数特性，具有语法检查
+    内联函数具有函数特性，拥有语法检查
 
 eg:
 ```cpp
@@ -147,6 +185,18 @@ std::cout<<"&ref= "<<&ref<<std::endl;
 
 ### 作用域与命名空间
 
+1. 局部域
+2. 名字空间域
+3. 类域
+
+4. 变量的作用域
+    - 局部变量的作用域是局部，
+    - 普通全局变量的作用域是整个项目（别的文件可以访问）
+    - 静态全局变量的作用域是本文件,在别的文件是不可见的
+
+5. 全局函数的作用域
+    - 普通全局函数的作用域是整个项目（别的文件可以访问）
+    - 静态全局函数的作用域是本文件，在别的文件是不可见的
 
 
 ## 面向对象
@@ -157,13 +207,169 @@ std::cout<<"&ref= "<<&ref<<std::endl;
 
 #### class和struct的区别
 
-class默认访问权限 pravite
-struct默认访问权限 public
+class默认访问权限 private，默认继承权限也是 private
+struct默认访问权限 public，默认继承权限也是 public 
 
-### this
+#### this 指针
+
+this 指针是一个隐式变量，在调用类函数时，会自动将类的首地址传给this指针，可以在类内部函数中使用
 
 ### 堆空空间申请
 
-### 构造函数
+new delete
 
-### 析构函数
+### 构造函数 structor
+
+构造函数(也叫构造器)， 在对象创建的时候自动调用，一般用于完成对象的初始化工作
+
+特点
+
+1. 函数名与类同名，无返回值，可以有参数，可以重载，可以有多个构造函数
+2. 一旦自定义了构造函数，必须选择用一个自定义的构造函数来初始化对象
+
+```cpp
+struct Person
+{
+    int age;
+
+     Person()
+     {
+         cout << "Person()" << endl;
+     }
+
+    Person(int age)
+    {
+        if(age < 0)
+        {
+            age = -1;
+        }
+        this->age = age;
+        cout << "Person(int age)" << endl;
+    }
+
+};
+```
+
+### 析构函数 Destructor
+
+析构函数（也叫析构器），在销毁对象的实惠调用，一般用于完成对象后的清理工作
+
+特点
+
+函数名以~开头，与类同名，无返回值，无参，不可以重载，有且只有一个析构函数
+
+通过malloc分配的对象free的时候不会调用构造和析构函数
+
+构造函数与析构函数要设置为public才能正常调用  
+
+
+
+
+### 继承
+
+#### 成员访问权限
+
+public 公共的任何地方都可以访问（struct默认）
+
+protected 子类内部，当前类内部可以访问
+
+private 私有的，只有当前内部类可以访问（class默认）
+
+子类内部访问父类的权限，是一下2项权限最小的那个
+- 成员本身的访问权限
+- 上一级父类的继承方式
+
+开发中用的最多的继承方式是public，这样保留父类原来的成员访问权限
+
+**访问权限不影响类的内存布局**
+
+#### 初始化列表
+
+##### 初始化列表的使用
+- 一种便捷的初始化成员变量的方式
+- 初始化顺序只与成员声明的顺序有关
+- 只能用于构造函数
+- 如果声明和实现是分离的，则初始化列表应位于实现
+
+```cpp
+Person(int age, int height)
+{
+    m_age = age;
+    m_height = height;
+}
+// 等价于
+// 在原始代码的右值能放什么，括号里就可以放什么
+// 括号里的内容和参数列表并无绝对关系
+Person(int age, int height) :m_age(age), m_height(height){}
+
+```
+与函数的默认参数配合
+
+```cpp
+Person(int age = 0, int height = 0) : m_age(m_height), m_height(height){}
+// 可以当作无参构造函数使用
+Person person;
+Person person1(10);
+Person person1(10, 20);
+// 以上写法皆可行
+```
+
+##### 构造函数的互相调用
+
+构造函数的相互调用不能在函数体内直接调用，而应该在初始化列表中调用
+```cpp
+struct Person{
+    int m_age;
+    int m_height;
+
+    Person() : Person(0, 0)  // 调用其他的构造函数
+    {  
+    }
+
+    Person(int age, int height)
+    {
+        m_age = age;
+        m_height = height;
+    }
+
+};
+```
+
+##### 父类的构造函数
+
+- 子类的构造函数在执行自己的代码之前默认会调用父类的无参构造
+- 如果子类的构造函数显示的调用了父类的有参构造函数，就不会再去默认调用父类的无参构造函数
+- 如果父类缺少无参构造函数，子类的 构造函数必须显示的调用父类的构造函数
+
+显示调用
+```cpp
+class Person{
+    int m_age;
+    public:
+    Person()
+    {
+        cout << "Person::Person()" << endl;
+
+    }
+    Person(int age)
+    {
+        m_age = age;
+    }
+};
+
+class Student : Person{
+    int m_no;
+public:
+    Student(int age) : Person(age)
+    {
+        cout << "Student::Student()" << endl;
+
+    }
+};
+```
+
+#### 多继承
+
+
+
+### 多态

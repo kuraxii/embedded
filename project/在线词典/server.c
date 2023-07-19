@@ -336,24 +336,7 @@ void history(SOCKMSG csock, USERMSG cond)
 
     sprintf(sql, "select * from history where id=\"%s\";", cond.id);
 
-    // if (sqlite3_get_table(db, sql, &result, &row, &col, &errmsg) == SQLITE_OK)
-    // {
-    //     if (errmsg != NULL)
-    //     {
-    //         printf("sqlite3_exec: %s\n", errmsg);
-    //         sqlite3_free(errmsg); // 释放错误消息的内存
-    //         return;
-    //     }
-    // }
-
-    // msg.type = 'h';
-    // for (int i = 0; i <= row; i++)
-    // {
-
-    //     sprintf(msg.data, "%s %s %s %s", result[col * i + 0], result[col * i + 1], result[col * i + 2],
-    //             result[col * i + 3]);
-    //     Write(csock.cfd, msg);
-    // }
+   
 
     if(sqlite3_exec(db, sql, historycallback, &csock.cfd, &errmsg))
     {
