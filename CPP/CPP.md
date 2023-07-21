@@ -377,6 +377,10 @@ public:
 
 #### const类与成员
 
+#### 拷贝构造
+
+
+
 #### 友元
 
 当一个函数或者类想访问另外一个类的私有成员的时候，要先成为它的友元
@@ -510,6 +514,64 @@ struct Pig : Animal
 
 虚函数的实现原理是虚表，这个虚表里面存储着最终要调用的虚函数地址，这个虚表也叫虚函数表
 
+有虚函数的的类的内存空间布局
+![虚表](cpp.assets/uTools_1689903205758.png)
+
+关于虚表的细节
+
+虚表的内存地址为类的首地址
+
+只有父类声明了虚函数，子类才会有虚表，虚表中的函数为从子类到父类第一个出现的虚函数
+
+```cpp
+#include <iostream>
+using namespace std;
+
+struct Animal
+{
+    void speak()
+    {
+        cout << "Animal is Speak!" << endl;
+    }
+    void run()
+    {
+        cout << "Animal is Run!" << endl;
+    }
+};
+
+struct Cat : Animal  // 由于父类没有虚函数，所以该类在被创建时没有创建虚表，所以使用多态的方式调用该类函数时，直接调用的父类的函数
+{
+    virtual void speak()
+    {
+        cout << "Cat is Speak!" << endl;
+    }
+    virtual void run()
+    {
+        cout << "Cat is Run!" << endl;
+    }
+};
+
+
+struct smallCat : Animal  // 父类的函数为虚函数，重写的函数继承虚函数特性，在类的首地址连接一个虚表
+{                           // 虚表中的函数为所有的虚函数，并且虚表中的函数为从子类到父类第一个出现的虚函数
+    void speak()
+    {
+        cout << "smallCat is Speak!" << endl;
+    }
+    void run()
+    {
+        cout << "smallCat is Run!" << endl;
+    }
+};
+
+
+```
+
+#### 调用父类的的成员函数
+
+在需要调用父类的成员函数时，只需要在子类中使用父类的访问修饰符
+
+#### 虚析构函数
 
 
 
