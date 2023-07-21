@@ -159,7 +159,7 @@ const引用的特点
         // 非const实参
         int a = 1, b = 2;
         sum(a, b);  // 调用 int sum(int &v1, int &v2)
-
+    
         // const实参
         const int c = 1, d = 2;
         sum(c, d); // 调用 int sum(const int &v1, const int &v2)
@@ -214,11 +214,11 @@ struct默认访问权限 public，默认继承权限也是 public
 
 this 指针是一个隐式变量，在调用类函数时，会自动将类的首地址传给this指针，可以在类内部函数中使用
 
-### 堆空空间申请
+#### 堆空空间申请
 
 new delete
 
-### 构造函数 structor
+构造函数 structor
 
 构造函数(也叫构造器)， 在对象创建的时候自动调用，一般用于完成对象的初始化工作
 
@@ -249,6 +249,7 @@ struct Person
 
 };
 ```
+
 
 ### 析构函数 Destructor
 
@@ -314,6 +315,8 @@ Person person1(10, 20);
 // 以上写法皆可行
 ```
 
+
+
 ##### 构造函数的互相调用
 
 构造函数的相互调用不能在函数体内直接调用，而应该在初始化列表中调用
@@ -335,9 +338,10 @@ struct Person{
 };
 ```
 
-##### 父类的构造函数
+父类的构造函数
 
 - 子类的构造函数在执行自己的代码之前默认会调用父类的无参构造
+- 对于析构函数，子类会在执行完自己的代码后调用父类的额析构函数
 - 如果子类的构造函数显示的调用了父类的有参构造函数，就不会再去默认调用父类的无参构造函数
 - 如果父类缺少无参构造函数，子类的 构造函数必须显示的调用父类的构造函数
 
@@ -368,8 +372,151 @@ public:
 };
 ```
 
+#### 静态成员变量
+
+
+#### const类与成员
+
+#### 友元
+
+当一个函数或者类想访问另外一个类的私有成员的时候，要先成为它的友元
+
+需要注意的地方：
+- 友元关系不能继承
+- 友元关系是单向的，如果A是B的友元，但B不一定是A的友元，要看有没有友元的申明
+- 友元关系不具有传递性，如果B是A的友元，而C是B的友元，那C不一定是A的友元，要看C是否被定义为A的友		
+- 友元它破坏了类的封装和隐藏，所以我们要慎用
+
+三种友元
+-   友元函数：
+    ```cpp
+    class Student
+    {
+    friend void checkId(Student&);
+    }
+    // 友元函数可以放在共有区域，也能够放到私有区域
+    // 一个函数可以是多个类的友元函数，只需要在各个类中分别声明
+    // 友元函数的调用和普通函数一样
+    ``` 
+    
+将一个全局函数声明为类的友元函数，这样的话，这个友元函数就能够访问类对象的私有的成员
+
+友元函数没有类对象的this指针，必须将类对象的指针或者引用传给友元函数
+
+    
+- 友元类
+    ```cpp
+    friend class Demo;
+    //可以声明一个类为另一类的友元类，
+    ```
+- 友员成员函数
+    ```cpp
+    class B;
+    class A{
+    public:
+        void func(B&);
+    
+    }
+    class B{
+    private:
+        int a;
+        friend void A::func(B&);
+    }
+    //可以将A的成员函数func设置为B的友元，这个函数就成为了B的友元成员函数
+    ```
+
 #### 多继承
 
 
 
 ### 多态
+
+父类指针与子类指针
+
+父类指针可以指向子类对象，是安全的，开发中经常用到（继承方式必须是public）
+
+多态是面向对象非常重要的一个特性
+- 同一个操作作用于不同的对象，可以有不同的解释，产生不同的执行结果
+- 在运行时，可以识别出真正的对象类型，调用对应子类中的函数
+
+多态的要素
+- 子类重写父类的成员函数（override）
+- 父类指针指向子类对象
+- 利用父类指针调用重写的成员函数
+
+#### 虚函数
+
+关键字 virtual
+c++中的虚函数通过虚函数(virtual function)来实现
+
+- 虚函数: 被virtual修饰的成员函数
+- 只要被父类中声明为虚函数，子类重写的函数也会自动变成虚函数（也就是说子类中可以省略）
+```cpp
+#include <iostream>
+using namespace std;
+
+struct Animal
+{
+    virtual void speak()
+    {
+        cout << "Animal is Speak!" << endl;
+    }
+    virtual void run()
+    {
+        cout << "Animal is Run!" << endl;
+    }
+};
+
+struct Cat : Animal
+{
+    void speak()
+    {
+        cout << "Cat is Speak!" << endl;
+    }
+    void run()
+    {
+        cout << "Cat is Run!" << endl;
+    }
+};
+
+struct Dog : Animal
+{
+    void speak()
+    {
+        cout << "Dog is Speak!" << endl;
+    }
+    void run()
+    {
+        cout << "Dog is Run!" << endl;
+    }
+};
+
+struct Pig : Animal
+{
+    void speak()
+    {
+        cout << "Pig is Speak!" << endl;
+    }
+    void run()
+    {
+        cout << "Pig is Run!" << endl;
+    }
+};
+
+
+```
+
+#### 虚表
+
+虚函数的实现原理是虚表，这个虚表里面存储着最终要调用的虚函数地址，这个虚表也叫虚函数表
+
+
+
+
+
+
+
+
+
+
+
