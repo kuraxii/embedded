@@ -218,7 +218,7 @@ this 指针是一个隐式变量，在调用类函数时，会自动将类的首
 
 new delete
 
-构造函数 structor
+### 构造函数 constructor
 
 构造函数(也叫构造器)， 在对象创建的时候自动调用，一般用于完成对象的初始化工作
 
@@ -248,6 +248,59 @@ struct Person
     }
 
 };
+```
+
+#### 隐式构造 (explicit关键字)
+
+C++中存在隐式构造的现象：某些情况下，会隐式调用单参数的
+
+
+jkkkop
+```cpp
+class Person
+{
+    int a;
+    int b;
+public:
+    Person(int a = 0, int b = 0) : a(a), b(b)
+    {
+        cout << "Person::Person(int) --- " << this << endl;
+    }
+    ~Person()
+    {
+        cout << "Person::~Person() --- " << this << endl;
+    }
+
+    void set(int a, int b)
+    {
+        this->a = a;
+        this->b = b;
+    }
+
+    void print()
+    {
+        cout << "a= " << a << ", b= " << b << endl;
+    }
+
+
+};
+int main(int argc, char* argv[])
+{
+    Person p;
+
+    p.print();
+
+    p.set(66, 99);
+    p.print();
+
+
+    int a = 2;
+    p = 30;
+
+    p.print();
+
+    return 0;
+}
 ```
 
 
