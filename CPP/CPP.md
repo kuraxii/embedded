@@ -254,8 +254,9 @@ struct Person
 
 C++中存在隐式构造的现象：某些情况下，会隐式调用单参数的
 
+使用explicit关键字可以禁用构造函数的隐式构造现象
 
-jkkkop
+
 ```cpp
 class Person
 {
@@ -618,7 +619,9 @@ class Point
 
 父类指针与子类指针
 
-父类指针可以指向子类对象，是安全的，开发中经常用到（继承方式必须是public）
+在没有虚函数的情况下，**调用类函数是根据类的类型或类指针的类型直接调用的**
+**父类指针可以指向子类对象（向上转型），是安全的**，开发中经常用到（继承方式必须是public）
+**向下转型是不安全的**
 
 多态是面向对象非常重要的一个特性
 - 同一个操作作用于不同的对象，可以有不同的解释，产生不同的执行结果
@@ -632,10 +635,13 @@ class Point
 #### 虚函数
 
 关键字 virtual
-c++中的虚函数通过虚函数(virtual function)来实现
 
+##### 虚函数
 - 虚函数: 被virtual修饰的成员函数
 - 只要被父类中声明为虚函数，子类重写的函数也会自动变成虚函数（也就是说子类中可以省略）
+- 虚函数只能定义**非静态**成员函数
+- 构造函数不能声明为虚函数，但析构函数可以
+
 ```cpp
 #include <iostream>
 using namespace std;
@@ -691,6 +697,71 @@ struct Pig : Animal
 
 ```
 
+##### 函数的重写（override）（重写实现了多态）
+- 不同的作用域
+- 函数名相同
+- 参数相同
+- 返回值类型相同
+- 重写函数的权限访问限定符可以不同
+
+```cpp
+class Base
+{ 
+public:
+    Base(){}
+    ~Base(){}
+    virtual void func1(int a, int b)
+    {
+        cout << "Base::func1(int, int), " << a << "," << b << endl;
+    }
+};
+class Derived : public Base
+{  
+public:
+    Derived(){}
+    ~Derived(){}   
+    virtual void func1(int a, int b)
+    {
+        cout << "Derived::func1(int, int), " << a << "," << b << endl;
+    }
+};
+
+```
+
+##### 函数的隐藏（无法直接调用父类函数，可以通过父类的域访问修饰符调用）
+- 不同的作用域
+- 函数名相同
+- 没有重写现象
+- 函数的隐藏解决了多继承下的父类同名函数的调用混淆
+
+```cpp
+class Base
+{
+    
+public:
+    Base(){}
+    ~Base(){}
+    
+    void func1(float a, int b)
+    {
+        cout << "Base::func1(int, int), " << a << "," << b << endl;
+    }
+};
+class Derived : public Base
+{
+public:
+    Derived(){}
+    ~Derived(){}
+    
+    int func()
+    {
+        cout << "Derived::func1()" << endl;
+        return 0;
+    }
+
+};
+```
+
 #### 虚表
 
 虚函数的实现原理是虚表，这个虚表里面存储着最终要调用的虚函数地址，这个虚表也叫虚函数表
@@ -701,8 +772,7 @@ struct Pig : Animal
 关于虚表的细节
 
 虚表的内存地址为类的首地址
-
-只有父类声明了虚函数，子类才会有虚表，虚表中的函数为从子类到父类第一个出现的虚函数
+只要有虚函数，就会有虚表。虚表中的函数为从子类到父类第一个出现的虚函数
 
 ```cpp
 #include <iostream>
@@ -751,13 +821,65 @@ struct smallCat : Animal  // 父类的函数为虚函数，重写的函数继承
 #### 调用父类的的成员函数
 
 在需要调用父类的成员函数时，只需要在子类中使用父类的访问修饰符
+```cpp
+class A
+{
+    func1();
+}
+class B : public A;
+
+main
+
+B b;
+b.A::func1(); // 使用父类的访问修饰符
+```
 
 #### 虚析构函数
 
 当存在父类指针指向子类时(多态), 需要将父类的析构函数声明为virtual
 如此，delete父指针时，才会调用子类的析构函数，保证析构的完整性
 
-#### 纯虚函数
+```cpp
+struct Animal
+{
+    int m_age;
+    virtual void speak()
+    {
+        cout << "Animal is Speak!" << endl;
+    }
+    virtual void run()
+    {
+        cout << "Animal is Run!" << endl;
+    }
+    Animal(){
+        cout << "Animal::Animal()" << endl; 
+    }
+    virtual ~Animal(){
+        cout << "Animal::~Animal()" << endl; 
+    }
+};
+
+struct Cat : Animal
+{
+    int mylife;
+    void speak()
+    {
+        cout << "Cat is Speak!" << endl;
+    }
+    void run()
+    {
+        cout << "Cat is Run!" << endl;
+    }
+    Cat(){
+        cout << "Cat::Cat()" << endl; 
+    }
+    ~Cat(){
+        cout << "Cat::~Cat()" << endl; 
+    }
+};
+```
+
+#### 纯虚函数(抽象类)
 
 - 纯虚函数：没有函数体，且初始化为0的虚函数，用来定义接口规范
 - 抽象类 （Abstract Class）
