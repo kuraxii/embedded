@@ -1,0 +1,1 @@
+cout.setf(ios::hex, ios::basefield);
