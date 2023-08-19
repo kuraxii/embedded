@@ -1,11 +1,11 @@
+#include <errno.h>
+#include <fcntl.h>
+#include <pthread.h>
+#include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <pthread.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <semaphore.h>
 
 void sys_err(char *str, int _errno)
 {
@@ -33,12 +33,11 @@ int main(int argc, char *argv[])
     pthread_t cid, pid;
     sem_init(&blank_number, 0, 5);
     sem_init(&product_number, 0, 0); // 信号量队列初始化
-    
 
-    pthread_create(&pid, NULL, product, (void *)(intptr_t)1); // 创建生产者与消费者
-    pthread_create(&pid, NULL, product, (void *)2);   // 生产者2
+    pthread_create(&pid, NULL, product, (void *)(intptr_t)1);  // 创建生产者与消费者
+    pthread_create(&pid, NULL, product, (void *)2);            // 生产者2
     pthread_create(&cid, NULL, consumer, (void *)(intptr_t)1); // 消费者1
-    pthread_create(&cid, NULL, consumer, (void *)2);  //消费者2
+    pthread_create(&cid, NULL, consumer, (void *)2);           //消费者2
 
     pthread_join(pid, NULL); // 线程回收
     pthread_join(cid, NULL);
@@ -51,7 +50,6 @@ int main(int argc, char *argv[])
 
 void *product(void *arg) // 生产者
 {
-    
 
     while (1)
     {
@@ -59,8 +57,8 @@ void *product(void *arg) // 生产者
         sem_wait(&blank_number);
         sem_quene[product_i] = rand() % 1000; // 临界区
         printf("product%d: put %d to buffer%d\n", (int)(intptr_t)arg, sem_quene[product_i], product_i);
-        sem_post(&product_number); // 将产品数++
-        product_i = (product_i + 1) % NUM;         // 循环队列
+        sem_post(&product_number);         // 将产品数++
+        product_i = (product_i + 1) % NUM; // 循环队列
         pthread_mutex_unlock(&pro_mutex);
         sleep(1);
 
@@ -72,7 +70,6 @@ void *product(void *arg) // 生产者
 
 void *consumer(void *arg) // 消费者
 {
-    
 
     while (1)
     {

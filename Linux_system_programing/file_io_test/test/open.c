@@ -8,7 +8,7 @@
 
 
 
-int main(int argc,int *argv[])
+int main(int argc,char *argv[])
 {
     int fd;
     // fd = open("./dict.txt",O_RDONLY);   //以只读打开文件
