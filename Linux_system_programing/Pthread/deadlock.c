@@ -71,4 +71,5 @@ void *func2(void *arg)
 
     pthread_mutex_unlock(&mutex1);
     pthread_mutex_unlock(&mutex2);
+    return NULL;
 }
