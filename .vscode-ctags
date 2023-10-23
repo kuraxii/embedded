@@ -1,0 +1,949 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+A	CPP/class_/extends/diamond_entends.cpp	/^    A(int a) : aa(a)$/;"	f	class:A
+A	CPP/class_/extends/diamond_entends.cpp	/^class A$/;"	c	file:
+A	CPP/class_/extends/multiple_extends.cpp	/^    A(int x) : a(x)$/;"	f	class:A
+A	CPP/class_/extends/multiple_extends.cpp	/^class A$/;"	c	file:
+A	CPP/class_/extends/multiple_extends_3.cpp	/^    A(int a) : aa(a)$/;"	f	class:A
+A	CPP/class_/extends/multiple_extends_3.cpp	/^class A$/;"	c	file:
+A	CPP/class_/多态/virtual_table.cpp	/^class A$/;"	c	file:
+A	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    A(int a) : a(a){}$/;"	f	class:A
+A	CPP/class_/强制类型转换/dynamic_cast.cpp	/^class A$/;"	c	file:
+Address	CPP/class_/友元/friendclass.cpp	/^    Address(string p, string c, string d, string s) : province(p), city(c), district(d), street(s)$/;"	f	class:Address
+Address	CPP/class_/友元/friendclass.cpp	/^class Address$/;"	c	file:
+Address	CPP/class_/友元/friendmemfunc.cpp	/^    Address(string p, string c, string d, string s) : province(p), city(c), district(d), street(s)$/;"	f	class:Address
+Address	CPP/class_/友元/friendmemfunc.cpp	/^class Address$/;"	c	file:
+Animal	CPP/class_/多态/main1.cpp	/^struct Animal$/;"	s	file:
+Animal	CPP/class_/多态/virtual_destructorfunc.cpp	/^    Animal(){$/;"	f	struct:Animal
+Animal	CPP/class_/多态/virtual_destructorfunc.cpp	/^struct Animal$/;"	s	file:
+Animal	CPP/class_/多态/virtualfunc.cpp	/^struct Animal$/;"	s	file:
+Animal	CPP/class_/多态/纯虚函数.cpp	/^struct Animal  \/\/ 抽象类$/;"	s	file:
+Array	CPP/class_/copy_struct/deep_copy.cpp	/^    Array(Array& a) \/\/ 深拷贝$/;"	f	class:Array
+Array	CPP/class_/copy_struct/deep_copy.cpp	/^    Array(int len = 100) : len(len), pArray(nullptr)$/;"	f	class:Array
+Array	CPP/class_/copy_struct/deep_copy.cpp	/^class Array{$/;"	c	file:
+Array	CPP/class_/模板/arr_template.cpp	/^    Array(int len = 10) : len(len), pArray(nullptr)$/;"	f	class:Array
+Array	CPP/class_/模板/arr_template.cpp	/^template <typename T> class Array$/;"	c	file:
+Array	CPP/class_/运算符重载/memoperator1.cpp	/^    Array(Array &array)$/;"	f	class:Array
+Array	CPP/class_/运算符重载/memoperator1.cpp	/^    Array(int len) : len(len), pArray(nullptr)$/;"	f	class:Array
+Array	CPP/class_/运算符重载/memoperator1.cpp	/^class Array$/;"	c	file:
+B	CPP/class_/extends/multiple_extends.cpp	/^    B(int x) : b(x)$/;"	f	class:B
+B	CPP/class_/extends/multiple_extends.cpp	/^class B$/;"	c	file:
+B	CPP/class_/extends/multiple_extends_3.cpp	/^    B(int a, int b) : A(a), bb(b)$/;"	f	class:B
+B	CPP/class_/extends/multiple_extends_3.cpp	/^class B : public A$/;"	c	file:
+B	CPP/class_/多态/virtual_table.cpp	/^class B : public A$/;"	c	file:
+B	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    B(int a, int b) : A(a), b(b){}$/;"	f	class:B
+B	CPP/class_/强制类型转换/dynamic_cast.cpp	/^class B : public A$/;"	c	file:
+B1	CPP/class_/extends/diamond_entends.cpp	/^    B1(int a, int b) : A(a), b1(b)$/;"	f	class:B1
+B1	CPP/class_/extends/diamond_entends.cpp	/^class B1 : virtual public A$/;"	c	file:
+B2	CPP/class_/extends/diamond_entends.cpp	/^    B2(int a, int b) : A(a), b2(b)$/;"	f	class:B2
+B2	CPP/class_/extends/diamond_entends.cpp	/^class B2 : virtual public A$/;"	c	file:
+Base	CPP/class_/extends/extends1.cpp	/^class Base$/;"	c	file:
+Base	CPP/class_/extends/extends2.cpp	/^class Base$/;"	c	file:
+Base	CPP/class_/extends/extends3.cpp	/^class Base$/;"	c	file:
+Base	CPP/class_/extends/extends4.cpp	/^    Base(int a) : aa(a)$/;"	f	class:Base
+Base	CPP/class_/extends/extends4.cpp	/^class Base$/;"	c	file:
+Base	CPP/class_/extends/upcast.cpp	/^    Base(int b) : bb(b)$/;"	f	class:Base
+Base	CPP/class_/extends/upcast.cpp	/^class Base$/;"	c	file:
+Base	CPP/class_/多态/hidden.cpp	/^    Base(){}$/;"	f	class:Base
+Base	CPP/class_/多态/hidden.cpp	/^class Base$/;"	c	file:
+Base	CPP/class_/多态/overload.cpp	/^    Base(){}$/;"	f	class:Base
+Base	CPP/class_/多态/overload.cpp	/^class Base$/;"	c	file:
+Base	CPP/class_/异常/catch_multiple_exception.cpp	/^    Base()$/;"	f	class:Base
+Base	CPP/class_/异常/catch_multiple_exception.cpp	/^class Base$/;"	c	file:
+Base	CPP/class_/强制类型转换/static_cast.cpp	/^    Base(int b1) : b1(b1){}$/;"	f	class:Base
+Base	CPP/class_/强制类型转换/static_cast.cpp	/^class Base$/;"	c	file:
+C	CPP/class_/extends/multiple_extends.cpp	/^    C(int x) : c(x)$/;"	f	class:C
+C	CPP/class_/extends/multiple_extends.cpp	/^class C$/;"	c	file:
+C	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    C(int a, int b, int c) : B(a, b), c(c){}$/;"	f	class:C
+C	CPP/class_/强制类型转换/dynamic_cast.cpp	/^class C : public B$/;"	c	file:
+CLI_ADDR	Linux_network_programming/socket/LocalSocket/client.c	17;"	d	file:
+Car	CPP/class_/base_/memmanage.cpp	/^    Car()$/;"	f	struct:Car
+Car	CPP/class_/base_/memmanage.cpp	/^struct Car{$/;"	s	file:
+Car	CPP/class_/extends/car__inherit_phone.cpp	/^    Car(string name ) : ownerName(name)$/;"	f	class:Car
+Car	CPP/class_/extends/car__inherit_phone.cpp	/^class Car$/;"	c	file:
+Cat	CPP/class_/多态/main1.cpp	/^struct Cat : Animal$/;"	s	file:
+Cat	CPP/class_/多态/virtual_destructorfunc.cpp	/^    Cat(){$/;"	f	struct:Cat
+Cat	CPP/class_/多态/virtual_destructorfunc.cpp	/^struct Cat : Animal$/;"	s	file:
+Cat	CPP/class_/多态/virtualfunc.cpp	/^struct Cat : Animal$/;"	s	file:
+Cat	CPP/class_/多态/纯虚函数.cpp	/^struct Cat : Animal$/;"	s	file:
+Company	CPP/class_/多态/company.cpp	/^    Company(string name) : name(name)$/;"	f	class:Company
+Company	CPP/class_/多态/company.cpp	/^class Company$/;"	c	file:
+Container	CPP/class_/模板/container_class_template.cpp	/^    Container(T a) : data(a){}$/;"	f	class:Container
+Container	CPP/class_/模板/container_class_template.cpp	/^class Container$/;"	c	file:
+D	CPP/class_/extends/diamond_entends.cpp	/^    D(int a, int b1, int b2, int d) : A(a), B1(5, b1), B2(6, b2), d(d)$/;"	f	class:D
+D	CPP/class_/extends/diamond_entends.cpp	/^class D : public B1, public B2 $/;"	c	file:
+D	CPP/class_/extends/multiple_extends_3.cpp	/^    D(int a, int b, int d) :  B(a, b), dd(d)$/;"	f	class:D
+D	CPP/class_/extends/multiple_extends_3.cpp	/^class D : public B$/;"	c	file:
+DATABASE	project/在线词典/importdict.c	4;"	d	file:
+DB	Sqlite/practice/exec.c	4;"	d	file:
+DB	Sqlite/practice/open.c	4;"	d	file:
+DB	project/在线词典/server.c	17;"	d	file:
+DEFAULT_THREAD_VARY	Linux_network_programming/threadPool/threadpool.c	13;"	d	file:
+DEFAULT_TIME	Linux_network_programming/threadPool/threadpool.c	11;"	d	file:
+Demo	CPP/c_extension/namespace.cpp	/^    class Demo$/;"	c	namespace:myspace	file:
+Demo	CPP/class_/const/constobj.cpp	/^    Demo(int a) : aa(a)$/;"	f	class:Demo
+Demo	CPP/class_/const/constobj.cpp	/^class Demo$/;"	c	file:
+Demo	CPP/class_/copy_struct/copy.cpp	/^        Demo(const Demo& d)$/;"	f	class:Demo
+Demo	CPP/class_/copy_struct/copy.cpp	/^        Demo(int a = 0, float b = 0) : aa(a), bb(b)$/;"	f	class:Demo
+Demo	CPP/class_/copy_struct/copy.cpp	/^class Demo{$/;"	c	file:
+Demo	CPP/class_/extends/multiple_extends.cpp	/^    Demo(int a = 10) : aa(a)$/;"	f	class:Demo
+Demo	CPP/class_/extends/multiple_extends.cpp	/^class Demo$/;"	c	file:
+Demo	CPP/class_/static_/static.cpp	/^        Demo(int a, int b) : aa(a), bb(b)$/;"	f	class:Demo
+Demo	CPP/class_/static_/static.cpp	/^class Demo{$/;"	c	file:
+Demo	CPP/class_/static_/static_howmany.cpp	/^        Demo()$/;"	f	class:Demo
+Demo	CPP/class_/static_/static_howmany.cpp	/^        Demo(int a) : aa(a)$/;"	f	class:Demo
+Demo	CPP/class_/static_/static_howmany.cpp	/^class Demo{$/;"	c	file:
+Demo	CPP/class_/初始化列表/hq_test.cpp	/^Demo::Demo() : aa(0), bb(0)$/;"	f	class:Demo
+Demo	CPP/class_/初始化列表/hq_test.cpp	/^Demo::Demo(int a, int b) : aa(a), bb(b)$/;"	f	class:Demo
+Demo	CPP/class_/初始化列表/hq_test.cpp	/^class Demo$/;"	c	file:
+Demo	CPP/class_/初始化列表/hq_test_2.cpp	/^class Demo$/;"	c	file:
+Demo	CPP/class_/强制类型转换/reinterpret_cast.cpp	/^class Demo $/;"	c	file:
+Demo1	CPP/c_extension/namespace.cpp	/^    struct Demo1{$/;"	s	namespace:myspace	file:
+Demo2	CPP/class_/extends/multiple_extends.cpp	/^    Demo2(int a = 100) : aa(a)$/;"	f	class:Demo2
+Demo2	CPP/class_/extends/multiple_extends.cpp	/^class Demo2$/;"	c	file:
+Derived	CPP/class_/extends/extends1.cpp	/^class Derived : public Base$/;"	c	file:
+Derived	CPP/class_/extends/extends2.cpp	/^class Derived : protected Base$/;"	c	file:
+Derived	CPP/class_/extends/extends3.cpp	/^class Derived : public Base$/;"	c	file:
+Derived	CPP/class_/extends/extends4.cpp	/^        Derived(int a, int b) : Base(a), bb(b)$/;"	f	class:Derived
+Derived	CPP/class_/extends/extends4.cpp	/^class Derived : public Base$/;"	c	file:
+Derived	CPP/class_/extends/multiple_extends.cpp	/^    Derived(int a, int b, int c, int d) : demo(), A(a), B(b), C(c), d(d)$/;"	f	class:Derived
+Derived	CPP/class_/extends/multiple_extends.cpp	/^class Derived : public B, protected C, private A$/;"	c	file:
+Derived	CPP/class_/extends/upcast.cpp	/^    Derived(int bb, int dd) : Base(bb), dd(dd)$/;"	f	class:Derived
+Derived	CPP/class_/extends/upcast.cpp	/^class Derived : public Base$/;"	c	file:
+Derived	CPP/class_/多态/hidden.cpp	/^    Derived(){}$/;"	f	class:Derived
+Derived	CPP/class_/多态/hidden.cpp	/^class Derived : public Base$/;"	c	file:
+Derived	CPP/class_/多态/overload.cpp	/^    Derived(){}$/;"	f	class:Derived
+Derived	CPP/class_/多态/overload.cpp	/^class Derived : public Base$/;"	c	file:
+Derived	CPP/class_/异常/catch_multiple_exception.cpp	/^    Derived()$/;"	f	class:Derived
+Derived	CPP/class_/异常/catch_multiple_exception.cpp	/^class Derived : public Base$/;"	c	file:
+Derived	CPP/class_/强制类型转换/static_cast.cpp	/^    Derived(int b1 = 0, int d1 = 0) : Base(b1), d1(d1){}$/;"	f	class:Derived
+Derived	CPP/class_/强制类型转换/static_cast.cpp	/^class Derived : public Base$/;"	c	file:
+Dog	CPP/class_/多态/main1.cpp	/^struct Dog : Animal$/;"	s	file:
+Dog	CPP/class_/多态/virtualfunc.cpp	/^struct Dog : Animal$/;"	s	file:
+Dog	CPP/class_/多态/纯虚函数.cpp	/^struct Dog : Animal$/;"	s	file:
+Examiner	CPP/class_/友元/driver_license_test.cpp	/^class Examiner$/;"	c	file:
+Goodstudent	CPP/class_/mempermission/main.cpp	/^class Goodstudent : Student$/;"	c	file:
+Integer	CPP/class_/运算符重载/operator.cpp	/^        Integer(int a = 100) : aa(a){}$/;"	f	class:Integer
+Integer	CPP/class_/运算符重载/operator.cpp	/^class Integer$/;"	c	file:
+MIN_WAIT_TASK_NUM	Linux_network_programming/threadPool/threadpool.c	12;"	d	file:
+MULTIPLY	CPP/c_extension/inline.cpp	2;"	d	file:
+MyException	CPP/class_/异常/inherit_std_excwption.cpp	/^    MyException(const char *errinfo) : errinfo(errinfo)$/;"	f	class:MyException
+MyException	CPP/class_/异常/inherit_std_excwption.cpp	/^class MyException : public exception$/;"	c	file:
+NUM	Linux_system_programing/Pthread/sem_product_consumer.c	18;"	d	file:
+NewException	CPP/class_/异常/create_new_exception.cpp	/^    NewException(int code, string errinfo) : errCode(code), errInfo(errinfo){}$/;"	f	class:NewException
+NewException	CPP/class_/异常/create_new_exception.cpp	/^class NewException $/;"	c	file:
+Nike	CPP/class_/多态/company.cpp	/^    Nike(string name) : Company(name){}$/;"	f	class:Nike
+Nike	CPP/class_/多态/company.cpp	/^class Nike : public Company$/;"	c	file:
+NikeChina	CPP/class_/多态/company.cpp	/^    NikeChina(string name) : Nike(name){}$/;"	f	class:NikeChina
+NikeChina	CPP/class_/多态/company.cpp	/^class NikeChina : public Nike$/;"	c	file:
+PORT	project/在线词典/server.c	18;"	d	file:
+Person	CPP/class_/base_/class.cpp	/^struct Person$/;"	s	file:
+Person	CPP/class_/base_/destructor.cpp	/^    Person()  \/\/ 构造函数$/;"	f	class:Person
+Person	CPP/class_/base_/destructor.cpp	/^    Person(int age)  \/\/ 构造函数$/;"	f	class:Person
+Person	CPP/class_/base_/destructor.cpp	/^class Person{$/;"	c	file:
+Person	CPP/class_/base_/getset.cpp	/^class Person{$/;"	c	file:
+Person	CPP/class_/base_/mem_init.cpp	/^     Person()$/;"	f	struct:Person
+Person	CPP/class_/base_/mem_init.cpp	/^    Person(int age)$/;"	f	struct:Person
+Person	CPP/class_/base_/mem_init.cpp	/^struct Person$/;"	s	file:
+Person	CPP/class_/base_/memmanage.cpp	/^    Person()$/;"	f	struct:Person
+Person	CPP/class_/base_/memmanage.cpp	/^struct Person{$/;"	s	file:
+Person	CPP/class_/base_/struct.cpp	/^    Person()  \/\/ 构造函数$/;"	f	class:Person
+Person	CPP/class_/base_/struct.cpp	/^    Person(int age)  \/\/ 构造函数$/;"	f	class:Person
+Person	CPP/class_/base_/struct.cpp	/^class Person{$/;"	c	file:
+Person	CPP/class_/base_/this.cpp	/^struct Person{$/;"	s	file:
+Person	CPP/class_/copy_struct/father_constructor.cpp	/^    Person(const Person &p) : m_age(p.m_age){}$/;"	f	class:Person
+Person	CPP/class_/copy_struct/father_constructor.cpp	/^    Person(int m_age = 0) : m_age(m_age){}$/;"	f	class:Person
+Person	CPP/class_/copy_struct/father_constructor.cpp	/^class Person$/;"	c	file:
+Person	CPP/class_/declare/declare.cpp	/^Person::Person()$/;"	f	class:Person
+Person	CPP/class_/declare/declare.h	/^class Person{$/;"	c
+Person	CPP/class_/declare/main.cpp	/^Person::Person() \/\/ 构造函数$/;"	f	class:Person
+Person	CPP/class_/declare/main.cpp	/^Person::Person(int age) \/\/ 构造函数$/;"	f	class:Person
+Person	CPP/class_/declare/main.cpp	/^class Person$/;"	c	file:
+Person	CPP/class_/extends/extend.cpp	/^struct Person$/;"	s	file:
+Person	CPP/class_/extends/student.cpp	/^    Person(string name, int age) : name(name), age(age)$/;"	f	class:Person
+Person	CPP/class_/extends/student.cpp	/^class Person$/;"	c	file:
+Person	CPP/class_/mempermission/main.cpp	/^class Person$/;"	c	file:
+Person	CPP/class_/初始化列表/main.cpp	/^    Person(int age = 0, int height = 0) : m_age(m_height), m_height(height)$/;"	f	struct:Person
+Person	CPP/class_/初始化列表/main.cpp	/^struct Person$/;"	s	file:
+Person	CPP/class_/初始化列表/main2.cpp	/^    Person() : Person(0, 0)$/;"	f	struct:Person
+Person	CPP/class_/初始化列表/main2.cpp	/^    Person(int age, int height)$/;"	f	struct:Person
+Person	CPP/class_/初始化列表/main2.cpp	/^struct Person{$/;"	s	file:
+Person	CPP/class_/初始化列表/main3.cpp	/^    Person()$/;"	f	class:Person
+Person	CPP/class_/初始化列表/main3.cpp	/^    Person(int age)$/;"	f	class:Person
+Person	CPP/class_/初始化列表/main3.cpp	/^class Person{$/;"	c	file:
+Phone	CPP/class_/extends/car__inherit_phone.cpp	/^    Phone(){}$/;"	f	class:Phone
+Phone	CPP/class_/extends/car__inherit_phone.cpp	/^class Phone$/;"	c	file:
+Pig	CPP/class_/多态/main1.cpp	/^struct Pig : Animal$/;"	s	file:
+Pig	CPP/class_/多态/virtualfunc.cpp	/^struct Pig : Animal$/;"	s	file:
+Pig	CPP/class_/多态/纯虚函数.cpp	/^struct Pig : Animal$/;"	s	file:
+Point	CPP/class_/模板/add_func_template.cpp	/^    Point(double x = 0, double y = 0) : x(x), y(y)$/;"	f	class:Point
+Point	CPP/class_/模板/add_func_template.cpp	/^class Point{$/;"	c	file:
+Point	CPP/class_/模板/arr_template.cpp	/^    Point(double x = 0, double y = 0) : x(x), y(y){}$/;"	f	class:Point
+Point	CPP/class_/模板/arr_template.cpp	/^class Point{$/;"	c	file:
+Point	CPP/class_/运算符重载/friend_operator.cpp	/^    Point(double a = 0, double b = 0) : x(a), y(b){}$/;"	f	class:Point
+Point	CPP/class_/运算符重载/friend_operator.cpp	/^class Point{$/;"	c	file:
+Point	CPP/class_/运算符重载/memoperator.cpp	/^    Point(double x, double y) : x(x), y(y)$/;"	f	class:Point
+Point	CPP/class_/运算符重载/memoperator.cpp	/^class Point$/;"	c	file:
+SERV_ADDR	Linux_network_programming/socket/LocalSocket/client.c	16;"	d	file:
+SERV_ADDR	Linux_network_programming/socket/LocalSocket/server.c	19;"	d	file:
+SOCKMSG	project/在线词典/server.c	/^} SOCKMSG;$/;"	t	typeref:struct:__anon2	file:
+Student	CPP/class_/copy_struct/father_constructor.cpp	/^    Student(const Student& stu) : Person(stu), m_score(stu.m_score){}$/;"	f	class:Student
+Student	CPP/class_/copy_struct/father_constructor.cpp	/^    Student(int m_age, int m_score) : Person(m_age), m_score(m_score){}$/;"	f	class:Student
+Student	CPP/class_/copy_struct/father_constructor.cpp	/^class Student : Person$/;"	c	file:
+Student	CPP/class_/extends/extend.cpp	/^struct Student : Person $/;"	s	file:
+Student	CPP/class_/extends/student.cpp	/^    Student(string name, int age, float score) : Person(name, age), score(score)$/;"	f	class:Student
+Student	CPP/class_/extends/student.cpp	/^class Student : public Person$/;"	c	file:
+Student	CPP/class_/mempermission/main.cpp	/^class Student : public Person  \/\/ 以public的方式继承,私有成员无法被继承$/;"	c	file:
+Student	CPP/class_/初始化列表/main3.cpp	/^    Student(int age) : Person(age)$/;"	f	class:Student
+Student	CPP/class_/初始化列表/main3.cpp	/^class Student : Person{$/;"	c	file:
+Student	CPP/class_/友元/driver_license_test.cpp	/^    Student(string name, string id) : name(name), id(id), score(0){}$/;"	f	class:Student
+Student	CPP/class_/友元/driver_license_test.cpp	/^class Student{$/;"	c	file:
+Student	CPP/class_/友元/friendclass.cpp	/^    Student(string n, int a, float s) : name(n), age(a), score(s)$/;"	f	class:Student
+Student	CPP/class_/友元/friendclass.cpp	/^class Student$/;"	c	file:
+Student	CPP/class_/友元/friendfunc.cpp	/^    Student(string n, int a, float s) : name(n), age(a), score(s)$/;"	f	class:Student
+Student	CPP/class_/友元/friendfunc.cpp	/^class Student$/;"	c	file:
+Student	CPP/class_/友元/friendmemfunc.cpp	/^    Student(string n, int a, float s) : name(n), age(a), score(s)$/;"	f	class:Student
+Student	CPP/class_/友元/friendmemfunc.cpp	/^class Student$/;"	c	file:
+USERMSG	project/在线词典/client.c	/^} USERMSG;$/;"	t	typeref:struct:__anon1	file:
+USERMSG	project/在线词典/server.c	/^} USERMSG;$/;"	t	typeref:struct:__anon3	file:
+Worker	CPP/class_/extends/extend.cpp	/^struct Worker : Person$/;"	s	file:
+Write	project/在线词典/client.c	/^void Write(int cfd, USERMSG msg)$/;"	f
+Write	project/在线词典/server.c	/^void Write(int cfd, USERMSG msg)$/;"	f
+WriteCond	project/在线词典/server.c	/^void WriteCond(int cfd, char c)$/;"	f
+_DECLARE_H	CPP/class_/declare/declare.h	2;"	d
+_MYMATH	Linux_system_programing/test/mymath.h	2;"	d
+__THREADPOOL_H_	Linux_network_programming/threadPool/threadpool.h	2;"	d
+_connect	project/在线词典/client.c	/^int _connect() \/\/ 连接服务端$/;"	f
+_div	CPP/class_/异常/create_new_exception.cpp	/^int _div(int a, int b)$/;"	f
+_div	CPP/class_/异常/use_std_exception.cpp	/^int _div(int a, int b)$/;"	f
+_waitpid	Linux_network_programming/socket/Multi-process_and_Multithread_Concurrent_Server/multiprocess.c	/^void _waitpid(int sig){$/;"	f
+a	CPP/c_extension/namespace.cpp	/^        int a;$/;"	m	class:myspace::Demo	file:
+a	CPP/c_extension/namespace.cpp	/^        int a;$/;"	m	struct:myspace::Demo1	file:
+a	CPP/class_/extends/multiple_extends.cpp	/^    int a;$/;"	m	class:A	file:
+a	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    int a;$/;"	m	class:A	file:
+a1	CPP/class_/extends/extends1.cpp	/^    int a1;$/;"	m	class:Base	file:
+a1	CPP/class_/extends/extends2.cpp	/^    int a1;$/;"	m	class:Base	file:
+a2	CPP/class_/declare/main.cpp	/^    int a2;$/;"	m	class:Person	file:
+a2	CPP/class_/extends/extends1.cpp	/^    int a2;$/;"	m	class:Base	file:
+a2	CPP/class_/extends/extends2.cpp	/^    int a2;$/;"	m	class:Base	file:
+a3	CPP/class_/extends/extends1.cpp	/^    int a3;$/;"	m	class:Base	file:
+a3	CPP/class_/extends/extends2.cpp	/^    int a3;$/;"	m	class:Base	file:
+aa	CPP/c_extension/namespace.cpp	/^    int aa = 10;$/;"	m	namespace:myspace	file:
+aa	CPP/c_extension/scope.cpp	/^int aa = 1;$/;"	v
+aa	CPP/class_/const/constobj.cpp	/^    const int aa;$/;"	m	class:Demo	file:
+aa	CPP/class_/copy_struct/copy.cpp	/^        int aa;$/;"	m	class:Demo	file:
+aa	CPP/class_/extends/diamond_entends.cpp	/^    int aa;    $/;"	m	class:A	file:
+aa	CPP/class_/extends/extends3.cpp	/^        int aa;  \/\/ 派生类覆盖了父类的同名成员$/;"	m	class:Derived	file:
+aa	CPP/class_/extends/extends3.cpp	/^        int aa;$/;"	m	class:Base	file:
+aa	CPP/class_/extends/extends4.cpp	/^    int aa; $/;"	m	class:Base	file:
+aa	CPP/class_/extends/multiple_extends.cpp	/^    int aa;$/;"	m	class:Demo	file:
+aa	CPP/class_/extends/multiple_extends.cpp	/^    int aa;$/;"	m	class:Demo2	file:
+aa	CPP/class_/extends/multiple_extends_3.cpp	/^    int aa;$/;"	m	class:A	file:
+aa	CPP/class_/static_/static.cpp	/^        int aa;$/;"	m	class:Demo	file:
+aa	CPP/class_/static_/static_howmany.cpp	/^        int aa;$/;"	m	class:Demo	file:
+aa	CPP/class_/初始化列表/hq_test.cpp	/^        int aa;$/;"	m	class:Demo	file:
+aa	CPP/class_/初始化列表/hq_test_2.cpp	/^    int aa;$/;"	m	class:Demo	file:
+aa	CPP/class_/运算符重载/operator.cpp	/^        int aa;$/;"	m	class:Integer	file:
+add	CPP/c_extension/defaultargument.cpp	/^int add(int num1, int num2, int num3)$/;"	f
+add	CPP/c_extension/reload.cpp	/^float add(float a, float b)$/;"	f
+add	CPP/c_extension/reload.cpp	/^int add(int a, int b)$/;"	f
+add	CPP/class_/base_/template.cpp	/^T add(T a, T b)$/;"	f
+add	CPP/class_/模板/add_func_template.cpp	/^T add(T t1, T t2) \/\/ 函数模板$/;"	f
+add	Linux_system_programing/makefiletest/add.c	/^int add(int a, int b)$/;"	f
+add	Linux_system_programing/test/resource/add.c	/^int add(int a,int b){$/;"	f
+add0	CPP/c_extension/defaultargument.cpp	/^int add0(int num1 = 2, int num2 = 3, int num3 = 0)$/;"	f
+addrlen	project/在线词典/server.c	/^    socklen_t addrlen;$/;"	m	struct:__anon2	file:
+adjust_thread	Linux_network_programming/threadPool/threadpool.c	/^void *adjust_thread(void *threadpool)   \/\/ 创建销毁线程$/;"	f
+adjust_tid	Linux_network_programming/threadPool/threadpool.c	/^    pthread_t adjust_tid;               \/* 存管理线程tid *\/$/;"	m	struct:threadpool_t	file:
+age	CPP/class_/base_/class.cpp	/^    int age;$/;"	m	struct:Person	file:
+age	CPP/class_/base_/mem_init.cpp	/^    int age;$/;"	m	struct:Person	file:
+age	CPP/class_/base_/this.cpp	/^    int age;$/;"	m	struct:Person	file:
+age	CPP/class_/extends/student.cpp	/^    int age;$/;"	m	class:Person	file:
+age	CPP/class_/友元/friendclass.cpp	/^    int age;$/;"	m	class:Student	file:
+age	CPP/class_/友元/friendfunc.cpp	/^    int age;$/;"	m	class:Student	file:
+age	CPP/class_/友元/friendmemfunc.cpp	/^    int age;$/;"	m	class:Student	file:
+arg	Linux_network_programming/threadPool/threadpool.c	/^    void *arg;                          \/* 上面函数的参数 *\/$/;"	m	struct:__anon4	file:
+b	CPP/c_extension/namespace.cpp	/^        float b;$/;"	m	class:myspace::Demo	file:
+b	CPP/c_extension/namespace.cpp	/^        float b;$/;"	m	struct:myspace::Demo1	file:
+b	CPP/class_/extends/multiple_extends.cpp	/^    int b;$/;"	m	class:B	file:
+b	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    int b;$/;"	m	class:B	file:
+b1	CPP/class_/extends/diamond_entends.cpp	/^    int b1;    $/;"	m	class:B1	file:
+b1	CPP/class_/强制类型转换/static_cast.cpp	/^    int b1;$/;"	m	class:Base	file:
+b2	CPP/class_/extends/diamond_entends.cpp	/^    int b2;    $/;"	m	class:B2	file:
+bb	CPP/class_/copy_struct/copy.cpp	/^        float bb;$/;"	m	class:Demo	file:
+bb	CPP/class_/extends/extends4.cpp	/^    int bb;$/;"	m	class:Derived	file:
+bb	CPP/class_/extends/multiple_extends_3.cpp	/^    int bb;$/;"	m	class:B	file:
+bb	CPP/class_/extends/upcast.cpp	/^    int bb;$/;"	m	class:Base	file:
+bb	CPP/class_/static_/static.cpp	/^        float bb;$/;"	m	class:Demo	file:
+bb	CPP/class_/初始化列表/hq_test.cpp	/^        int bb;$/;"	m	class:Demo	file:
+bb	CPP/class_/初始化列表/hq_test_2.cpp	/^    float bb;$/;"	m	class:Demo	file:
+blank_number	Linux_system_programing/Pthread/sem_product_consumer.c	/^sem_t blank_number, product_number; \/\/ 队列空白信号量数量  产品信号量数量$/;"	v
+buf	project/在线词典/client.c	/^char buf[1024] = {0};$/;"	v
+busy_thr_num	Linux_network_programming/threadPool/threadpool.c	/^    int busy_thr_num;                   \/* 忙状态线程个数 *\/$/;"	m	struct:threadpool_t	file:
+c	CPP/c_extension/namespace.cpp	/^        int c = 10;$/;"	m	namespace:myspace::my2space	file:
+c	CPP/c_extension/namespace.cpp	/^        std::string c;$/;"	m	class:myspace::Demo	file:
+c	CPP/c_extension/namespace.cpp	/^        std::string c;$/;"	m	struct:myspace::Demo1	file:
+c	CPP/class_/extends/multiple_extends.cpp	/^    int c;$/;"	m	class:C	file:
+c	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    int c;$/;"	m	class:C	file:
+call	CPP/class_/extends/car__inherit_phone.cpp	/^    void call(string str)$/;"	f	class:Phone
+callback	Sqlite/practice/exec.c	/^int callback(void *args, int f_num, char **f_value, char **f_name)$/;"	f
+catch_child	Linux_system_programing/Sign/catch_sign/catch_child.c	/^void catch_child(int signo)$/;"	f
+cfd	project/在线词典/server.c	/^    int cfd;$/;"	m	struct:__anon2	file:
+check_file	C/practice/check_char.c	/^void check_file(int argc, char* argv[])$/;"	f
+check_input	C/practice/check_char.c	/^void check_input(char ch)$/;"	f
+chickId	CPP/class_/友元/driver_license_test.cpp	/^bool Examiner::chickId(Student&stu)$/;"	f	class:Examiner
+city	CPP/class_/友元/friendclass.cpp	/^    string city;$/;"	m	class:Address	file:
+city	CPP/class_/友元/friendmemfunc.cpp	/^    string city;$/;"	m	class:Address	file:
+cli_addr	project/在线词典/server.c	/^    struct sockaddr_in cli_addr;$/;"	m	struct:__anon2	typeref:struct:__anon2::sockaddr_in	file:
+con_mutex	Linux_system_programing/Pthread/sem_product_consumer.c	/^pthread_mutex_t con_mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+cond	Linux_system_programing/Pthread/conditionVar_product_consumer.c	/^pthread_cond_t cond = PTHREAD_COND_INITIALIZER;$/;"	v
+consumer	Linux_system_programing/Pthread/conditionVar_product_consumer.c	/^void *consumer(void *arg)$/;"	f
+consumer	Linux_system_programing/Pthread/sem_product_consumer.c	/^void *consumer(void *arg) \/\/ 消费者$/;"	f
+consumer_i	Linux_system_programing/Pthread/sem_product_consumer.c	/^int consumer_i = 0;$/;"	v
+count	Linux_system_programing/Pthread/deadlock.c	/^int count = 0;$/;"	v
+curr	project/在线词典/client.c	/^USERMSG curr;$/;"	v
+d	CPP/class_/extends/diamond_entends.cpp	/^    int d;    $/;"	m	class:D	file:
+d	CPP/class_/extends/multiple_extends.cpp	/^    int d;$/;"	m	class:Derived	file:
+d	CPP/class_/强制类型转换/reinterpret_cast.cpp	/^    int d = 22;$/;"	m	class:Demo	file:
+d1	CPP/class_/extends/extends1.cpp	/^    int d1;$/;"	m	class:Derived	file:
+d1	CPP/class_/extends/extends2.cpp	/^    int d1;$/;"	m	class:Derived	file:
+d1	CPP/class_/强制类型转换/static_cast.cpp	/^    int d1;$/;"	m	class:Derived	file:
+data	CPP/class_/模板/container_class_template.cpp	/^    T data;$/;"	m	class:Container	file:
+data	project/在线词典/client.c	/^    char data[128];$/;"	m	struct:__anon1	file:
+data	project/在线词典/server.c	/^    char data[128];$/;"	m	struct:__anon3	file:
+db	project/在线词典/server.c	/^sqlite3 *db;$/;"	v
+dd	CPP/class_/extends/multiple_extends_3.cpp	/^    int dd;$/;"	m	class:D	file:
+dd	CPP/class_/extends/upcast.cpp	/^    int dd;$/;"	m	class:Derived	file:
+debug	CPP/c_extension/ioformat.cpp	/^void debug(string s1 = "------------------------------")$/;"	f
+debug	CPP/class_/copy_struct/copy.cpp	/^void debug()$/;"	f
+debug	CPP/class_/copy_struct/deep_copy.cpp	/^void debug()$/;"	f
+debug	CPP/class_/强制类型转换/dynamic_cast.cpp	/^void debug()$/;"	f
+debug	CPP/class_/强制类型转换/static_cast.cpp	/^void debug()$/;"	f
+debug	CPP/class_/运算符重载/friend_operator.cpp	/^void debug()$/;"	f
+debug	CPP/class_/运算符重载/memoperator.cpp	/^void debug()$/;"	f
+debug	CPP/class_/运算符重载/memoperator1.cpp	/^void debug()$/;"	f
+demo	CPP/class_/extends/multiple_extends.cpp	/^    Demo demo;$/;"	m	class:Derived	file:
+demo2	CPP/class_/extends/multiple_extends.cpp	/^    Demo2 demo2;$/;"	m	class:Derived	file:
+desplay	CPP/class_/base_/this.cpp	/^    void desplay()$/;"	f	struct:Person
+desplay2	CPP/class_/base_/this.cpp	/^    void desplay2()$/;"	f	struct:Person
+display	CPP/class_/extends/extends3.cpp	/^        void display()$/;"	f	class:Derived
+display	CPP/class_/extends/extends4.cpp	/^        void display()$/;"	f	class:Derived
+display	CPP/class_/extends/student.cpp	/^    void display()$/;"	f	class:Student
+district	CPP/class_/友元/friendclass.cpp	/^    string district;$/;"	m	class:Address	file:
+district	CPP/class_/友元/friendmemfunc.cpp	/^    string district;$/;"	m	class:Address	file:
+div1	Linux_system_programing/makefiletest/div1.c	/^int div1(int a, int b)$/;"	f
+div1	Linux_system_programing/test/resource/div1.c	/^int div1(int a,int b){$/;"	f
+divide	CPP/class_/异常/inherit_std_excwption.cpp	/^double divide(double a, double b)$/;"	f
+driver	CPP/class_/extends/car__inherit_phone.cpp	/^    void driver()$/;"	f	class:Car
+e	CPP/class_/强制类型转换/reinterpret_cast.cpp	/^    int e = 33;$/;"	m	class:Demo	file:
+errCode	CPP/class_/异常/create_new_exception.cpp	/^    int errCode;$/;"	m	class:NewException	file:
+errInfo	CPP/class_/异常/create_new_exception.cpp	/^    string errInfo;$/;"	m	class:NewException	file:
+errinfo	CPP/class_/异常/inherit_std_excwption.cpp	/^    const char *errinfo;$/;"	m	class:MyException	file:
+exchange	CPP/class_/模板/add_func_template.cpp	/^void exchange(T1& t1, T1& t2)$/;"	f
+false	Linux_network_programming/threadPool/threadpool.c	15;"	d	file:
+fun3	CPP/class_/extends/extends1.cpp	/^    void fun3()$/;"	f	class:Base	file:
+fun3	CPP/class_/extends/extends2.cpp	/^    void fun3()$/;"	f	class:Base	file:
+func	CPP/c_extension/inline.cpp	/^inline void func()$/;"	f
+func	CPP/c_extension/namespace.cpp	/^        void func()$/;"	f	namespace:myspace::my2space
+func	CPP/c_extension/namespace.cpp	/^    void func()$/;"	f	namespace:myspace
+func	CPP/c_extension/namespace.cpp	/^void func()$/;"	f
+func	CPP/class_/extends/extends1.cpp	/^    void func()$/;"	f	class:Base
+func	CPP/class_/extends/extends2.cpp	/^  void func()$/;"	f	class:Derived
+func	CPP/class_/多态/hidden.cpp	/^    int func()$/;"	f	class:Derived
+func	CPP/class_/强制类型转换/const_cast.cpp	/^void func(const int& a)$/;"	f
+func	Linux_network_programming/socket/Multi-process_and_Multithread_Concurrent_Server/multithread.c	/^void* func(void* cfd){$/;"	f
+func	Linux_system_programing/Pthread/Pthread_decath.c	/^void *func(void *arg)$/;"	f
+func	Linux_system_programing/Pthread/Pthread_join.c	/^void *func()$/;"	f
+func	Linux_system_programing/Pthread/Pthread_join_for.c	/^void *func(void *arg)$/;"	f
+func	Linux_system_programing/Pthread/pthread_shared.c	/^void *func(void *arg)$/;"	f
+func1	CPP/class_/copy_struct/copy.cpp	/^void func1(Demo d1)$/;"	f
+func1	CPP/class_/extends/extends1.cpp	/^    void func1()$/;"	f	class:Base
+func1	CPP/class_/extends/extends2.cpp	/^    void func1()$/;"	f	class:Base
+func1	CPP/class_/初始化列表/hq_test_2.cpp	/^    void func1()$/;"	f	class:Demo
+func1	CPP/class_/多态/hidden.cpp	/^    virtual void func1(int a, int b)$/;"	f	class:Base
+func1	CPP/class_/多态/hidden.cpp	/^    void func1(float a, int b)$/;"	f	class:Base
+func1	CPP/class_/多态/overload.cpp	/^    virtual void func1(int a, int b)$/;"	f	class:Base
+func1	CPP/class_/多态/overload.cpp	/^    virtual void func1(int a, int b)$/;"	f	class:Derived
+func1	CPP/class_/多态/virtual_table.cpp	/^    virtual void func1()$/;"	f	class:A
+func1	CPP/class_/多态/virtual_table.cpp	/^    void func1()$/;"	f	class:B
+func1	CPP/class_/异常/catch_multiple_exception.cpp	/^void func1(int i)$/;"	f
+func1	CPP/class_/异常/exception_occured_lays.cpp	/^void func1()$/;"	f
+func1	CPP/class_/异常/use_std_exception.cpp	/^int func1(int index)$/;"	f
+func1	Linux_system_programing/Pthread/deadlock.c	/^void *func1(void *arg)$/;"	f
+func2	CPP/class_/extends/extends1.cpp	/^    void func2()$/;"	f	class:Base
+func2	CPP/class_/extends/extends2.cpp	/^    void func2()$/;"	f	class:Base
+func2	CPP/class_/异常/exception_occured_lays.cpp	/^void func2()$/;"	f
+func2	Linux_system_programing/Pthread/deadlock.c	/^void *func2(void *arg)$/;"	f
+function	Linux_network_programming/threadPool/threadpool.c	/^    void *(*function)(void *);          \/* 函数指针，回调函数 *\/$/;"	m	struct:__anon4	file:
+g_aa	CPP/class_/异常/use_std_exception.cpp	/^int g_aa[100];$/;"	v
+g_person	CPP/class_/base_/mem_init.cpp	/^Person g_person;$/;"	v
+getAge	CPP/class_/base_/destructor.cpp	/^    int getAge()$/;"	f	class:Person
+getAge	CPP/class_/base_/getset.cpp	/^    int getAge()$/;"	f	class:Person
+getAge	CPP/class_/base_/struct.cpp	/^    int getAge()$/;"	f	class:Person
+getAge	CPP/class_/declare/declare.cpp	/^int Person::getAge()$/;"	f	class:Person
+getAge	CPP/class_/declare/main.cpp	/^int Person::getAge()$/;"	f	class:Person
+getData	CPP/class_/模板/container_class_template.cpp	/^T Container<T>::getData() const$/;"	f	class:Container
+getData	CPP/class_/模板/container_class_template.cpp	/^T& Container<T>::getData() $/;"	f	class:Container
+getLen	CPP/class_/模板/arr_template.cpp	/^    int getLen()$/;"	f	class:Array
+getPhone	CPP/class_/extends/car__inherit_phone.cpp	/^    Phone& getPhone()$/;"	f	class:Car
+getlen	CPP/class_/copy_struct/deep_copy.cpp	/^    int getlen()$/;"	f	class:Array
+gettExamResult	CPP/class_/友元/driver_license_test.cpp	/^int Student::gettExamResult()$/;"	f	class:Student
+gettotal_objects	CPP/class_/static_/static_howmany.cpp	/^        static int gettotal_objects()$/;"	f	class:Demo
+goodstudent	CPP/class_/extends/extend.cpp	/^struct goodstudent : Student{$/;"	s	file:
+head	Linux_system_programing/Pthread/conditionVar_product_consumer.c	/^struct msg *head;$/;"	v	typeref:struct:msg
+high	CPP/class_/base_/this.cpp	/^    int high;$/;"	m	struct:Person	file:
+high	CPP/class_/mempermission/main.cpp	/^    int high;$/;"	m	class:Person	file:
+history	project/在线词典/client.c	/^void history(int cfd)$/;"	f
+history	project/在线词典/server.c	/^void history(SOCKMSG csock, USERMSG cond)$/;"	f
+historycallback	project/在线词典/server.c	/^int historycallback(void *data, int argc, char **argv, char **azColName) \/\/ sqlite 回调$/;"	f
+id	CPP/class_/base_/this.cpp	/^    int id;$/;"	m	struct:Person	file:
+id	CPP/class_/友元/driver_license_test.cpp	/^    string id; \/\/ 20230720$/;"	m	class:Student	file:
+id	project/在线词典/client.c	/^    char id[20];$/;"	m	struct:__anon1	file:
+id	project/在线词典/server.c	/^    char id[20];$/;"	m	struct:__anon3	file:
+insert	project/在线词典/importdict.c	/^int insert(sqlite3 *db, char *buf, int len)$/;"	f
+is_thread_alive	Linux_network_programming/threadPool/threadpool.c	/^int is_thread_alive(pthread_t tid)$/;"	f
+isfile	Linux_system_programing/fileSysten_test/ls-R.c	/^void isfile(char *name)$/;"	f
+len	CPP/class_/copy_struct/deep_copy.cpp	/^    int len;$/;"	m	class:Array	file:
+len	CPP/class_/模板/arr_template.cpp	/^    int len;$/;"	m	class:Array	file:
+len	CPP/class_/运算符重载/memoperator1.cpp	/^    int len;$/;"	m	class:Array	file:
+liu	CPP/class_/多态/main1.cpp	/^void liu(Animal *p)$/;"	f
+liu	CPP/class_/多态/virtual_destructorfunc.cpp	/^void liu(Animal *p)$/;"	f
+liu	CPP/class_/多态/virtualfunc.cpp	/^void liu(Animal *p)$/;"	f
+liu	CPP/class_/多态/纯虚函数.cpp	/^void liu(Animal *p)$/;"	f
+live_thr_num	Linux_network_programming/threadPool/threadpool.c	/^    int live_thr_num;                   \/* 当前存活线程个数 *\/$/;"	m	struct:threadpool_t	file:
+lock	Linux_network_programming/threadPool/threadpool.c	/^    pthread_mutex_t lock;               \/* 用于锁住本结构体 *\/    $/;"	m	struct:threadpool_t	file:
+login	project/在线词典/client.c	/^int login(int cfd)$/;"	f
+login	project/在线词典/server.c	/^USERMSG login(int cfd, USERMSG msg)$/;"	f
+loginmenu	project/在线词典/client.c	/^void loginmenu(int cfd) \/\/ 登录菜单$/;"	f
+m_age	CPP/class_/base_/destructor.cpp	/^    int m_age;$/;"	m	class:Person	file:
+m_age	CPP/class_/base_/getset.cpp	/^    int m_age;$/;"	m	class:Person	file:
+m_age	CPP/class_/base_/memmanage.cpp	/^    int m_age;$/;"	m	struct:Person	file:
+m_age	CPP/class_/base_/struct.cpp	/^    int m_age;$/;"	m	class:Person	file:
+m_age	CPP/class_/copy_struct/father_constructor.cpp	/^    int m_age;$/;"	m	class:Person	file:
+m_age	CPP/class_/declare/declare.h	/^    int m_age;$/;"	m	class:Person
+m_age	CPP/class_/declare/main.cpp	/^    int m_age;$/;"	m	class:Person	file:
+m_age	CPP/class_/extends/extend.cpp	/^    int m_age;$/;"	m	struct:Person	file:
+m_age	CPP/class_/mempermission/main.cpp	/^    int m_age;$/;"	m	class:Person	file:
+m_age	CPP/class_/初始化列表/main.cpp	/^    int m_age;$/;"	m	struct:Person	file:
+m_age	CPP/class_/初始化列表/main2.cpp	/^    int m_age;$/;"	m	struct:Person	file:
+m_age	CPP/class_/初始化列表/main3.cpp	/^    int m_age;$/;"	m	class:Person	file:
+m_age	CPP/class_/多态/virtual_destructorfunc.cpp	/^    int m_age;$/;"	m	struct:Animal	file:
+m_age	CPP/class_/多态/virtualfunc.cpp	/^    int m_age;$/;"	m	struct:Animal	file:
+m_car	CPP/class_/base_/memmanage.cpp	/^    Car* m_car;$/;"	m	struct:Person	file:
+m_height	CPP/class_/初始化列表/main.cpp	/^    int m_height;$/;"	m	struct:Person	file:
+m_height	CPP/class_/初始化列表/main2.cpp	/^    int m_height;$/;"	m	struct:Person	file:
+m_no	CPP/class_/初始化列表/main3.cpp	/^    int m_no;$/;"	m	class:Student	file:
+m_price	CPP/class_/base_/memmanage.cpp	/^    int m_price;$/;"	m	struct:Car	file:
+m_saray	CPP/class_/extends/extend.cpp	/^    int m_saray;$/;"	m	struct:Worker	file:
+m_score	CPP/class_/copy_struct/father_constructor.cpp	/^    int m_score;$/;"	m	class:Student	file:
+m_score	CPP/class_/extends/extend.cpp	/^    int m_score;$/;"	m	struct:Student	file:
+main	C/practice/check_char.c	/^int main(int argc,char *argv[])$/;"	f
+main	C/practice/printfoneline.c	/^int main(int argc,char *argv[])$/;"	f
+main	C/practice/search_substring.c	/^int main(int argc,char *argv[])$/;"	f
+main	C/practice/test.c	/^int main(int argc,char *argv[])$/;"	f
+main	CPP/c_extension/const.cpp	/^int main()$/;"	f
+main	CPP/c_extension/defaultargument.cpp	/^int main()$/;"	f
+main	CPP/c_extension/helloworld.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/c_extension/inline.cpp	/^int main()$/;"	f
+main	CPP/c_extension/ioformat.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/c_extension/memory.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/c_extension/namespace.cpp	/^int main()$/;"	f
+main	CPP/c_extension/reference.cpp	/^int main()$/;"	f
+main	CPP/c_extension/reload.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/c_extension/scope.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/base_/class.cpp	/^int main()$/;"	f
+main	CPP/class_/base_/destructor.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/base_/getset.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/base_/mem_init.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/base_/memmanage.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/base_/struct.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/base_/template.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/base_/test.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/base_/this.cpp	/^int main()$/;"	f
+main	CPP/class_/const/constobj.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/const/main.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/const/main.s	/^main:$/;"	l
+main	CPP/class_/copy_struct/copy.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/copy_struct/deep_copy.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/copy_struct/father_constructor.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/declare/main.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/extends/car__inherit_phone.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/extends/diamond_entends.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/extends/extend.cpp	/^int main()$/;"	f
+main	CPP/class_/extends/extends1.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/extends/extends2.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/extends/extends3.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/extends/extends4.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/extends/multiple_extends.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/extends/multiple_extends_3.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/extends/student.cpp	/^int main()$/;"	f
+main	CPP/class_/extends/upcast.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/mempermission/main.cpp	/^int main()$/;"	f
+main	CPP/class_/static_/static.cpp	/^int main()$/;"	f
+main	CPP/class_/static_/static_howmany.cpp	/^int main()$/;"	f
+main	CPP/class_/初始化列表/hq_test.cpp	/^int main()$/;"	f
+main	CPP/class_/初始化列表/hq_test_2.cpp	/^int main()$/;"	f
+main	CPP/class_/初始化列表/main.cpp	/^int main()$/;"	f
+main	CPP/class_/初始化列表/main2.cpp	/^int main()$/;"	f
+main	CPP/class_/初始化列表/main3.cpp	/^int main()$/;"	f
+main	CPP/class_/友元/driver_license_test.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/友元/friendclass.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/友元/friendfunc.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/友元/friendmemfunc.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/多态/company.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/多态/hidden.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/多态/main1.cpp	/^int main()$/;"	f
+main	CPP/class_/多态/multiple_extends.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/多态/overload.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/多态/virtual_destructorfunc.cpp	/^int main()$/;"	f
+main	CPP/class_/多态/virtual_table.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/多态/virtualfunc.cpp	/^int main()$/;"	f
+main	CPP/class_/多态/纯虚函数.cpp	/^int main()$/;"	f
+main	CPP/class_/异常/Exception.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/异常/Exception1.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/异常/catch_multiple_exception.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/异常/create_new_exception.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/异常/exception_occured_lays.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/异常/inherit_std_excwption.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/异常/use_std_exception.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/强制类型转换/const_cast.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/强制类型转换/dynamic_cast.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/强制类型转换/reinterpret_cast.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/强制类型转换/static_cast.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/模板/add_func_template.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/模板/arr_template.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/模板/container_class_template.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/运算符重载/friend_operator.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/运算符重载/memoperator.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/运算符重载/memoperator1.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	CPP/class_/运算符重载/operator.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_network_programming/Io_multiplexing/Epoll/epoll.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/Io_multiplexing/Epoll/epoll_el.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/Io_multiplexing/Epoll/epoll_lt.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/Io_multiplexing/poll.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_network_programming/Io_multiplexing/select.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/Io_multiplexing/select_arr.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/socket/LocalSocket/client.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/socket/LocalSocket/server.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/socket/Multi-process_and_Multithread_Concurrent_Server/multiprocess.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/socket/Multi-process_and_Multithread_Concurrent_Server/multithread.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/socket/UDP/cilent.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/socket/UDP/server.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_network_programming/socket/client.c	/^int main(int argc, char *argv[]) {$/;"	f
+main	Linux_network_programming/socket/practice/client.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/socket/practice/serve1.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_network_programming/threadPool/threadpool.c	/^int main(void)$/;"	f
+main	Linux_system_programing/IPC_test/br_pipe_wc-l.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/fifo_test/fifo_r.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/fifo_test/fifo_w.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/fork.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/fork2.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/mmap/mmap_IPC.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/mmap/mmap_IPC2.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/mmap/mmap_IPC_ps.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/mmap/test.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/pipe.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/pipe_test.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/test.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/IPC_test/wait_test.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Pthread/Creat_ptheard.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Pthread/Pthread_decath.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Pthread/Pthread_join.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Pthread/Pthread_join_for.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Pthread/conditionVar_product_consumer.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Pthread/deadlock.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Pthread/pthread_cancel.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Pthread/pthread_shared.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Pthread/sem_product_consumer.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Sign/alarm/alarm.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Sign/catch_sign/catch_child.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Sign/catch_sign/sigaction.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Sign/catch_sign/signal.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Sign/kill/kill_ps.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/Sign/test/sigsfunc.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/fileSysten_test/dup2_test.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/fileSysten_test/dup_test.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/fileSysten_test/fcnt_dup.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/fileSysten_test/ls-R.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/fileSysten_test/myls.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/file_io_test/test/mv_test.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/file_io_test/test/open.c	/^int main(int argc,char *argv[])$/;"	f
+main	Linux_system_programing/file_io_test/test/stat_test.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/file_io_test/test/test.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/file_io_test/test/z_cp.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/makefiletest/add.c	/^int main()$/;"	f
+main	Linux_system_programing/makefiletest/div1.c	/^int main()$/;"	f
+main	Linux_system_programing/makefiletest/hello.c	/^int main()$/;"	f
+main	Linux_system_programing/process_test/pstofile.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/process_test/test.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/process_test/wait.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/process_test/waitpid_while.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/session/pro_process.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/session/test.c	/^int main(int argc, char *argv[])$/;"	f
+main	Linux_system_programing/test/test.c	/^int main(void)$/;"	f
+main	Sqlite/practice/exec.c	/^int main()$/;"	f
+main	Sqlite/practice/open.c	/^int main()$/;"	f
+main	project/在线词典/client.c	/^int main()$/;"	f
+main	project/在线词典/importdict.c	/^int main()$/;"	f
+main	project/在线词典/server.c	/^int main(int argc, char *argv[])$/;"	f
+max_thr_num	Linux_network_programming/threadPool/threadpool.c	/^    int max_thr_num;                    \/* 线程池最大线程数 *\/$/;"	m	struct:threadpool_t	file:
+menu	project/在线词典/client.c	/^int menu(int cfd, USERMSG msg)$/;"	f
+min_thr_num	Linux_network_programming/threadPool/threadpool.c	/^    int min_thr_num;                    \/* 线程池最小线程数 *\/$/;"	m	struct:threadpool_t	file:
+money	CPP/class_/extends/extend.cpp	/^    int money;$/;"	m	struct:goodstudent	file:
+msg	Linux_system_programing/Pthread/conditionVar_product_consumer.c	/^struct msg$/;"	s	file:
+mulitply	CPP/c_extension/inline.cpp	/^inline int mulitply(int a, int b)$/;"	f
+mutex	Linux_system_programing/Pthread/conditionVar_product_consumer.c	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+mutex	Linux_system_programing/Pthread/pthread_shared.c	/^pthread_mutex_t mutex; \/\/ 定义一把互斥锁$/;"	v
+mutex1	Linux_system_programing/Pthread/deadlock.c	/^pthread_mutex_t mutex1, mutex2;$/;"	v
+mutex2	Linux_system_programing/Pthread/deadlock.c	/^pthread_mutex_t mutex1, mutex2;$/;"	v
+my2space	CPP/c_extension/namespace.cpp	/^    namespace my2space$/;"	n	namespace:myspace	file:
+mylife	CPP/class_/多态/virtual_destructorfunc.cpp	/^    int mylife;$/;"	m	struct:Cat	file:
+mylife	CPP/class_/多态/virtualfunc.cpp	/^    int mylife;$/;"	m	struct:Cat	file:
+myspace	CPP/c_extension/namespace.cpp	/^namespace myspace$/;"	n	file:
+name	CPP/class_/extends/student.cpp	/^    string name;$/;"	m	class:Person	file:
+name	CPP/class_/友元/driver_license_test.cpp	/^    string name;$/;"	m	class:Student	file:
+name	CPP/class_/友元/friendclass.cpp	/^    string name;$/;"	m	class:Student	file:
+name	CPP/class_/友元/friendfunc.cpp	/^    string name;$/;"	m	class:Student	file:
+name	CPP/class_/友元/friendmemfunc.cpp	/^    string name;$/;"	m	class:Student	file:
+name	CPP/class_/多态/company.cpp	/^    string name;$/;"	m	class:Company	file:
+name	project/在线词典/client.c	/^    char name[20];$/;"	m	struct:__anon1	file:
+name	project/在线词典/server.c	/^    char name[20];$/;"	m	struct:__anon3	file:
+next	Linux_system_programing/Pthread/conditionVar_product_consumer.c	/^    struct msg *next;$/;"	m	struct:msg	typeref:struct:msg::msg	file:
+num	Linux_system_programing/Pthread/conditionVar_product_consumer.c	/^    int num;$/;"	m	struct:msg	file:
+obj	CPP/c_extension/makefile	/^obj = $(patsubst %.cpp,%,$(src))$/;"	m
+obj	CPP/class_/copy_struct/makefile	/^obj = $(patsubst %.cpp,%,$(src))$/;"	m
+obj	CPP/class_/extends/makefile	/^obj = $(patsubst %.cpp,%,$(src))$/;"	m
+obj	CPP/class_/makefile	/^obj = $(patsubst %.cpp,%,$(src))$/;"	m
+obj	Linux_network_programming/Io_multiplexing/Epoll/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_network_programming/socket/LocalSocket/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_network_programming/socket/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_network_programming/socket/practice/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/IPC_test/fifo_test/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/IPC_test/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/IPC_test/mmap/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/Pthread/makefile	/^obj = $(patsubst %.c,%,$(src))$/;"	m
+obj	Linux_system_programing/Sign/alarm/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/Sign/catch_sign/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/Sign/kill/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/Sign/test/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/fileSysten_test/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/file_io_test/test/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/makefiletest/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	Linux_system_programing/process_test/makefile	/^obj = $(patsubst %.c,%.out,$(src))$/;"	m
+obj	project/在线词典/makefile	/^obj = $(patsubst %.c,%,$(src))$/;"	m
+opendb	project/在线词典/server.c	/^void opendb() \/\/ 打开数据库模块$/;"	f
+operator !	CPP/class_/运算符重载/friend_operator.cpp	/^Point operator!(Point& a)$/;"	f
+operator !	CPP/class_/运算符重载/memoperator.cpp	/^    Point operator!() {$/;"	f	class:Point
+operator *	CPP/class_/运算符重载/operator.cpp	/^Integer operator*(const Integer& a, const Integer& b)$/;"	f
+operator +	CPP/class_/模板/add_func_template.cpp	/^    Point operator+(Point p)$/;"	f	class:Point
+operator +	CPP/class_/运算符重载/operator.cpp	/^Integer operator+(const Integer& a, const Integer& b)$/;"	f
+operator ++	CPP/class_/运算符重载/memoperator.cpp	/^Point Point::operator++()$/;"	f	class:Point
+operator ++	CPP/class_/运算符重载/memoperator.cpp	/^Point Point::operator++(int i)$/;"	f	class:Point
+operator ++	CPP/class_/运算符重载/operator.cpp	/^Integer operator++(Integer& a) \/\/ 前++$/;"	f
+operator ++	CPP/class_/运算符重载/operator.cpp	/^Integer operator++(Integer& a, int b) \/\/ 后++$/;"	f
+operator +=	CPP/class_/运算符重载/friend_operator.cpp	/^Point operator+=(Point& a, Point& b)$/;"	f
+operator --	CPP/class_/运算符重载/friend_operator.cpp	/^Point operator--(Point& a)$/;"	f
+operator --	CPP/class_/运算符重载/friend_operator.cpp	/^Point operator--(Point& a,int b)$/;"	f
+operator -=	CPP/class_/运算符重载/memoperator.cpp	/^Point Point::operator-=(Point a)$/;"	f	class:Point
+operator <<	CPP/class_/模板/add_func_template.cpp	/^ostream& operator<<(ostream& out, const Point& p)$/;"	f
+operator <<	CPP/class_/模板/arr_template.cpp	/^ostream& operator<<(ostream& out, Point &p)$/;"	f
+operator <<	CPP/class_/运算符重载/memoperator.cpp	/^ostream &operator<<(ostream &output, const Point &p)$/;"	f
+operator <<	CPP/class_/运算符重载/memoperator1.cpp	/^ostream &operator<<(ostream &output, const Array &p)$/;"	f
+operator =	CPP/class_/运算符重载/memoperator1.cpp	/^Array Array::operator=(const Array &array)$/;"	f	class:Array
+operator ==	CPP/class_/运算符重载/friend_operator.cpp	/^bool operator==(Point& a, Point& b)$/;"	f
+operator >	CPP/class_/运算符重载/operator.cpp	/^bool operator>(const Integer& a, const Integer& b)$/;"	f
+operator []	CPP/class_/模板/arr_template.cpp	/^template <typename T> T &Array<T>::operator[](int index)$/;"	f	class:Array
+operator []	CPP/class_/运算符重载/memoperator1.cpp	/^int &Array::operator[](int index)$/;"	f	class:Array
+ownerName	CPP/class_/extends/car__inherit_phone.cpp	/^    string ownerName;$/;"	m	class:Car	file:
+pArray	CPP/class_/copy_struct/deep_copy.cpp	/^    int* pArray;$/;"	m	class:Array	file:
+pArray	CPP/class_/模板/arr_template.cpp	/^    T *pArray;$/;"	m	class:Array	file:
+pArray	CPP/class_/运算符重载/memoperator1.cpp	/^    int *pArray;$/;"	m	class:Array	file:
+phone	CPP/class_/extends/car__inherit_phone.cpp	/^    Phone phone;$/;"	m	class:Car	file:
+pointer_change	CPP/c_extension/reference.cpp	/^void pointer_change(int *a, int *b)$/;"	f
+print	Linux_system_programing/Sign/alarm/alarm.c	/^void print()$/;"	f
+printset	Linux_system_programing/Sign/test/sigsfunc.c	/^void printset(sigset_t *set)$/;"	f
+pro_mutex	Linux_system_programing/Pthread/sem_product_consumer.c	/^pthread_mutex_t pro_mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+process	Linux_network_programming/threadPool/threadpool.c	/^void *process(void *arg)$/;"	f
+product	Linux_system_programing/Pthread/conditionVar_product_consumer.c	/^void *product(void *arg)$/;"	f
+product	Linux_system_programing/Pthread/sem_product_consumer.c	/^void *product(void *arg) \/\/ 生产者$/;"	f
+product_i	Linux_system_programing/Pthread/sem_product_consumer.c	/^int product_i = 0;$/;"	v
+product_number	Linux_system_programing/Pthread/sem_product_consumer.c	/^sem_t blank_number, product_number; \/\/ 队列空白信号量数量  产品信号量数量$/;"	v
+province	CPP/class_/友元/friendclass.cpp	/^    string province;$/;"	m	class:Address	file:
+province	CPP/class_/友元/friendmemfunc.cpp	/^    string province;$/;"	m	class:Address	file:
+ptr	CPP/c_extension/reference.cpp	/^int ptr(const int *p)$/;"	f
+query	project/在线词典/client.c	/^void query(int cfd)$/;"	f
+querydic	project/在线词典/server.c	/^void querydic(SOCKMSG csock, USERMSG cond) \/\/ 查字典$/;"	f
+queue_front	Linux_network_programming/threadPool/threadpool.c	/^    int queue_front;                    \/* task_queue队头下标 *\/$/;"	m	struct:threadpool_t	file:
+queue_max_size	Linux_network_programming/threadPool/threadpool.c	/^    int queue_max_size;                 \/* task_queue队列可容纳任务数上限 *\/$/;"	m	struct:threadpool_t	file:
+queue_not_empty	Linux_network_programming/threadPool/threadpool.c	/^    pthread_cond_t queue_not_empty;     \/* 任务队列里不为空时，通知等待任务的线程 *\/$/;"	m	struct:threadpool_t	file:
+queue_not_full	Linux_network_programming/threadPool/threadpool.c	/^    pthread_cond_t queue_not_full;      \/* 当任务队列满时，添加任务的线程阻塞，等待此条件变量 *\/$/;"	m	struct:threadpool_t	file:
+queue_rear	Linux_network_programming/threadPool/threadpool.c	/^    int queue_rear;                     \/* task_queue队尾下标 *\/$/;"	m	struct:threadpool_t	file:
+queue_size	Linux_network_programming/threadPool/threadpool.c	/^    int queue_size;                     \/* task_queue队中实际任务数 *\/$/;"	m	struct:threadpool_t	file:
+read_dir	Linux_system_programing/fileSysten_test/ls-R.c	/^void read_dir(char *dir)$/;"	f
+refer_change	CPP/c_extension/reference.cpp	/^int refer_change(const int &a, const int &b) \/\/ 常引用重载$/;"	f
+refer_change	CPP/c_extension/reference.cpp	/^int refer_change(int &a, int &b)$/;"	f
+ret	Linux_system_programing/Pthread/Pthread_join.c	/^    int ret;$/;"	m	struct:tval	file:
+ret	Linux_system_programing/Pthread/Pthread_join_for.c	/^    int ret;$/;"	m	struct:tval	file:
+retref	CPP/c_extension/reference.cpp	/^int &retref(int &a)$/;"	f
+returnDemo	CPP/class_/copy_struct/copy.cpp	/^Demo returnDemo()$/;"	f
+run	CPP/class_/base_/class.cpp	/^    void run()$/;"	f	struct:Person
+run	CPP/class_/extends/extend.cpp	/^    void run()$/;"	f	struct:Person
+run	CPP/class_/mempermission/main.cpp	/^    void run()$/;"	f	class:Person
+run	CPP/class_/多态/main1.cpp	/^    void run()$/;"	f	struct:Animal
+run	CPP/class_/多态/main1.cpp	/^    void run()$/;"	f	struct:Cat
+run	CPP/class_/多态/main1.cpp	/^    void run()$/;"	f	struct:Dog
+run	CPP/class_/多态/main1.cpp	/^    void run()$/;"	f	struct:Pig
+run	CPP/class_/多态/virtual_destructorfunc.cpp	/^    virtual void run()$/;"	f	struct:Animal
+run	CPP/class_/多态/virtual_destructorfunc.cpp	/^    void run()$/;"	f	struct:Cat
+run	CPP/class_/多态/virtualfunc.cpp	/^    virtual void run()$/;"	f	struct:Animal
+run	CPP/class_/多态/virtualfunc.cpp	/^    void run()$/;"	f	struct:Cat
+run	CPP/class_/多态/virtualfunc.cpp	/^    void run()$/;"	f	struct:Dog
+run	CPP/class_/多态/virtualfunc.cpp	/^    void run()$/;"	f	struct:Pig
+run	CPP/class_/多态/纯虚函数.cpp	/^    void run()$/;"	f	struct:Cat
+run	CPP/class_/多态/纯虚函数.cpp	/^    void run()$/;"	f	struct:Dog
+run	CPP/class_/多态/纯虚函数.cpp	/^    void run()$/;"	f	struct:Pig
+saySlogan	CPP/class_/多态/company.cpp	/^void saySlogan(Company& p)$/;"	f
+score	CPP/class_/extends/student.cpp	/^    float score;$/;"	m	class:Student	file:
+score	CPP/class_/友元/driver_license_test.cpp	/^    int score;  \/\/ 90分$/;"	m	class:Student	file:
+score	CPP/class_/友元/friendclass.cpp	/^    float score;$/;"	m	class:Student	file:
+score	CPP/class_/友元/friendfunc.cpp	/^    float score;$/;"	m	class:Student	file:
+score	CPP/class_/友元/friendmemfunc.cpp	/^    float score;$/;"	m	class:Student	file:
+sem_quene	Linux_system_programing/Pthread/sem_product_consumer.c	/^int sem_quene[NUM];$/;"	v
+set	CPP/class_/copy_struct/copy.cpp	/^        void set(int a, float b)$/;"	f	class:Demo
+set	CPP/class_/copy_struct/deep_copy.cpp	/^    int& set(int index)$/;"	f	class:Array
+set	CPP/class_/extends/extends1.cpp	/^    void set(int aa, int bb, int cc)$/;"	f	class:Base
+set	CPP/class_/extends/extends2.cpp	/^    void set(int aa, int bb, int cc)$/;"	f	class:Base
+set	CPP/class_/初始化列表/hq_test_2.cpp	/^    void set(int aa, float bb)$/;"	f	class:Demo
+set	CPP/class_/模板/arr_template.cpp	/^    void set(T a)$/;"	f	class:Array
+set	CPP/class_/运算符重载/friend_operator.cpp	/^    void set(double a, double b)$/;"	f	class:Point
+set	CPP/class_/运算符重载/memoperator.cpp	/^    void set(int a, int b)$/;"	f	class:Point
+set	CPP/class_/运算符重载/operator.cpp	/^        void set(int a)$/;"	f	class:Integer
+setAge	CPP/class_/base_/destructor.cpp	/^    void setAge(int age)$/;"	f	class:Person
+setAge	CPP/class_/base_/getset.cpp	/^    void setAge(int age)$/;"	f	class:Person
+setAge	CPP/class_/base_/struct.cpp	/^    void setAge(int age)$/;"	f	class:Person
+setAge	CPP/class_/declare/declare.cpp	/^void Person::setAge(int age)$/;"	f	class:Person
+setAge	CPP/class_/declare/main.cpp	/^void Person::setAge(int age)$/;"	f	class:Person
+setAll	CPP/class_/copy_struct/deep_copy.cpp	/^    void setAll(int num)$/;"	f	class:Array
+setScore	CPP/class_/友元/driver_license_test.cpp	/^void Examiner::setScore(Student &stu)$/;"	f	class:Examiner
+setValue	CPP/class_/extends/extends1.cpp	/^    void setValue(int a)$/;"	f	class:Derived
+setValue	CPP/class_/extends/extends2.cpp	/^    void setValue(int a)$/;"	f	class:Derived
+set_value	CPP/class_/static_/static.cpp	/^        static void set_value(int value)$/;"	f	class:Demo
+shared_value	CPP/class_/static_/static.cpp	/^        static int shared_value;    $/;"	m	class:Demo	file:
+shared_value	CPP/class_/static_/static.cpp	/^int Demo::shared_value = 0; $/;"	m	class:Demo	file:
+show	CPP/class_/const/constobj.cpp	/^    void show() const $/;"	f	class:Demo
+show	CPP/class_/copy_struct/copy.cpp	/^        void show(){$/;"	f	class:Demo
+show	CPP/class_/copy_struct/deep_copy.cpp	/^    void show()$/;"	f	class:Array
+show	CPP/class_/extends/diamond_entends.cpp	/^    void show()$/;"	f	class:D
+show	CPP/class_/extends/extends1.cpp	/^    void show()$/;"	f	class:Derived
+show	CPP/class_/extends/extends2.cpp	/^    void show()$/;"	f	class:Derived
+show	CPP/class_/extends/extends3.cpp	/^        void show()$/;"	f	class:Base
+show	CPP/class_/extends/extends4.cpp	/^    void show()$/;"	f	class:Base
+show	CPP/class_/extends/multiple_extends.cpp	/^    void show()$/;"	f	class:Derived
+show	CPP/class_/extends/multiple_extends_3.cpp	/^    void show()$/;"	f	class:D
+show	CPP/class_/extends/upcast.cpp	/^    void show()$/;"	f	class:Base
+show	CPP/class_/extends/upcast.cpp	/^    void show()$/;"	f	class:Derived
+show	CPP/class_/static_/static.cpp	/^        void show()$/;"	f	class:Demo
+show	CPP/class_/初始化列表/hq_test_2.cpp	/^    void show()$/;"	f	class:Demo
+show	CPP/class_/友元/friendclass.cpp	/^    void show()$/;"	f	class:Student
+show	CPP/class_/异常/create_new_exception.cpp	/^    void show()$/;"	f	class:NewException
+show	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    virtual void show()$/;"	f	class:A
+show	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    void show()$/;"	f	class:B
+show	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    void show()$/;"	f	class:C
+show	CPP/class_/强制类型转换/reinterpret_cast.cpp	/^    void show()$/;"	f	class:Demo
+show	CPP/class_/强制类型转换/static_cast.cpp	/^    void show()$/;"	f	class:Base
+show	CPP/class_/强制类型转换/static_cast.cpp	/^    void show()$/;"	f	class:Derived
+show	CPP/class_/模板/arr_template.cpp	/^template <typename T> void Array<T>::show()$/;"	f	class:Array
+show	CPP/class_/模板/container_class_template.cpp	/^    void show() const$/;"	f	class:Container
+show	CPP/class_/模板/container_class_template.cpp	/^void Container<T>::show()$/;"	f	class:Container
+show	CPP/class_/运算符重载/friend_operator.cpp	/^    void show()$/;"	f	class:Point
+show	CPP/class_/运算符重载/memoperator.cpp	/^    void show()$/;"	f	class:Point
+show	CPP/class_/运算符重载/operator.cpp	/^        void show()$/;"	f	class:Integer
+show_home	CPP/class_/友元/friendclass.cpp	/^    void show_home(const Address &add)$/;"	f	class:Student
+show_home	CPP/class_/友元/friendmemfunc.cpp	/^void Student::show_home(const Address &add)$/;"	f	class:Student
+show_student_info	CPP/class_/友元/friendfunc.cpp	/^void show_student_info(const Student& stu)$/;"	f
+show_value	CPP/class_/static_/static.cpp	/^        static void show_value()$/;"	f	class:Demo
+showall	CPP/class_/友元/friendclass.cpp	/^    void showall(const Address &add)$/;"	f	class:Student
+shutdown	Linux_network_programming/threadPool/threadpool.c	/^    int shutdown;                       \/* 标志位，线程池使用状态，true或false *\/$/;"	m	struct:threadpool_t	file:
+signin	project/在线词典/client.c	/^int signin(int cfd)$/;"	f
+signin	project/在线词典/server.c	/^int signin(int cfd, USERMSG msg) \/\/ 注册$/;"	f
+slogan	CPP/class_/多态/company.cpp	/^    virtual void slogan()$/;"	f	class:Company
+slogan	CPP/class_/多态/company.cpp	/^    void slogan()$/;"	f	class:Nike
+slogan	CPP/class_/多态/company.cpp	/^    void slogan()$/;"	f	class:NikeChina
+slogan	CPP/class_/多态/company.cpp	/^    void slogan(int i)$/;"	f	class:NikeChina
+sockinit	project/在线词典/server.c	/^int sockinit(char *ipaddr, unsigned short port) \/\/ 初始化服务端套接字$/;"	f
+speak	CPP/class_/多态/main1.cpp	/^    void speak()$/;"	f	struct:Animal
+speak	CPP/class_/多态/main1.cpp	/^    void speak()$/;"	f	struct:Cat
+speak	CPP/class_/多态/main1.cpp	/^    void speak()$/;"	f	struct:Dog
+speak	CPP/class_/多态/main1.cpp	/^    void speak()$/;"	f	struct:Pig
+speak	CPP/class_/多态/virtual_destructorfunc.cpp	/^    virtual void speak()$/;"	f	struct:Animal
+speak	CPP/class_/多态/virtual_destructorfunc.cpp	/^    void speak()$/;"	f	struct:Cat
+speak	CPP/class_/多态/virtualfunc.cpp	/^    virtual void speak()$/;"	f	struct:Animal
+speak	CPP/class_/多态/virtualfunc.cpp	/^    void speak()$/;"	f	struct:Cat
+speak	CPP/class_/多态/virtualfunc.cpp	/^    void speak()$/;"	f	struct:Dog
+speak	CPP/class_/多态/virtualfunc.cpp	/^    void speak()$/;"	f	struct:Pig
+speak	CPP/class_/多态/纯虚函数.cpp	/^    void speak()$/;"	f	struct:Cat
+speak	CPP/class_/多态/纯虚函数.cpp	/^    void speak()$/;"	f	struct:Dog
+speak	CPP/class_/多态/纯虚函数.cpp	/^    void speak()$/;"	f	struct:Pig
+src	CPP/c_extension/makefile	/^src = $(wildcard *.cpp)  #hello.c sub.c div1.c add.c$/;"	m
+src	CPP/class_/copy_struct/makefile	/^src = $(wildcard *.cpp)  #hello.c sub.c div1.c add.c$/;"	m
+src	CPP/class_/extends/makefile	/^src = $(wildcard *.cpp)  #hello.c sub.c div1.c add.c$/;"	m
+src	CPP/class_/makefile	/^src = $(wildcard *.cpp)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_network_programming/Io_multiplexing/Epoll/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_network_programming/socket/LocalSocket/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_network_programming/socket/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_network_programming/socket/practice/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/IPC_test/fifo_test/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/IPC_test/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/IPC_test/mmap/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/Pthread/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/Sign/alarm/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/Sign/catch_sign/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/Sign/kill/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/Sign/test/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/fileSysten_test/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/file_io_test/test/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/makefiletest/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	Linux_system_programing/process_test/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+src	project/在线词典/makefile	/^src = $(wildcard *.c)  #hello.c sub.c div1.c add.c$/;"	m
+str	Linux_system_programing/Pthread/Pthread_join.c	/^    char *str;$/;"	m	struct:tval	file:
+str	Linux_system_programing/Pthread/Pthread_join_for.c	/^    char *str;$/;"	m	struct:tval	file:
+street	CPP/class_/友元/friendclass.cpp	/^    string street;$/;"	m	class:Address	file:
+street	CPP/class_/友元/friendmemfunc.cpp	/^    string street;$/;"	m	class:Address	file:
+study	CPP/class_/extends/extend.cpp	/^    void study()$/;"	f	struct:Student
+study	CPP/class_/mempermission/main.cpp	/^    void study()$/;"	f	class:Student
+sub	Linux_system_programing/test/resource/sub.c	/^int sub(int a,int b){$/;"	f
+sys_err	Linux_network_programming/Io_multiplexing/Epoll/epoll.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/Io_multiplexing/Epoll/epoll_el.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/Io_multiplexing/Epoll/epoll_lt.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/Io_multiplexing/poll.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/Io_multiplexing/select.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/Io_multiplexing/select_arr.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/socket/LocalSocket/client.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/socket/LocalSocket/server.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/socket/Multi-process_and_Multithread_Concurrent_Server/multiprocess.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/socket/Multi-process_and_Multithread_Concurrent_Server/multithread.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/socket/UDP/cilent.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/socket/UDP/server.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/socket/client.c	/^void sys_err(char *str) {$/;"	f
+sys_err	Linux_network_programming/socket/practice/client.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_network_programming/socket/practice/serve1.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/IPC_test/br_pipe_wc-l.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/IPC_test/fifo_test/fifo_r.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/IPC_test/fifo_test/fifo_w.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/IPC_test/mmap/mmap_IPC.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/IPC_test/mmap/mmap_IPC2.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/IPC_test/mmap/mmap_IPC_ps.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/IPC_test/mmap/test.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/IPC_test/pipe.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/IPC_test/pipe_test.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Pthread/Creat_ptheard.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Pthread/Pthread_decath.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Pthread/Pthread_join.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Pthread/Pthread_join_for.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Pthread/conditionVar_product_consumer.c	/^void sys_err(char *str, int _errno)$/;"	f
+sys_err	Linux_system_programing/Pthread/deadlock.c	/^void sys_err(char *str, int _errno)$/;"	f
+sys_err	Linux_system_programing/Pthread/pthread_cancel.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Pthread/pthread_shared.c	/^void sys_err(char *str, int _errno)$/;"	f
+sys_err	Linux_system_programing/Pthread/sem_product_consumer.c	/^void sys_err(char *str, int _errno)$/;"	f
+sys_err	Linux_system_programing/Sign/alarm/alarm.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Sign/catch_sign/catch_child.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Sign/catch_sign/sigaction.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Sign/catch_sign/signal.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Sign/kill/kill_ps.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/Sign/test/sigsfunc.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/session/pro_process.c	/^void sys_err(char *str)$/;"	f
+sys_err	Linux_system_programing/session/test.c	/^void sys_err(char *str)$/;"	f
+sys_sig	Linux_system_programing/Sign/catch_sign/sigaction.c	/^void sys_sig(int signo)$/;"	f
+sys_sig	Linux_system_programing/Sign/catch_sign/signal.c	/^void sys_sig(int signo)$/;"	f
+task_queue	Linux_network_programming/threadPool/threadpool.c	/^    threadpool_task_t *task_queue;      \/* 任务队列 *\/$/;"	m	struct:threadpool_t	file:
+test	CPP/class_/友元/driver_license_test.cpp	/^bool Student::test(Student& stu, Examiner& ex)$/;"	f	class:Student
+tfn	Linux_system_programing/Pthread/Creat_ptheard.c	/^void *tfn(void *arg)$/;"	f
+tfn	Linux_system_programing/Pthread/pthread_cancel.c	/^void *tfn(void *arg)$/;"	f
+thread	project/在线词典/server.c	/^void *thread(void *sockmsg)$/;"	f
+thread_counter	Linux_network_programming/threadPool/threadpool.c	/^    pthread_mutex_t thread_counter;     \/* 记录忙状态线程个数de琐 -- busy_thr_num *\/$/;"	m	struct:threadpool_t	file:
+threadpool_add	Linux_network_programming/threadPool/threadpool.c	/^int threadpool_add(threadpool_t *pool, void*(*function)(void *arg), void *arg)$/;"	f
+threadpool_all_threadnum	Linux_network_programming/threadPool/threadpool.c	/^int threadpool_all_threadnum(threadpool_t *pool)$/;"	f
+threadpool_busy_threadnum	Linux_network_programming/threadPool/threadpool.c	/^int threadpool_busy_threadnum(threadpool_t *pool)$/;"	f
+threadpool_create	Linux_network_programming/threadPool/threadpool.c	/^threadpool_t *threadpool_create(int min_thr_num, int max_thr_num, int queue_max_size)   \/\/池里最小线程，最大线程，最大队列$/;"	f
+threadpool_destroy	Linux_network_programming/threadPool/threadpool.c	/^int threadpool_destroy(threadpool_t *pool)$/;"	f
+threadpool_free	Linux_network_programming/threadPool/threadpool.c	/^int threadpool_free(threadpool_t *pool)$/;"	f
+threadpool_t	Linux_network_programming/threadPool/threadpool.c	/^struct threadpool_t {$/;"	s	file:
+threadpool_t	Linux_network_programming/threadPool/threadpool.h	/^typedef struct threadpool_t threadpool_t;$/;"	t	typeref:struct:threadpool_t
+threadpool_task_t	Linux_network_programming/threadPool/threadpool.c	/^} threadpool_task_t;                    \/* 各子线程任务结构体 *\/$/;"	t	typeref:struct:__anon4	file:
+threadpool_thread	Linux_network_programming/threadPool/threadpool.c	/^void *threadpool_thread(void *threadpool)$/;"	f
+threads	Linux_network_programming/threadPool/threadpool.c	/^    pthread_t *threads;                 \/* 存放线程池中每个线程的tid。数组 *\/$/;"	m	struct:threadpool_t	file:
+total_objects	CPP/class_/static_/static_howmany.cpp	/^        static int total_objects;  $/;"	m	class:Demo	file:
+total_objects	CPP/class_/static_/static_howmany.cpp	/^int Demo::total_objects = 0;  $/;"	m	class:Demo	file:
+true	Linux_network_programming/threadPool/threadpool.c	14;"	d	file:
+tval	Linux_system_programing/Pthread/Pthread_join.c	/^struct tval$/;"	s	file:
+tval	Linux_system_programing/Pthread/Pthread_join_for.c	/^struct tval$/;"	s	file:
+type	project/在线词典/client.c	/^    char type;$/;"	m	struct:__anon1	file:
+type	project/在线词典/server.c	/^    char type;$/;"	m	struct:__anon3	file:
+wait_exit_thr_num	Linux_network_programming/threadPool/threadpool.c	/^    int wait_exit_thr_num;              \/* 要销毁的线程个数 *\/$/;"	m	struct:threadpool_t	file:
+what	CPP/class_/异常/catch_multiple_exception.cpp	/^    virtual void what()$/;"	f	class:Base
+what	CPP/class_/异常/catch_multiple_exception.cpp	/^    void what()$/;"	f	class:Derived
+work	CPP/class_/extends/extend.cpp	/^    void work()$/;"	f	struct:Worker
+work	CPP/class_/mempermission/main.cpp	/^        void work()$/;"	f	class:Goodstudent
+x	CPP/class_/模板/add_func_template.cpp	/^    double x;$/;"	m	class:Point	file:
+x	CPP/class_/模板/arr_template.cpp	/^    double x;$/;"	m	class:Point	file:
+x	CPP/class_/运算符重载/friend_operator.cpp	/^    double x;$/;"	m	class:Point	file:
+x	CPP/class_/运算符重载/memoperator.cpp	/^    double x;$/;"	m	class:Point	file:
+y	CPP/class_/模板/add_func_template.cpp	/^    double y;$/;"	m	class:Point	file:
+y	CPP/class_/模板/arr_template.cpp	/^    double y;$/;"	m	class:Point	file:
+y	CPP/class_/运算符重载/friend_operator.cpp	/^    double y;$/;"	m	class:Point	file:
+y	CPP/class_/运算符重载/memoperator.cpp	/^    double y;$/;"	m	class:Point	file:
+~A	CPP/class_/extends/diamond_entends.cpp	/^    ~A()$/;"	f	class:A
+~A	CPP/class_/extends/multiple_extends.cpp	/^    ~A()$/;"	f	class:A
+~A	CPP/class_/extends/multiple_extends_3.cpp	/^    ~A()$/;"	f	class:A
+~A	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    ~A(){}$/;"	f	class:A
+~Animal	CPP/class_/多态/virtual_destructorfunc.cpp	/^    virtual ~Animal(){$/;"	f	struct:Animal
+~Array	CPP/class_/copy_struct/deep_copy.cpp	/^    ~Array()$/;"	f	class:Array
+~Array	CPP/class_/模板/arr_template.cpp	/^    ~Array()$/;"	f	class:Array
+~Array	CPP/class_/运算符重载/memoperator1.cpp	/^    ~Array()$/;"	f	class:Array
+~B	CPP/class_/extends/multiple_extends.cpp	/^    ~B()$/;"	f	class:B
+~B	CPP/class_/extends/multiple_extends_3.cpp	/^    ~B()$/;"	f	class:B
+~B	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    ~B(){}$/;"	f	class:B
+~B1	CPP/class_/extends/diamond_entends.cpp	/^    ~B1()$/;"	f	class:B1
+~B2	CPP/class_/extends/diamond_entends.cpp	/^    ~B2()$/;"	f	class:B2
+~Base	CPP/class_/extends/extends4.cpp	/^    ~Base()$/;"	f	class:Base
+~Base	CPP/class_/extends/upcast.cpp	/^    ~Base(){}$/;"	f	class:Base
+~Base	CPP/class_/多态/hidden.cpp	/^    ~Base(){}$/;"	f	class:Base
+~Base	CPP/class_/多态/overload.cpp	/^    ~Base(){}$/;"	f	class:Base
+~Base	CPP/class_/异常/catch_multiple_exception.cpp	/^    ~Base()$/;"	f	class:Base
+~Base	CPP/class_/强制类型转换/static_cast.cpp	/^    ~Base(){}$/;"	f	class:Base
+~C	CPP/class_/extends/multiple_extends.cpp	/^    ~C()$/;"	f	class:C
+~C	CPP/class_/强制类型转换/dynamic_cast.cpp	/^    ~C(){}$/;"	f	class:C
+~Car	CPP/class_/base_/memmanage.cpp	/^    ~Car()$/;"	f	struct:Car
+~Car	CPP/class_/extends/car__inherit_phone.cpp	/^    ~Car(){}$/;"	f	class:Car
+~Cat	CPP/class_/多态/virtual_destructorfunc.cpp	/^    ~Cat(){$/;"	f	struct:Cat
+~Company	CPP/class_/多态/company.cpp	/^    ~Company(){}$/;"	f	class:Company
+~D	CPP/class_/extends/diamond_entends.cpp	/^    ~D()$/;"	f	class:D
+~D	CPP/class_/extends/multiple_extends_3.cpp	/^    ~D()$/;"	f	class:D
+~Demo	CPP/class_/extends/multiple_extends.cpp	/^    ~Demo()$/;"	f	class:Demo
+~Demo	CPP/class_/static_/static_howmany.cpp	/^        ~Demo()$/;"	f	class:Demo
+~Demo	CPP/class_/初始化列表/hq_test.cpp	/^Demo::~Demo()$/;"	f	class:Demo
+~Demo	CPP/class_/初始化列表/hq_test_2.cpp	/^Demo::~Demo()$/;"	f	class:Demo
+~Demo2	CPP/class_/extends/multiple_extends.cpp	/^    ~Demo2()$/;"	f	class:Demo2
+~Derived	CPP/class_/extends/extends4.cpp	/^        ~Derived()$/;"	f	class:Derived
+~Derived	CPP/class_/extends/multiple_extends.cpp	/^    ~Derived()$/;"	f	class:Derived
+~Derived	CPP/class_/extends/upcast.cpp	/^    ~Derived()$/;"	f	class:Derived
+~Derived	CPP/class_/多态/hidden.cpp	/^    ~Derived(){}$/;"	f	class:Derived
+~Derived	CPP/class_/多态/overload.cpp	/^    ~Derived(){}$/;"	f	class:Derived
+~Derived	CPP/class_/异常/catch_multiple_exception.cpp	/^    ~Derived()$/;"	f	class:Derived
+~Derived	CPP/class_/强制类型转换/static_cast.cpp	/^    ~Derived(){}$/;"	f	class:Derived
+~NewException	CPP/class_/异常/create_new_exception.cpp	/^    ~NewException(){}$/;"	f	class:NewException
+~Nike	CPP/class_/多态/company.cpp	/^    ~Nike(){}$/;"	f	class:Nike
+~NikeChina	CPP/class_/多态/company.cpp	/^    ~NikeChina(){}$/;"	f	class:NikeChina
+~Person	CPP/class_/base_/destructor.cpp	/^    ~Person()$/;"	f	class:Person
+~Person	CPP/class_/base_/memmanage.cpp	/^    ~Person()$/;"	f	struct:Person
+~Person	CPP/class_/declare/declare.cpp	/^Person::~Person()$/;"	f	class:Person
+~Person	CPP/class_/declare/main.cpp	/^Person::~Person()$/;"	f	class:Person
+~Person	CPP/class_/extends/student.cpp	/^    ~Person()$/;"	f	class:Person
+~Person	CPP/class_/初始化列表/main3.cpp	/^    ~Person()$/;"	f	class:Person
+~Phone	CPP/class_/extends/car__inherit_phone.cpp	/^    ~Phone(){}$/;"	f	class:Phone
+~Student	CPP/class_/extends/student.cpp	/^    ~Student()$/;"	f	class:Student
+~Student	CPP/class_/初始化列表/main3.cpp	/^    ~Student()$/;"	f	class:Student

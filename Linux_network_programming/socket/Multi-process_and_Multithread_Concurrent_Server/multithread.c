@@ -26,7 +26,7 @@ void* func(void* cfd){
     printf("from client: %s\n",buf);
   }
 
-
+  return NULL;
 }
 
 int main(int argc,char *argv[])

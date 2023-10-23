@@ -101,7 +101,7 @@ mov al,[0]
 8086CPU 中，有两个奇存器，段寄存器 sS 和寄存器 SP，栈顶的段地址存放在SS 中，偏移地址存放在SP 中。**任意时刻，SS:SP 指向栈顶元素**。push 指令和 pop 指
 令执行时，CPU 从SS 和SP 中得到栈顶的地址
 
-### DI DI寄存器
+### SI DI寄存器
 
 SI 和 DI寄存器是8086寄存器中和bx功能相似的寄存器，但SI、DI寄存器无法分成两个8位寄存器来使用
 
@@ -663,15 +663,13 @@ sreg 的集合包括：
     ; 等指令，段地址默认在 ss中。
     
     ; 存放段地址的寄存器也可以是显性给出的，比如以下的指令。
-    mov ax, ds:[bp]  ; 含义：(ax)=((ds) *16+ (bp)）
+    mov ax, ds:[bp]  ; 含义：(ax)=((ds) *16+ (bp))
     mov ax, es:[bx]  ; 含义：(ax)=((es)*16+(bx)）
     mov ax, ss: [bx+si]  ; 含义：(ax)=((ds*16 + (bx) + (si)）
     mov ax, cs: [bx+si+8]  ; 含义：（ax)=((cs)*16+(bx)+(si)+8）
     ```
 
-### 8.3 寻址方式
-
-我们可以用多种方式来给定这个内存单元的偏移地址，这种定位内存单元的方法一般被称为寻址方式。
+### 8.3 寻址移地址，这种定位内存单元的方法一般被称为寻址方式。
 
 
 
@@ -705,16 +703,16 @@ sreg 的集合包括：
 ```asm
 ; 例如，下面的指令中，寄存器指明了指令进行的是宇操作。
     mov ax, 1 
-    mov bx,ds: [0] 
+    mov bx, ds:[0] 
     mov ds, ax 
-    mov ds: [0], ax 
+    mov ds:[0], ax 
     inc ax add 
     ax, 1000
 ; 下面的指令中，寄存器指明了指令进行的是字节操作。
     mov al, 1 
     mov al,bl
-    mov al, ds: [0] 
-    mov ds: [0], al 
+    mov al, ds:[0] 
+    mov ds:[0], al 
     inc al 
     add al, 100
 
