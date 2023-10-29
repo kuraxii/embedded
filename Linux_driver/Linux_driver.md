@@ -167,25 +167,116 @@ int get_board_led_num(void);
 
 - 分层
 
-将与硬件相关与硬件无关的代码分离
-![led的分层](Linux_driver.assets/1698063451897.png)
+    将与硬件相关与硬件无关的代码分离
+    ![led的分层](Linux_driver.assets/1698063451897.png)
 
 - 分离
-将不同的引脚操作进行分离，比如GPIO1与GPIO2的硬件设置不同就导致了相关的代码不同
-使用文件进行分离
-![驱动的分离](Linux_driver.assets/1698064550218.png)
+
+    将不同的引脚操作进行分离，比如GPIO1与GPIO2的硬件设置不同就导致了相关的代码不同
+    使用文件进行分离
+    ![驱动的分离](Linux_driver.assets/1698064550218.png)
 
 
-## 驱动进化之路 —- 总线设备驱动模型
+## 驱动进化之路
+
+驱动编写的三种写法
+1. 传统写法
+
+    ![传统写法](./Linux_driver.assets/1698588931036.png)
+- 使用哪个引脚，怎么操作引脚，都写死在代码里
+- 最简单，不考虑扩展性，可以快速实现功能
+- 修改代码时，余姚重新编译
+
+2. 总线设备驱动模型
+
+    ![总线设备驱动模型](./Linux_driver.assets/1698589166846.png)
+- 引入platform_device/platform_driver,将‘资源’和‘驱动’分离开
+- 代码稍微复杂，但是易于扩展
+- 更换引脚时，图9.3中的led_drv.c基本不用改，但是需要修改led_dev.c
+
+3. 设备树
+
+    ![设备树](./Linux_driver.assets/1698589377314.png)
+- 通过配置文件──设备树来定义“资源”。
+- 代码稍微复杂，但是易于扩展。
+- 无冗余代码，修改引脚时只需要修改 dts 文件并编译得到 dtb 文件，把它传给内核。
+- 无需重新编译内核/驱动。
 
 
+### 总线设备驱动模型
+
+#### deice与driver的匹配规则
+- 最先比较
+    - platform_device.driver_override 和 platform_driver.driver.name
+    - 可以设置 platform_device 的 driver_override，强制选择某个 platform_driver。
+
+- 然后比较
+    - platform_device. name 和 platform_driver.id_table[i].name
+    - Platform_driver.id_table 是“platform_device_id”指针，表示该 drv 支持若干个 device，它里面列出了各个 device 的{.name, .driver_data}，其中的“ name”表示该
+drv 支持的设备的名字， driver_data 是些提供给该 device 的私有数据。
+
+- 最后比较
+    - platform_device.name 和 platform_driver.driver.name
+    - platform_driver.id_table 可能为空，
+这时可以根据 platform_driver.driver.name 来寻找同名的 platform_device。
+
+#### 比较过城中的函数调用
+```c
+platform_device_register
+platform_device_add()
+    device_add()
+        bus_add_device() // 放入链表
+                bus_probe_device() // probe 枚举设备，即找到匹配的(dev, drv)
+                    device_initial_probe()
+                            __device_attach()
+                                    bus_for_each_drv(...,__device_attach_driver,...)
+                                        __device_attach_driver()
+                                            driver_match_device(drv, dev) // 是否匹配
+                                                driver_probe_device() // 调用 drv 的 probe
+platform_driver_register()
+__platform_driver_register()
+    driver_register()
+        bus_add_driver() // 放入链表
+            driver_attach(drv)
+                bus_for_each_dev(drv->bus, NULL, drv, __driver_attach);
+                    __driver_attach()
+                        driver_match_device(drv, dev) // 是否匹配
+                            driver_probe_device() // 调用 drv 的 probe
+```
 
 
+#### 常用函数
 
+##### 注册/反注册
+```c
+platform_device_register()/ platform_device_unregister()
+platform_driver_register()/ platform_driver_unregister()
+platform_add_devices() // 注册多个 device
+```
+##### 获得资源
+返回该 dev 中某类型(type)资源中的第几个(num)：
+```c
+struct resource *platform_get_resource(struct platform_device *dev, unsigned int type, unsigned int num)
+```
+返回该 dev 所用的第几个(num)中断：
+```c
+int platform_get_irq(struct platform_device *dev, unsigned int num)
+```
+通过名字(name)返回该 dev 的某类型(type)资源：
+```c
+struct resource *platform_get_resource_byname(struct platform_device *dev,
+unsigned int type,
+const char *name)
+```
+通过名字(name)返回该 dev 的中断号：
+```c
+int platform_get_irq_byname(struct platform_device *dev， const char *name)
+```
 
-
-
-
-
-
-
+#### 怎么写程序
+- 分配/设置/注册 platform_device 结构体
+    - 在里面定义所用资源，指定设备名字。
+- 分配/设置/注册 platform_driver 结构体
+    - 在其中的 probe 函数里，分配/设置/注册 file_operations 结构体，
+    - 并从 platform_device 中确实所用硬件资源。
+    - 指定 platform_driver 的名字。
