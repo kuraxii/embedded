@@ -42,7 +42,7 @@ int main(int argc,char *argv[])
   struct sockaddr_in ser_addr;
   ser_addr.sin_family = AF_INET;
   ser_addr.sin_port = htons(12500);
-  ser_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  ser_addr.sin_addr.s_addr = inet_addr("0.0.0.0");
 
   ret = bind(lfd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
   if(ret == -1){
