@@ -1,0 +1,1 @@
+/usr/bin/cc -g -rdynamic CMakeFiles/2.dir/main.c.o CMakeFiles/2.dir/Sequence_list.c.o -o 2 

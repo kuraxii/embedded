@@ -1,9 +1,9 @@
 src = $(wildcard *.c)  #hello.c sub.c div1.c add.c
-obj = $(patsubst %.c,%.out,$(src))
+obj = $(patsubst %.c,%,$(src))
 
 ALL:$(obj)
 
-$(obj):%.out:%.c
+$(obj):%:%.c
 	gcc $< -o $@
 
 

@@ -1,0 +1,3 @@
+/home/zzj/hqyj/第三阶段/expr/sqlist/build/CMakeFiles/main.dir
+/home/zzj/hqyj/第三阶段/expr/sqlist/build/CMakeFiles/edit_cache.dir
+/home/zzj/hqyj/第三阶段/expr/sqlist/build/CMakeFiles/rebuild_cache.dir
