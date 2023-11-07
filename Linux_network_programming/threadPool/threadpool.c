@@ -99,7 +99,7 @@ threadpool_t *threadpool_create(int min_thr_num, int max_thr_num, int queue_max_
             break;
         }
 
-        /* 初始化互斥琐、条件变量 */1
+        /* 初始化互斥琐、条件变量 */
         if (pthread_mutex_init(&(pool->lock), NULL) != 0
                 || pthread_mutex_init(&(pool->thread_counter), NULL) != 0
                 || pthread_cond_init(&(pool->queue_not_empty), NULL) != 0
