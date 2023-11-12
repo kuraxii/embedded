@@ -1,7 +1,25 @@
 # linux_driver
 
-## 字符设备驱动
+## 应用层和驱动的互交方式
 
+### app和驱动
+- copy_to_user()
+- copy_from_user()
+
+### 驱动和与硬件
+- 各个子系统的函数
+- 通过ioremap映射寄存器地址后，直接访问寄存器
+
+### app使用驱动和的4中方式
+
+驱动程序：提供能力，不提供策略
+- 非阻塞(轮询)
+- 阻塞(休眠-唤醒)
+- poll(定时)
+- 异步通知
+
+## 字符设备驱动
+https://tasks.josn/
 ### 简单的字符设备驱动框架
 
 1. 确定主设备号，也可以让内核分配  int major;  major = 0 时自动分配
@@ -15,14 +33,14 @@
 
 register_chrdev方式，register_chrdev会使用整个主设备号,使用简单，但占用资源较大
 ```c
-#include "asm/uaccess.h"
-#include "linux/err.h"
-#include "linux/export.h"
-#include "linux/kdev_t.h"
-#include "linux/moduleparam.h"
-#include "linux/printk.h"
-#include "linux/stddef.h"
-#include "linux/usb/cdc.h"
+#include <asm/uaccess.h>
+#include <linux/err.h>
+#include <linux/export.h>
+#include <linux/kdev_t.h>
+#include <linux/moduleparam.h>
+#include <linux/printk.h>
+#include <linux/stddef.h>
+#include <linux/usb/cdc.h>
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/errno.h>
@@ -122,6 +140,23 @@ static void __exit hello_drv_exit(void)
 module_init(hello_drv_init);
 module_exit(hello_drv_exit);
 ```
+
+自动创建设备节点
+```c
+drv_init()
+{
+    class_create();
+    device_create();
+}
+
+drv_exit()
+{
+    device_destory();
+    class_destory();
+}
+
+```
+
 
 ```makefile
 # 1. 使用不同的开发板内核时, 一定要修改KERN_DIR
