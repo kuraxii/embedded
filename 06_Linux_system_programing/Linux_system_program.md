@@ -1066,11 +1066,11 @@ int main(int argc,char *argv[])
 
 ```
 
-### exit函数
 
 
 
-## 进程通信
+
+## 进程间通信
 
 现用常用的进程间通信方式
 
@@ -1079,7 +1079,7 @@ int main(int argc,char *argv[])
 3. 共享映射区（无血缘关系）
 4. 本地套接字（最稳定）
 
-### 管道
+### pipe匿名管道
 
 管道是一种最基本的IPC(Inter Process Communication)机制，作用于有血缘关系的进程之间，完成数据传递。调用pipe系统函数即可创建一个管道。有如下特质:
 
@@ -1223,9 +1223,9 @@ int main(int argc,char *argv[])
 }
 ```
 
-### 存储映射
+### 共享内存
 
-#### shm函数
+#### system V 共享内存
 
 - 键和标识符
 
@@ -1331,7 +1331,7 @@ int main()
 ```
 
 
-#### mmap函数原理
+#### mmap存储映射
 
 ```c
 #include <sys/mman.h>
@@ -1500,9 +1500,9 @@ sxi标准信号量
 
 int semget(key_t key, int nsems, int semflg);   // 创建打开信号量
 // 参数：
-//     key  信号量的键值，可用过ftok获取
+//     key  信号量的键值，可以通过ftok获取
 //     nsems sxi信号量为信号量集，可以有多个信号量，该参数设置信号量的个数
-//     semflg 设置信号量的权限 与 IPC_CTEAT相或则不存在则创建
+//     semflg 设置信号量的权限  与IPC_CTEAT相或，不存在则创建
 int semctl(int semid, int semnum, int cmd, .../* union semun arg */);   // 设置信号量
 union semun{
     int val;
@@ -1523,7 +1523,6 @@ union semun{
 //          GETALL     取集合中信号量所有的semnum的值，存储在arg.array中返回
 //          SETALL     设置集合中信号量所有的semnum的值，存储在arg.array中返回
 int semop(int semid, struct sembuf *sops, size_t nsops);   //信号量操作函数
-
 // 参数
 //     semid  信号量集标识符，通过semget获取
 //     sembuf 信号量操作数组
@@ -1534,7 +1533,16 @@ struct sembuf{
     short sem_flg;
 };
 
+// sem_op 参数：
+//       sem_op > 0          信号加上 sem_op 的值，表示进程释放控制的资源；
+//       sem_op = 0          如果没有设置 IPC_NOWAIT，则调用进程进入睡眠状态，直到信号量的值为0；否则进程不回睡眠，直接返回 EAGAIN
+//       sem_op < 0          信号加上 sem_op 的值。若没有设置 IPC_NOWAIT ，则调用进程阻
+//                           塞，直到资源可用；否则进程直接返回EAGAIN
+// sem_flg 参数:
+// 该参数可设置为 IPC_NOWAIT 或 SEM_UNDO 两种状态。只有将 sem_flg 指定为 SEM_UNDO 标志后，semadj （所指定信号量针对调用进程的调整值）才会更新。   此外，如果此操作指定SEM_UNDO，系统更新过程中会撤消此信号灯的计数（semadj）。此操作可以随时进行---它永远不会强制等待的过程。调用进程必须有改变信号量集的权限。
 
+// sem_flg公认的标志是 IPC_NOWAIT 和 SEM_UNDO。如果操作指定SEM_UNDO，它将会自动撤消该进程终止时。
+// 在标准操作程序中的操作是在数组的顺序执行、原子的，那就是，该操作要么作为一个完整的单元，要么不。如果不是所有操作都可以立即执行的系统调用的行为取决于在个人sem_flg领域的IPC_NOWAIT标志的存在。
 ```
 example
 
@@ -1909,11 +1917,11 @@ sigaction
 #include <signal.h>
 int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
 struct sigaction {
-         void     (*sa_handler)(int); //信号处理函数
-         void     (*sa_sigaction)(int, siginfo_t *, void *);
-         sigset_t   sa_mask; //信号屏蔽集
-         int        sa_flags; 
-         void     (*sa_restorer)(void);// 已废弃
+         void     (*sa_handler)(int); // 信号处理函数
+         void     (*sa_sigaction)(int, siginfo_t *, void *);  // 也是信号处理函数  flag值为SA_SIGINFO时使用该函数
+         sigset_t   sa_mask; // 信号屏蔽集
+         int        sa_flags; // 具体使用方法查看unix环境高级编程
+         void     (*sa_restorer)(void); // 已废弃
 };
 // 参数：
 //   signum   要捕捉的信号
@@ -1926,7 +1934,6 @@ struct sigaction {
 ```
 
 example
-
 ```c
 // signal
 void sys_sig(int signo){
@@ -1965,7 +1972,6 @@ int main(int argc,char *argv[])
 ```
 
 使用信号通信实现子进程回收 （SIGCHLD 子进程改变状态(停止、继续、退出)时，发送该信号给父进程）
-
 ```c
 void catch_child(int signo){
   int ret;

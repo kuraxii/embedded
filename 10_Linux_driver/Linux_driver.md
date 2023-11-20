@@ -1,4 +1,4 @@
-# linux_driver
+# linux_driver 理论篇
 
 ## 应用层和驱动的互交方式
 
@@ -315,3 +315,195 @@ int platform_get_irq_byname(struct platform_device *dev， const char *name)
     - 在其中的 probe 函数里，分配/设置/注册 file_operations 结构体，
     - 并从 platform_device 中确实所用硬件资源。
     - 指定 platform_driver 的名字。
+
+
+
+# linux_driver 实战篇
+
+## 常用函数集合
+
+### 驱动注册
+```c
+
+static inline int register_chrdev(unsigned int major, const char *name,
+				  const struct file_operations *fops);
+/*  
+    作用： 申请设备号，创建设备节点，将操作函数绑定到设备节点
+    参数：
+        major: 主设备号，使用该函数将占用该主设备号下的所有的次设备节点 major == 0 将动态分配一个主设备号。
+        name: 设备名称
+        fops: 为设备注册的操作函数
+    返回值：
+        成功：主设备号
+        失败： < 0
+*/
+static inline void unregister_chrdev(unsigned int major, const char *name);
+/*  
+    作用： 卸载调申请的设备节点
+    参数：
+        major: 主设备号
+        name: 设备名称
+*/
+// 创建设备文件到文件系统
+#define class_create(owner, name);
+/*  
+    作用： 申请设备号，创建设备节点，将操作函数绑定到设备节点
+    参数：
+        major: 主设备号，使用该函数将占用该主设备号下的所有的次设备节点 major == 0 将动态分配一个主设备号。
+        name: 设备名称
+        fops: 为设备注册的操作函数
+    返回值：
+        成功：主设备号
+        失败： < 0
+*/
+struct device *device_create(struct class *class, struct device *parent,
+			     dev_t devt, void *drvdata, const char *fmt, ...);
+
+static inline void unregister_chrdev(unsigned int major, const char *name);
+
+void device_destroy(struct class *class, dev_t devt)
+
+void class_destroy(struct class *cls)
+```
+
+### 应用层与内核数据交互
+```c
+// 一般在read write函数使用 
+unsigned long copy_from_user(void *to, const void __user *from, unsigned long n)；
+/*  参数：
+        to: 内核层内存地址地址
+        from: 用户内存地址
+        n: 复制的字节数
+    返回值：
+        复制成功的字节数
+*/
+unsigned long copy_to_user(void __user *to, const void *from, unsigned long n);
+/*  参数：
+        to: 用户层内存地址地址
+        from: 内核内存地址
+        n: 复制的字节数
+    返回值：
+        复制成功的字节数
+*/
+
+```
+
+### gpio操作函数
+```c
+// 在linux中 gpio口可以通过cat /sys/kernel/debug/gpio命令查看
+int gpio_request(unsigned gpio, const char *label);
+/*  
+    作用： 申请一个gpio，并为该gpio取一个名字
+    参数：
+        gpio: gpio号
+        label: 为gpio取名
+    返回值：
+        失败： < 0
+*/
+static inline int gpio_direction_input(unsigned gpio);
+/*  
+    作用： 设置gpio口为输入模式
+    参数：
+        gpio: gpio号
+    返回值：
+        失败： < 0
+*/
+static inline int gpio_direction_output(unsigned gpio, int value);
+/*  
+    作用： 设置gpio口为输出模式，并且设置输出的初始值
+    参数：
+        gpio: gpio号
+        vlaue: 为gpio设置值，一般为0 或 1
+    返回值：
+        失败： < 0
+*/
+
+int gpio_get_value(unsigned int gpio)
+/*  
+    作用： 获取gpio口的值
+    参数：
+        gpio: gpio号
+    返回值：
+        0 或 1
+*/
+void gpio_set_value(unsigned int gpio, int value);
+/*  
+    作用： 给gpio口设置值
+    参数：
+        gpio: gpio号
+        label: gpio口的值 一般为 0 或 1
+    返回值：
+        复制成功的字节数
+*/
+
+
+int gpio_to_irq	(unsigned int irq, irq_handler_t handler, unsigned long flags, const char * name, void * dev)
+/*  
+    作用： 将gpio口注册为中断
+    参数：
+        irq: 申请的中断号
+        handler： 中断处理函数
+        flags： 监听中断触发的选项 IRQF_TRIGGER_RISING（上升沿） | IRQF_TRIGGER_FALLING（下降沿）
+        name： 名字
+        dev：调用中断时的传入参数
+    返回值：
+        失败 < 0
+*/
+
+void gpio_free(unsigned gpio);
+
+
+```
+
+
+### 中断
+```c
+void free_irq(unsigned int irq, void *dev_id)
+
+```
+
+### 异步通知
+```c
+void kill_fasync(struct fasync_struct **fp, int sig, int band);
+
+int fasync_helper(int fd, struct file * filp, int on, struct fasync_struct **fapp)
+
+```
+
+### 定时
+
+```c
+int mod_timer(struct timer_list *timer, unsigned long expires)
+udelay() 
+static inline u64 ktime_get_ns(void)
+int del_timer(struct timer_list *timer)
+
+
+```
+
+
+
+static DECLARE_WAIT_QUEUE_HEAD(gpio_wait);
+
+#define wake_up_interruptible(x)
+
+
+#define wait_event_interruptible(wq, condition)
+
+static inline void poll_wait(struct file * filp, wait_queue_head_t * wait_address, poll_table *p)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
