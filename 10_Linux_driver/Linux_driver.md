@@ -324,7 +324,6 @@ int platform_get_irq_byname(struct platform_device *dev， const char *name)
 
 ### 驱动注册
 ```c
-
 static inline int register_chrdev(unsigned int major, const char *name,
 				  const struct file_operations *fops);
 /*  
@@ -344,26 +343,52 @@ static inline void unregister_chrdev(unsigned int major, const char *name);
         major: 主设备号
         name: 设备名称
 */
-// 创建设备文件到文件系统
+
 #define class_create(owner, name);
 /*  
-    作用： 申请设备号，创建设备节点，将操作函数绑定到设备节点
+    作用：主要是在/sys/class/ 下创建一个 “name”的文件夹 以便于创建设备节点 
     参数：
-        major: 主设备号，使用该函数将占用该主设备号下的所有的次设备节点 major == 0 将动态分配一个主设备号。
+        owner: 一般为 THIS_MODULE
         name: 设备名称
-        fops: 为设备注册的操作函数
+        
     返回值：
-        成功：主设备号
-        失败： < 0
+        成功: 返回 class
+        失败: 使用 IS_ERR 宏定义判断
 */
 struct device *device_create(struct class *class, struct device *parent,
 			     dev_t devt, void *drvdata, const char *fmt, ...);
+/*  
+    作用：在/dev/目录下创建设备文件
+    参数：
+        class: class_create返回值
+        parent: 一般为NULL
+        devt： 主设备号与次设备号 使用宏 MKDEV 合成
+        fmt: 格式化参数，设备节点的名字
+    返回值：
+        失败: 使用 IS_ERR 宏定义判断
+*/               
 
-static inline void unregister_chrdev(unsigned int major, const char *name);
 
-void device_destroy(struct class *class, dev_t devt)
 
-void class_destroy(struct class *cls)
+void device_destroy(struct class *class, dev_t devt);
+/*  
+    作用：删除/dev/目录下的设备文件
+    参数：
+        class: class_create返回值
+        devt: 主设备号与次设备号 使用宏 MKDEV 合成
+
+*/     
+
+
+
+void class_destroy(struct class *cls);
+/*  
+    作用：删除创建的class文件夹
+    参数：
+        class: class_create返回值
+*/     
+
+
 ```
 
 ### 应用层与内核数据交互
@@ -451,7 +476,17 @@ int gpio_to_irq	(unsigned int irq, irq_handler_t handler, unsigned long flags, c
 */
 
 void gpio_free(unsigned gpio);
-
+/*  
+    作用： 释放gpio
+    参数：
+        irq: 申请的中断号
+        handler： 中断处理函数
+        flags： 监听中断触发的选项 IRQF_TRIGGER_RISING（上升沿） | IRQF_TRIGGER_FALLING（下降沿）
+        name： 名字
+        dev：调用中断时的传入参数
+    返回值：
+        失败 < 0
+*/
 
 ```
 
@@ -459,12 +494,26 @@ void gpio_free(unsigned gpio);
 ### 中断
 ```c
 void free_irq(unsigned int irq, void *dev_id)
-
+/*  
+    作用： 释放中断
+    参数：
+        irq: 申请的中断号
+        dev_id： 设备特定的标识符， 可以传NULL
+  
+*/
 ```
 
 ### 异步通知
 ```c
 void kill_fasync(struct fasync_struct **fp, int sig, int band);
+/*  
+    作用： 发送信号给进程
+    参数：
+        fp: 申请的中断号
+        sig: 信号  一般为 SIGIO
+        band: 监听中断触发的选项 IRQF_TRIGGER_RISING（上升沿） | IRQF_TRIGGER_FALLING（下降沿）
+
+*/
 
 int fasync_helper(int fd, struct file * filp, int on, struct fasync_struct **fapp)
 
@@ -473,10 +522,39 @@ int fasync_helper(int fd, struct file * filp, int on, struct fasync_struct **fap
 ### 定时
 
 ```c
-int mod_timer(struct timer_list *timer, unsigned long expires)
-udelay() 
-static inline u64 ktime_get_ns(void)
-int del_timer(struct timer_list *timer)
+int mod_timer(struct timer_list *timer, unsigned long expires);
+/* 
+    描述：mod_timer(timer, expires) is equivalent to: 
+        del_timer(timer); timer->expires = expires; add_timer(timer);
+    参数:
+        timer: 
+        expires: 设置超时时
+ */
+#define setup_timer(timer, fn, data)
+/*  
+    作用： 初始化定时器
+    参数：
+        timer：定时器
+        fn: 定时器超时处理函数
+        data：为超时函数传入的参数
+*/
+
+int del_timer(struct timer_list *timer)；
+/*
+    作用： 删除定时器
+    参数：
+        timer：定时器
+*/
+
+udelay();
+/*  
+    作用： 微秒级延时
+    参数：
+        整数
+
+*/
+
+
 
 
 ```
