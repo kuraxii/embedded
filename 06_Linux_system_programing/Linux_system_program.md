@@ -2235,6 +2235,8 @@ pthread_t pthread_self(void);   //获取线程ID。其作用对应进程中getpi
 
 创建一个新线程。  其作用，对应进程中 fork()函数。
 
+**在多线程中，如果没有将子线程设置为线程分离，在主线程结束后，子线程回自动结束**
+
 ```c
 #include <pthread.h>
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
@@ -2683,6 +2685,82 @@ void* consumer(void* arg){  //消费者
   }
 
   return NULL;
+}
+
+```
+
+两个线程程之间的互斥
+```c
+/*********************************************
+ * @FileName: 05_pthread_read_write.c
+ * @Author: Null-zzj
+ * @Mail: zj.zhu.cn@gmail.com
+ * @Created Time: Tue Dec  5 13:22:05 2023
+ *********************************************/
+
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE 128
+
+char buffer[BUFFER_SIZE];
+int g_dataReady = 0;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond_input = PTHREAD_COND_INITIALIZER;
+pthread_cond_t cond_output = PTHREAD_COND_INITIALIZER;
+
+void *input_thread(void *arg)
+{
+    while (1)
+    {
+        pthread_mutex_lock(&mutex);
+        while (g_dataReady)
+        {
+            pthread_cond_wait(&cond_output, &mutex);
+        }
+
+        printf("Please input some word: ");
+        fflush(stdout);
+        fgets(buffer, BUFFER_SIZE, stdin);
+        g_dataReady = 1;
+        pthread_cond_signal(&cond_input);
+        pthread_mutex_unlock(&mutex);
+    }
+
+    return NULL;
+}
+
+void *output_thread(void *arg)
+{
+    while (1)
+    {
+        pthread_mutex_lock(&mutex);
+        while (!g_dataReady)
+        {
+            pthread_cond_wait(&cond_input, &mutex);
+        }
+
+        printf("You input: %s\n", buffer);
+        g_dataReady = 0;
+        pthread_cond_signal(&cond_output);
+        pthread_mutex_unlock(&mutex);
+    }
+
+    return NULL;
+}
+
+int main()
+{
+    pthread_t tid[2];
+
+    pthread_create(&tid[0], NULL, input_thread, NULL);
+    pthread_create(&tid[1], NULL, output_thread, NULL);
+
+    pthread_join(tid[0], NULL);
+    pthread_join(tid[1], NULL);
+
+    return 0;
 }
 
 ```
