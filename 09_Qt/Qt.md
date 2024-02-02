@@ -94,3 +94,116 @@ connect(tea, SIGNAL(hungry(QString)), [=](){
     });
 
 ```
+
+## 主窗口（QMainWindows）
+
+### 1.菜单栏（只能有一个）
+1. QMenuBar * bar =  menuBar()  创建菜单栏
+2. setMenuBar(bar) 设置窗口中
+3. QMenu * fileMenu  =  bar->addMenu(“文件”); 添加菜单
+4. QAction * newAtcion = fileMenu->addAction(“新建”); 添加菜单项
+
+```cpp
+   //1. 菜单栏 （只能有一个）
+    QMenuBar *bar = menuBar();
+    // 菜单栏设置到窗口中
+    this->setMenuBar(bar);
+    // 添加菜单
+    QMenu* fileMenu = bar->addMenu("文件");
+    // 添加菜单项
+    QAction* newAction = fileMenu->addAction("新建");
+    // 添加分割线
+    fileMenu->addSeparator();
+    QAction* openAction = fileMenu->addAction("打开");
+
+    // 菜单项中有子菜单
+    QMenu* subMenu = new QMenu;
+    subMenu->addAction("子菜单1");
+    subMenu->addAction("子菜单2");
+    newAction->setMenu(subMenu);
+```
+
+### 2.工具栏（可以有多个）
+1. QToolBar * toolbar = new QToolBar(this);
+2. addToolBar( Qt::LeftToolBarArea , toolBar )
+3. 设置后期停靠区域 setAllowedAreas
+4. 设置浮动  setFloatable
+5. 设置移动  setMovable
+6. 添加菜单项  addAction
+7. 添加分割线  addSeparator
+
+```cpp
+    //2. 工具栏  可以多个
+    QToolBar* toolBar = new QToolBar(this);
+    // 将工具栏设置到窗口中
+    this->addToolBar(toolBar);
+    // 添加toolbar选项
+    toolBar->addAction("关闭");
+
+    // 设置toolbar初始位置
+    QToolBar* toolBar2 = new QToolBar(this);
+    this->addToolBar(toolBar2);
+    // 将工具栏设置到窗口中，设置工具栏到窗口左边
+    this->addToolBar(Qt::LeftToolBarArea,toolBar2);
+
+    // 设置只允许左右位置停靠
+    toolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
+    // 设置浮动
+    toolBar->setFloatable(false);
+    // 设置移动 (false 为工具栏窗口禁止拖动)
+    toolBar2->setMovable(false);
+
+    // 工具栏添加选项  分割线
+    toolBar2->addAction("新建");
+    toolBar2->addSeparator();
+    toolBar2->addAction("关闭");
+```
+
+### 3.状态栏（只能有一个）
+1. QStatusBar * sBar = statusBar();
+2. setStatusBar(sBar);
+3. 添加标签 显示到状态栏中
+
+```cpp
+    //3. 状态栏  只能有一个
+    QStatusBar *sBar = new QStatusBar(this);
+    // 设置状态栏
+    this->setStatusBar(sBar);
+    QLabel *label1 = new QLabel("左侧信息", this);
+    sBar->addWidget(label1);
+
+    QLabel *label2 = new QLabel("右侧信息", this);
+    sBar->addPermanentWidget(label2);
+
+    // 从最左边上插入
+    QLabel *label3 = new QLabel("左侧信息2", this);
+    sBar->insertWidget(0, label3);
+
+    // 从最右边插入
+    QLabel *label4 = new QLabel("右侧信息2", this);
+    sBar->insertPermanentWidget(0, label4);
+```
+### 4.铆接部件 （浮动窗口，可以有多个）
+1. QDockWidget * dock = new QDockWidget(“标题”,this);
+2. addDockWidget(Qt::BottomDockWidgetArea,dock);
+3. 设置停靠 setAllowedArea( )
+
+```cpp
+    // 铆接部件  浮动窗口  可以多个
+    QDockWidget *dock =  new QDockWidget("浮动窗口", this);
+    // 添加dock窗口
+    addDockWidget(Qt::BottomDockWidgetArea, dock);
+    // 设置只允许上下停靠
+    dock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+//    dock->setFloating(true);
+```
+### 5.核心部件（主窗口，只能有一个）
+1. QTextEdit  * edit = new QTextEdit(this);
+2. setCentralWidget（edit）;
+
+```cpp
+    //5. 核心部件(主窗口)  只能有一个
+    QTextEdit* edit = new QTextEdit(this);
+    // 设置核心部件
+    setCentralWidget(edit);
+```
