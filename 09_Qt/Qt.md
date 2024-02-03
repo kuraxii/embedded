@@ -1,21 +1,41 @@
+- [QT](#qt)
+  - [快捷键](#快捷键)
+  - [信号与槽](#信号与槽)
+  - [主窗口（QMainWindows）](#主窗口qmainwindows)
+    - [1.菜单栏（只能有一个）](#1菜单栏只能有一个)
+    - [2.工具栏（可以有多个）](#2工具栏可以有多个)
+    - [3.状态栏（只能有一个）](#3状态栏只能有一个)
+    - [4.铆接部件 （浮动窗口，可以有多个）](#4铆接部件-浮动窗口可以有多个)
+    - [5.核心部件（主窗口，只能有一个）](#5核心部件主窗口只能有一个)
+    - [资源文件](#资源文件)
+  - [对话框](#对话框)
+    - [模态和非模态对话框 QDialog](#模态和非模态对话框-qdialog)
+    - [消息对话框](#消息对话框)
+    - [其他标准对话框](#其他标准对话框)
+
+
 # QT
 ## 快捷键
-// 运行 CTRL + R  run
-// 编译 CTRL + B  build
-// 格式化  CTRL + i
-// 同名的.cpp .h切换 F4
-// 查看文档 F1
+```tex
+    运行 CTRL + R  run
+    编译 CTRL + B  build
+    格式化  CTRL + i
+    同名的.cpp .h切换 F4
+    查看文档 F1
+```
 
 ## 信号与槽
 信号与槽优点，松散耦合
 
+```cpp
 QObject::connect(scrollBar, SIGNAL(valueChanged(int value)),
                    label, SLOT(setNum(int value)));
-参数：
-    scrollBar：信号发送者   类实例地址
-    SIGNAL(valueChanged(int value))：发送的信号  函数指针地址
-    label：信号的接收者  类实例地址
-    SLOT(setNum(int value)): 槽函数 槽函数地址
+// 参数：
+//     scrollBar：信号发送者   类实例地址
+//     SIGNAL(valueChanged(int value))：发送的信号  函数指针地址
+//     label：信号的接收者  类实例地址
+//     SLOT(setNum(int value)): 槽函数 槽函数地址
+```
 
 **自定义信号与槽的实现**
 1. 自定义信号
@@ -207,3 +227,93 @@ connect(tea, SIGNAL(hungry(QString)), [=](){
     // 设置核心部件
     setCentralWidget(edit);
 ```
+
+### 资源文件
+
+- 导入资源文件
+    1. 将资源文件放到目录下
+    2. 添加资源文件
+        1. 右键项目->添加新文件->Qt->Qt resource file
+        2. 给资源文件起名 例如：res 生成res.qrc文件
+    3. 编辑资源文件
+        1. 添加前缀
+        2. 添加文件
+    4. 使用资源
+        1. 语法 ":<前缀名><文件名>"
+    ```cpp
+        ui->actionnew->setIcon(QIcon(":/Image/Luffy.png"));
+        ui->actiondakai->setIcon(QIcon(":/Image/OnePiece.png"));
+    ```
+## 对话框
+
+### 模态和非模态对话框 QDialog
+模态对话框
+1. 不可以对其他窗口进行操作
+2. QDialog(this)
+3. dlg.reseize(w,h)
+4. dlg.exec();
+
+非模态对话框
+1. 可以对其他窗口进行操作
+2. QDialog *dlg = new QDialog(this);
+3. dlg->resize(w, h)
+4. dlg->setAttribute(Qt::WA_DeleteOnClose);
+5. dlg>show()
+![alt text](image-3.png)
+```cpp
+connect(ui->actionnew, &QAction::triggered,[=]{
+        // 对话框的分类
+        // 模态对话空  打开后，无法岁娶她窗口进行操作
+        // 非模态对话框
+
+        // 创建模态对话框
+        QDialog dlg(this);
+        dlg.exec();
+
+        // 创建非模态对话框
+        // QDialog dlg(this);
+        // lamdba函数执行结束自动消失
+        // dlg.show();
+        // 使用堆区内存改进
+        QDialog* dlg = new QDialog(this);
+        // 设置属性  当关闭窗口时释放堆区对象
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
+        dlg->show();
+        qDebug() << "弹出对话框";
+    });
+```
+### 消息对话框 
+
+1. 错误提示 critical
+2. 询问提示 question
+3. 警告提示 warning
+4. 消息提示 information
+   
+    ![alt text](image.png)
+    ![alt text](image-2.png)
+    ![alt text](image-4.png)
+    ![alt text](image-1.png)
+
+
+
+```cpp
+    // 错误提示
+    QMessageBox::critical(this, "critical", "错误!");
+    // 信息提示
+    QMessageBox::information(this, "info", "信息提示");
+
+    // 询问提示  
+    if(QMessageBox::Save == QMessageBox::question(this, "question", "询问!", QMessageBox::Save | QMessageBox::Cancel, QMessageBox::Save))
+    {
+        qDebug() <<  "选择了save按键";
+    }else
+    {
+        qDebug() <<  "选择了cancel按键";
+    }
+    // 警告提示
+    QMessageBox::warning(this, "warning", "警告");
+
+    // 参数： 1.父窗口 2.标题 3.文本 4.按键类型  5.关联回车按键
+```
+
+### 其他标准对话框
