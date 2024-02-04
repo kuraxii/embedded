@@ -12,6 +12,8 @@
     - [模态和非模态对话框 QDialog](#模态和非模态对话框-qdialog)
     - [消息对话框](#消息对话框)
     - [其他标准对话框](#其他标准对话框)
+  - [布局管理](#布局管理)
+  - [常用控件-按钮组](#常用控件-按钮组)
 
 
 # QT
@@ -80,6 +82,7 @@ QObject::connect(scrollBar, SIGNAL(valueChanged(int value)),
     connect(tea, &teacher::hungry, stu, &stu::treat)
     ```
     
+
 信号与槽发送重载时，使用connect连接时要使用函数指针做类型转化
 ```cpp
 connect(tea, (void(teacher::*)(QString))&teacher::hungry, this->stu, (void(student::*)(QString))&student::treat);
@@ -259,7 +262,7 @@ connect(tea, SIGNAL(hungry(QString)), [=](){
 3. dlg->resize(w, h)
 4. dlg->setAttribute(Qt::WA_DeleteOnClose);
 5. dlg>show()
-![alt text](image-3.png)
+![alt text](Qt.assets/image-3.png)
 ```cpp
 connect(ui->actionnew, &QAction::triggered,[=]{
         // 对话框的分类
@@ -289,10 +292,10 @@ connect(ui->actionnew, &QAction::triggered,[=]{
 3. 警告提示 warning
 4. 消息提示 information
    
-    ![alt text](image.png)
-    ![alt text](image-2.png)
-    ![alt text](image-4.png)
-    ![alt text](image-1.png)
+    ![alt text](Qt.assets/image.png)
+    ![alt text](Qt.assets/image-2.png)
+    ![alt text](Qt.assets/image-4.png)
+    ![alt text](Qt.assets/image-1.png)
 
 
 
@@ -317,3 +320,122 @@ connect(ui->actionnew, &QAction::triggered,[=]{
 ```
 
 ### 其他标准对话框
+
+1. 颜色对话框
+   
+    ![alt text](Qt.assets/image-5.png)
+    ```cpp
+    // 颜射对话框  并获取用户获取的颜射
+        QColor color = QColorDialog::getColor(QColor(255,0 , 0));
+        qDebug() << color;
+    ```
+2. 字体对话框
+   
+    ![alt text](Qt.assets/image-6.png)
+    ```cpp
+    // 字体对话框
+        bool ok;
+        QFont font = QFontDialog::getFont(&ok, QFont("宋体"));
+        qDebug() << font;
+    ```
+3. 文件对话框
+
+    ![alt text](Qt.assets/image-7.png)
+    ```cpp
+    // 文件对话框
+        QString fileName = QFileDialog::getOpenFileName(this, "打开文件", "D:/", "(*.txt *.c)");
+        qDebug() << fileName;
+    ```
+
+## 布局管理
+
+1. 利用widgets进行分组布局: 水平 垂直 栅格
+2. 巧用弹簧进行设置
+
+![alt text](Qt.assets/image-8.png)
+![alt text](Qt.assets/image-11.png)
+![alt text](Qt.assets/image-12.png)
+![alt text](Qt.assets/image-13.png)
+![alt text](Qt.assets/image-14.png)
+
+
+
+
+## 常用控件-按钮组
+1. QPushButton 可以显示图标
+    ![alt text](Qt.assets/image-15.png)
+
+2. QToolButton 工具按钮 默认优先显示图标
+    ![alt text](Qt.assets/image-16.png)
+
+3. QRadioButton 单选按钮
+    ![alt text](Qt.assets/image-17.png)
+    ```cpp
+    // 单选按钮  设置默认选中
+    ui->rBtn_man->setChecked(true);
+    this->sex = true;
+    // 监听 用户选中女选项
+    connect(ui->rBtn_woman, &QRadioButton::clicked, [=](){
+       qDebug() << "用户选择了女按钮";
+       this->sex = false;
+    });
+    connect(ui->rBtn_man, &QRadioButton::clicked, [=](){
+       qDebug() << "用户选择了男按钮";
+       this->sex = true;
+    });
+    connect(ui->btn_commit, &QPushButton::clicked, [=](){
+        qDebug() << "用户最终选择了 " << (this->sex == true ? "男" : "女");
+    });
+    ```
+
+4. QCheckBox 复选按钮
+
+    ![alt text](Qt.assets/image-18.png)
+    ```cpp
+    // 监听复选按钮是否被选中
+    ui->checkBox->setTristate(true); // 三中状态 未选中状态 半选中状态  state值分别为 0 1 2
+    
+    connect(ui->checkBox, &QCheckBox::stateChanged, [=](int state){
+        qDebug() << state;
+    });
+    connect(ui->checkBox_2, &QCheckBox::stateChanged, [=](int state){
+        qDebug() << state;
+    });
+    connect(ui->checkBox_3, &QCheckBox::stateChanged, [=](int state){
+        qDebug() << state;
+    });
+    ```
+    1. 半选状态属性设置
+       
+        ![alt text](Qt.assets/image-19.png)
+        ```cpp
+        // 默认不开启半选状态
+        ui->checkBox->setTristate(true); // 第三中状态 半选中状态  state值为1
+        ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
