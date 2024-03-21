@@ -98,6 +98,7 @@ connect(tea, (void(teacher::*)(QString))&teacher::hungry, this->stu, (void(stude
     1. 当信号与槽函数的参数数量相同时，它们参数类型要完全一致。
     2. 当信号的参数与槽函数的参数数量不同时，只能是信号的参数数量多于槽函数的参数数量，且前面相同数量的参数类型应一致，信号中多余的参数会被忽略。
 6. 可以利用disconnect函数断开连接（connect如何传参，dosconnect就怎么传参）
+7. 当涉及的任何一个对象被破坏时，信号槽连接将被移除。(类似自动调用了disconnect)
 
 QT4版本的信号槽写法
 ```cpp
@@ -412,6 +413,8 @@ connect(ui->actionnew, &QAction::triggered,[=]{
         // 默认不开启半选状态
         ui->checkBox->setTristate(true); // 第三中状态 半选中状态  state值为1
         ```
+
+
 
 
 
