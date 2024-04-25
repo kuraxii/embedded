@@ -19,7 +19,7 @@
 - 异步通知
 
 ## 字符设备驱动
-https://tasks.josn/
+
 ### 简单的字符设备驱动框架
 
 1. 确定主设备号，也可以让内核分配  int major;  major = 0 时自动分配
@@ -322,253 +322,537 @@ int platform_get_irq_byname(struct platform_device *dev， const char *name)
 
 ## 常用函数集合
 
-### 驱动注册
+### 申请gpio 将gpio注册为中断
+
+
+[查看实战示例](src/04_sr04_improve/gpio_drv.c#L221)
+
 ```c
-static inline int register_chrdev(unsigned int major, const char *name,
-				  const struct file_operations *fops);
-/*  
-    作用： 申请设备号，创建设备节点，将操作函数绑定到设备节点
-    参数：
-        major: 主设备号，使用该函数将占用该主设备号下的所有的次设备节点 major == 0 将动态分配一个主设备号。
-        name: 设备名称
-        fops: 为设备注册的操作函数
-    返回值：
-        成功：主设备号
-        失败： < 0
-*/
-static inline void unregister_chrdev(unsigned int major, const char *name);
-/*  
-    作用： 卸载调申请的设备节点
-    参数：
-        major: 主设备号
-        name: 设备名称
-*/
+    // 申请gpio 并设置gpio功能
+    err = gpio_request(gpios[0].gpio, gpios[0].name);
+    gpio_direction_output(gpios[0].gpio, 0);  // 输出模式
+    gpio_direction_input(gpios[0].gpio);      // 输入模式
+    // 释放gpio
+    gpio_free(gpios[0].gpio);
+```
+[查看实战示例](src/02_sr501/gpio_drv.c#L159)
+```c
+    // 将gpio注册为中断
+    gpios[1].irq  = gpio_to_irq(gpios[1].gpio);
+	err = request_irq(gpios[1].irq, sr04_isr, IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, gpios[1].name, &gpios[1]);
+    // 释放irq
+    free_irq(gpios[1].irq, &gpios[1]);
+```
+### 定时器相关
 
-#define class_create(owner, name);
-/*  
-    作用：主要是在/sys/class/ 下创建一个 “name”的文件夹 以便于创建设备节点 
-    参数：
-        owner: 一般为 THIS_MODULE
-        name: 设备名称
-        
-    返回值：
-        成功: 返回 class
-        失败: 使用 IS_ERR 宏定义判断
-*/
-struct device *device_create(struct class *class, struct device *parent,
-			     dev_t devt, void *drvdata, const char *fmt, ...);
-/*  
-    作用：在/dev/目录下创建设备文件
-    参数：
-        class: class_create返回值
-        parent: 一般为NULL
-        devt： 主设备号与次设备号 使用宏 MKDEV 合成
-        fmt: 格式化参数，设备节点的名字
-    返回值：
-        失败: 使用 IS_ERR 宏定义判断
-*/               
+定时器，定时结束执行函数
+[查看实战示例](src/04_sr04_improve/gpio_drv.c#L230)
+```c
+    // 注册定时器
+    setup_timer(&gpios[1].key_timer, sr04_timer_func, (unsigned long)&gpios[1]);
+    // 开始计时
+    mod_timer(&gpios[1].key_timer, jiffies + msecs_to_jiffies(50));  
+    // 停止计时 
+    del_timer(&gpios[1].key_timer);
 
-
-
-void device_destroy(struct class *class, dev_t devt);
-/*  
-    作用：删除/dev/目录下的设备文件
-    参数：
-        class: class_create返回值
-        devt: 主设备号与次设备号 使用宏 MKDEV 合成
-
-*/     
-
-
-
-void class_destroy(struct class *cls);
-/*  
-    作用：删除创建的class文件夹
-    参数：
-        class: class_create返回值
-*/     
-
+    // 销毁timer
+    del_timer(&gpios[1].key_timer);
 
 ```
 
-### 应用层与内核数据交互
-```c
-// 一般在read write函数使用 
-unsigned long copy_from_user(void *to, const void __user *from, unsigned long n)；
-/*  参数：
-        to: 内核层内存地址地址
-        from: 用户内存地址
-        n: 复制的字节数
-    返回值：
-        复制成功的字节数
-*/
-unsigned long copy_to_user(void __user *to, const void *from, unsigned long n);
-/*  参数：
-        to: 用户层内存地址地址
-        from: 内核内存地址
-        n: 复制的字节数
-    返回值：
-        复制成功的字节数
-*/
-
-```
-
-### gpio操作函数
-```c
-// 在linux中 gpio口可以通过cat /sys/kernel/debug/gpio命令查看
-int gpio_request(unsigned gpio, const char *label);
-/*  
-    作用： 申请一个gpio，并为该gpio取一个名字
-    参数：
-        gpio: gpio号
-        label: 为gpio取名
-    返回值：
-        失败： < 0
-*/
-static inline int gpio_direction_input(unsigned gpio);
-/*  
-    作用： 设置gpio口为输入模式
-    参数：
-        gpio: gpio号
-    返回值：
-        失败： < 0
-*/
-static inline int gpio_direction_output(unsigned gpio, int value);
-/*  
-    作用： 设置gpio口为输出模式，并且设置输出的初始值
-    参数：
-        gpio: gpio号
-        vlaue: 为gpio设置值，一般为0 或 1
-    返回值：
-        失败： < 0
-*/
-
-int gpio_get_value(unsigned int gpio)
-/*  
-    作用： 获取gpio口的值
-    参数：
-        gpio: gpio号
-    返回值：
-        0 或 1
-*/
-void gpio_set_value(unsigned int gpio, int value);
-/*  
-    作用： 给gpio口设置值
-    参数：
-        gpio: gpio号
-        label: gpio口的值 一般为 0 或 1
-    返回值：
-        复制成功的字节数
-*/
-
-
-int gpio_to_irq	(unsigned int irq, irq_handler_t handler, unsigned long flags, const char * name, void * dev)
-/*  
-    作用： 将gpio口注册为中断
-    参数：
-        irq: 申请的中断号
-        handler： 中断处理函数
-        flags： 监听中断触发的选项 IRQF_TRIGGER_RISING（上升沿） | IRQF_TRIGGER_FALLING（下降沿）
-        name： 名字
-        dev：调用中断时的传入参数
-    返回值：
-        失败 < 0
-*/
-
-void gpio_free(unsigned gpio);
-/*  
-    作用： 释放gpio
-    参数：
-        irq: 申请的中断号
-        handler： 中断处理函数
-        flags： 监听中断触发的选项 IRQF_TRIGGER_RISING（上升沿） | IRQF_TRIGGER_FALLING（下降沿）
-        name： 名字
-        dev：调用中断时的传入参数
-    返回值：
-        失败 < 0
-*/
-
-```
-
-
-### 中断
-```c
-void free_irq(unsigned int irq, void *dev_id)
-/*  
-    作用： 释放中断
-    参数：
-        irq: 申请的中断号
-        dev_id： 设备特定的标识符， 可以传NULL
-  
-*/
-```
-
-### 异步通知
-```c
-void kill_fasync(struct fasync_struct **fp, int sig, int band);
-/*  
-    作用： 发送信号给进程
-    参数：
-        fp: 申请的中断号
-        sig: 信号  一般为 SIGIO
-        band: 监听中断触发的选项 IRQF_TRIGGER_RISING（上升沿） | IRQF_TRIGGER_FALLING（下降沿）
-
-*/
-
-int fasync_helper(int fd, struct file * filp, int on, struct fasync_struct **fapp)
-
-```
-
-### 定时
+### 驱动注册与反注册框架 
 
 ```c
-int mod_timer(struct timer_list *timer, unsigned long expires);
-/* 
-    描述：mod_timer(timer, expires) is equivalent to: 
-        del_timer(timer); timer->expires = expires; add_timer(timer);
-    参数:
-        timer: 
-        expires: 设置超时时
+// 注册
+static int __init gpio_drv_init(void)
+{
+    int err;
+    int i;
+
+    /* 获取gpio资源，使用平台总线后使用probe函数获取 */
+    int count = sizeof(gpios) / sizeof(gpios[0]);
+    for (i = 0; i < count; i++)
+    {
+        err = gpio_request(gpios[i].gpio, gpios[i].name);
+        if (err < 0)
+        {
+            printk("can not request gpio %d %s\n", gpios[i].gpio, gpios[i].name);
+            return -ENODEV;
+        }
+        gpio_direction_output(gpios[i].gpio, 1);
+    }
+
+    /* 注册file_operations 	0 表示自动分配主设备号 */  
+    /* 生成 /proc/devices/100ask_gpio_led */
+    major = register_chrdev(0, "100ask_gpio_led", &gpio_led_drv);
+
+    /* 创建一个设备类，可以用来帮助自动创建设备节点。 */  
+    /* 对应目录 /proc/devices/100ask_gpio_led */
+    gpio_class = class_create(THIS_MODULE, "100ask_gpio_led_class");
+    if (IS_ERR(gpio_class))
+    {
+        printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
+        unregister_chrdev(major, "100ask_gpio_led");
+        return PTR_ERR(gpio_class);
+    }
+
+    /* 通过上面的设备类自动创建设备节点 */  
+    /* 对应文件 /dev/100ask_gpio */
+    device_create(gpio_class, NULL, MKDEV(major, 0), NULL, "100ask_led"); /* /dev/100ask_gpio */
+
+    return err;
+}
+
+// 反注册
+
+/* 有入口函数就应该有出口函数：卸载驱动程序时，就会去调用这个出口函数
  */
-#define setup_timer(timer, fn, data)
-/*  
-    作用： 初始化定时器
-    参数：
-        timer：定时器
-        fn: 定时器超时处理函数
-        data：为超时函数传入的参数
-*/
+static void __exit gpio_drv_exit(void)
+{
+    int i;
+    int count = sizeof(gpios) / sizeof(gpios[0]);
 
-int del_timer(struct timer_list *timer)；
-/*
-    作用： 删除定时器
-    参数：
-        timer：定时器
-*/
-
-udelay();
-/*  
-    作用： 微秒级延时
-    参数：
-        整数
-
-*/
+    printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
+    
+    /* 卸载设备节点文件 */
+    device_destroy(gpio_class, MKDEV(major, 0));
+    /* 删除设备类 */
+    class_destroy(gpio_class);
+    /* 删除设备在系统中的注册 */
+    unregister_chrdev(major, "100ask_gpio_led");
 
 
+    /* 释放之前申请的设备资源 */
+    for (i = 0; i < count; i++)
+    {
+        gpio_free(gpios[i].gpio);
+    }
+}
+```
+
+中断 poll 异步信号以及详解,来自驱动实验 sr501模块
+```c
+// 定义的gpio描述结构体 包含了gpio号 irq中断 名字 以及 超时(在后续会引用解释)
+struct gpio_desc{
+	int gpio;
+	int irq;
+    char *name;
+    int key;
+	struct timer_list key_timer;
+} ;
+
+// 通过linux shell获取的gpio号，直接写死，这也是在没有platform框架下唯一的获取硬件资源的方式
+static struct gpio_desc gpios[1] = {
+    {115, 0, "sr501", },
+};
+
+/* 主设备号                                                                 */
+static int major = 0;
+static struct class *gpio_class;
+
+/* 环形缓冲区 */
+#define BUF_LEN 128
+static int g_keys[BUF_LEN];
+static int r, w;
+
+struct fasync_struct *button_fasync;
+
+#define NEXT_POS(x) ((x+1) % BUF_LEN)
+
+static int is_key_buf_empty(void)
+{
+	return (r == w);
+}
+
+static int is_key_buf_full(void)
+{
+	return (r == NEXT_POS(w));
+}
+
+static void put_key(int key)
+{
+	if (!is_key_buf_full())
+	{
+		g_keys[w] = key;
+		w = NEXT_POS(w);
+	}
+}
+static int get_key(void)
+{
+	int key = 0;
+	if (!is_key_buf_empty())
+	{
+		key = g_keys[r];
+		r = NEXT_POS(r);
+	}
+	return key;
+}
 
 
+// 等待队列声明，将应用层的进程添加到等待队列，等待条件触发。 如 read函数的阻塞
+// 在进程休眠时，进程时无法知道外部发生了生么的，只能通过wake_up_interruptible唤醒，让调度器
+static DECLARE_WAIT_QUEUE_HEAD(gpio_wait);
+
+
+// 中断服务程序 是这个驱动事件触发的核心，中断的触发事件已经在open函数中设置了
+static irqreturn_t gpio_key_isr(int irq, void *dev_id)
+{
+	int val;
+	int key;
+	struct gpio_desc *gpio_desc = dev_id;
+    // 触发了中断，获取gpio当前的值，然后将值存入环形缓冲区
+	val = gpio_get_value(gpio_desc->gpio);
+	key = (gpio_desc->key) | (val<<8);
+	put_key(key);
+     
+    // 唤醒进程，
+	wake_up_interruptible(&gpio_wait);
+
+    // 发送 向 button_fasync 中所有的进程发送信号， 并且可以通过select poll等方式获取 POLL_IN标识，示例如下
+	kill_fasync(&button_fasync, SIGIO, POLL_IN);
+    /* 
+    在应用层可以这样写
+    void sigio_handler(int signo) {
+    struct pollfd fds[1];
+    fds[0].fd = sockfd;  // sockfd是监听套接字或已连接套接字
+    fds[0].events = POLLIN | POLLOUT;
+
+    if (poll(fds, 1, 0) > 0) {
+        if (fds[0].revents & POLLIN) {
+            // 处理可读事件
+        }
+        if (fds[0].revents & POLLOUT) {
+            // 处理可写事件
+        }
+    }
+}
+
+    */
+	return IRQ_HANDLED;
+}
+
+
+
+/* 实现对应的open/read/write等函数，填入file_operations结构体                   */
+static ssize_t gpio_drv_read (struct file *file, char __user *buf, size_t size, loff_t *offset)
+{
+	//printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
+	int err;
+	int key;
+
+	if (is_key_buf_empty() && (file->f_flags & O_NONBLOCK))
+		return -EAGAIN;
+	
+    /* 
+    wait_event_interruptible 宏会检查给定的条件（第二个参数），如果条件为真（非零），宏会立即返回并继续执行后续代码。如果条件为假（零），进程会进入 TASK_INTERRUPTIBLE 状态，即可被信号打断的休眠状态，直到某个其他地方的代码显式地唤醒它（例如通过 wake_up_interruptible）或者进程接收到一个信号。
+     */
+	wait_event_interruptible(gpio_wait, !is_key_buf_empty());
+	key = get_key();
+	err = copy_to_user(buf, &key, 4);
+	
+	return 4;
+}
+
+static unsigned int gpio_drv_poll(struct file *fp, poll_table * wait)
+{
+	//printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
+    /* 为poll添加了一种机制，使得  poll机制可以通过 gpio_wait等待队列的唤醒而唤醒*/
+	poll_wait(fp, &gpio_wait, wait);
+	return is_key_buf_empty() ? 0 : POLLIN | POLLRDNORM;
+}
+
+static int gpio_drv_fasync(int fd, struct file *file, int on)
+{
+    // 用于将当前进程注册到 struct fasync_struct 中。
+    // 在应用层 使用 fcntl 实现注册信号
+    /*
+        应用层开启异步io的示例如下 
+        int flags = fcntl(fd, F_GETFL);
+        fcntl(fd, F_SETFL, flags | O_ASYNC); 
+    */
+	if (fasync_helper(fd, file, on, &button_fasync) >= 0)
+		return 0;
+	else
+		return -EIO;
+}
+
+
+/* 定义自己的file_operations结构体                                              */
+static struct file_operations gpio_key_drv = {
+	.owner	 = THIS_MODULE,
+	.read    = gpio_drv_read,
+	.poll    = gpio_drv_poll,
+	.fasync  = gpio_drv_fasync,
+};
+
+
+
+/* 在入口函数 */
+static int __init gpio_drv_init(void)
+{
+    int err;
+    int i;
+    int count = sizeof(gpios)/sizeof(gpios[0]);
+	for (i = 0; i < count; i++)
+	{		
+		gpios[i].irq  = gpio_to_irq(gpios[i].gpio);
+
+		/* 注册中断 
+        参数
+            中断号是gpios[i].irq 
+            中断处理函数 gpio_key_isr
+            中断属性以及触发方式 IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING
+            中断name 一般用于debug
+            中断独立参数 一般用于共享中断时的中断区别参数  在中断处理函数 void *dev_id可以得到它
+            */
+		err = request_irq(gpios[i].irq, gpio_key_isr, IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, gpios[i].name, &gpios[i]);
+        /* 
+        下面解释一下dev_id参数为什么必须的，而且是必须唯一的。
+        当调用free_irq注销中断处理函数时（通常卸载驱动时其中断处理函数也会被注销掉），因为dev_id是唯一的，所以可以通过它来判断从共享中断线上的多个中断处理程序中删除指定的一个。如果没有这个参数，那么kernel不可能知道给定的中断线上到底要删除哪一个处理程序。 
+        */
+    }
+	return err;
+}
+
+/* 有入口函数就应该有出口函数：卸载驱动程序时，就会去调用这个出口函数
+ */
+static void __exit gpio_drv_exit(void)
+{
+    int count = sizeof(gpios)/sizeof(gpios[0]);
+	for (i = 0; i < count; i++)
+	{
+		free_irq(gpios[i].irq, &gpios[i]);	
+	}
+}
+module_init(gpio_drv_init);
+module_exit(gpio_drv_exit);
+MODULE_LICENSE("GPL");
 ```
 
 
+
+
+外设时序 读取逻辑解析  来自驱动实现 sr04
+```c
+#define CMD_TRIG 100
+
+struct gpio_desc
+{
+    int gpio;
+    int irq;
+    char *name;
+    int key;
+    struct timer_list key_timer;
+};
+
+static struct gpio_desc gpios[2] = {
+    {
+        115,
+        0,
+        "trig",
+    },
+    {
+        116,
+        0,
+        "echo",
+    },
+
+};
+
+/* 主设备号      */
+static int major = 0;
+static struct class *gpio_class;
+
+/* 环形缓冲区 */
+#define BUF_LEN 128
+static int g_vals[BUF_LEN];
+static int r, w;
+
+struct fasync_struct *button_fasync;
+
+#define NEXT_POS(x) ((x + 1) % BUF_LEN)
+
+static int is_val_buf_empty(void)
+{
+    return (r == w);
+}
+
+static int is_cal_buf_full(void)
+{
+    return (r == NEXT_POS(w));
+}
+
+static void put_val(int key)
+{
+    if (!is_cal_buf_full())
+    {
+        g_vals[w] = key;
+        w = NEXT_POS(w);
+    }
+}
+
+static int get_val(void)
+{
+    int val = 0;
+    if (!is_val_buf_empty())
+    {
+        val = g_vals[r];
+        r = NEXT_POS(r);
+    }
+    return val;
+}
 
 static DECLARE_WAIT_QUEUE_HEAD(gpio_wait);
 
-#define wake_up_interruptible(x)
+static ssize_t sr04_drv_read(struct file *file, char __user *buf, size_t size, loff_t *offset)
+{
+    int err;
+    int val;
+
+    if (is_val_buf_empty() && (file->f_flags & O_NONBLOCK))
+        return -EAGAIN;
+
+    wait_event_interruptible(gpio_wait, !is_val_buf_empty());
+    val = get_val();
+    err = copy_to_user(buf, &val, 4);
+
+    return 4;
+}
+
+static unsigned int sr04_drv_poll(struct file *fp, poll_table *wait)
+{
+    poll_wait(fp, &gpio_wait, wait);
+    return is_val_buf_empty() ? 0 : POLLIN | POLLRDNORM;
+}
+
+static int sr04_drv_fasync(int fd, struct file *file, int on)
+{
+    if (fasync_helper(fd, file, on, &button_fasync) >= 0)
+        return 0;
+    else
+        return -EIO;
+}
+
+// ioctl (fd, cmd, arg)
+long sr04_drv_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
+{
+    switch (cmd)
+    {
+    case CMD_TRIG: {
+        gpio_set_value(gpios[0].gpio, 1);
+        udelay(20);
+        gpio_set_value(gpios[0].gpio, 0);
+    }
+    }
+    return 0;
+}
+
+                                     */
+static struct file_operations gpio_sr04_drv = {
+    .owner = THIS_MODULE,
+    .read = sr04_drv_read,
+    .poll = sr04_drv_poll,
+    .fasync = sr04_drv_fasync,
+    .unlocked_ioctl = sr04_drv_ioctl,
+};
+
+static irqreturn_t gpio_sr04_isr(int irq, void *dev_id)
+{
+    struct gpio_desc *gpio_desc = dev_id;
+    /* data ==> gpio */
+    int val;
+
+    static u64 rising_time = 0;
+    u64 time;
+
+    val = gpio_get_value(gpio_desc->gpio);
+    if (val)
+    {
+        rising_time = ktime_get_ns();
+    }
+    else
+    {
+        if (rising_time == 0)
+        {
+            printk("missing raising interrupt");
+            return IRQ_HANDLED;
+        }
+        // 下降沿记录结束时间，并计算时间差 计算距离
+        time = ktime_get_ns() - rising_time;
+        rising_time = 0;
+        put_val(time);
+        wake_up_interruptible(&gpio_wait);           // 中断
+        kill_fasync(&button_fasync, SIGIO, POLL_IN); //  异步
+    }
+    return IRQ_HANDLED;
+}
 
 
-#define wait_event_interruptible(wq, condition)
+static int __init gpio_drv_init(void)
+{
+    int err;
 
-static inline void poll_wait(struct file * filp, wait_queue_head_t * wait_address, poll_table *p)
+    printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
+
+    // trig pin
+    err = gpio_request(gpios[0].gpio, gpios[0].name);
+    if (err)
+    {
+        printk("%s: can not open GPIO %d\n", __func__, gpios[0].gpio);
+        return 0;
+    }
+    err = gpio_direction_output(gpios[0].gpio, 0);
+    if (err)
+    {
+        pr_err("Failed to direction input the GPIO %d\n", gpios[1].gpio);
+        return 0;
+    }
+
+    // echo pin
+    err = gpio_request(gpios[1].gpio, gpios[1].name);
+    if (err)
+    {
+        printk("%s: can not open GPIO %d\n", __func__, gpios[0].gpio);
+        return 0;
+    }
+    // 将echo引脚注册到中断号
+    gpios[1].irq = gpio_to_irq(gpios[1].gpio);
+    err =
+        request_irq(gpios[1].irq, gpio_sr04_isr, IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, gpios[1].name, &gpios[1]);
+
+    /* 注册file_operations 	*/
+    major = register_chrdev(0, "100ask_gpio_sr04", &gpio_sr04_drv); /* /dev/gpio_desc */
+
+    gpio_class = class_create(THIS_MODULE, "100ask_gpio_key_class");
+    if (IS_ERR(gpio_class))
+    {
+        printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
+        unregister_chrdev(major, "100ask_gpio_sr04");
+        return PTR_ERR(gpio_class);
+    }
+
+    device_create(gpio_class, NULL, MKDEV(major, 0), NULL, "sr04"); /* /dev/100ask_gpio */
+
+    return err;
+}
+
+static void __exit gpio_drv_exit(void)
+{
+    printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
+
+    device_destroy(gpio_class, MKDEV(major, 0));
+    class_destroy(gpio_class);
+    unregister_chrdev(major, "100ask_gpio_sr04");
+
+    // 释放gpio口与与其绑定的中断
+    gpio_free(gpios[0].gpio);
+    gpio_free(gpios[1].gpio);
+    free_irq(gpios[1].irq, &gpios[1]);
+}
+
+module_init(gpio_drv_init);
+module_exit(gpio_drv_exit);
+```
 
 
 
