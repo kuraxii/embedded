@@ -325,9 +325,17 @@ quit #退出
 直接gdb run
 
 其他命令介绍
+```
+
+## linux性能分析工具 perf
+```shell
 
 
+```
 
+## linux 系统调用跟踪工具 strace
+```shell
+strace -o xawtv.log xawtv -v /dev/video1 
 ```
 
 ## makefile项目管理
