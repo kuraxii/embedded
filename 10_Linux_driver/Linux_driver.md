@@ -855,9 +855,342 @@ module_exit(gpio_drv_exit);
 ```
 
 
+## platform 平台设备总线框架
+
+![alt text](./Linux_driver.assets/image.png)
+平台总线模型将原来驱动中的设备信息与驱动逻辑分离，使用两个源文件中进行构建，分别是xxx_device.c （设备硬件的描述）和 xxx_driver.c(驱动逻辑)
+即使用：
+xxx_device.c  描述设备硬件。比如：在这个文件中我们有描述GPIO相应外设接口的寄存器地址信息，中断号等。
+xxx_driver.c  用来控制硬件。比如：在这个文件中我们书写如何操作GPIO，如何申请中断等逻辑。
+
+### platform_device 设备资源模块
+
+#### 相关结构体
+```c
+/* 设备相关结构体 */
+struct platform_device {
+	const char	*name;  // 设别名称
+	int		id;  // 设备的id号，用于区分同意类型的多个设备
+	bool		id_auto;  // 自动分配id号
+	struct device	dev;  // 通用的设备结构体，
+	u32		num_resources;  // 设别的资源个数  有几个资源就写几个
+	struct resource	*resource; // 描述硬件的资源信息
+
+	const struct platform_device_id	*id_entry;  // 与驱动匹配成功后，**被填充的匹配信息**
+	char *driver_override; /* Driver name to force a match */
+    // 强制绑定设备到指定的驱动
+
+	/* MFD cell pointer */
+	struct mfd_cell *mfd_cell;
+
+	/* arch specific additions */
+	struct pdev_archdata	archdata;
+};
+
+struct resource {
+	resource_size_t start;  /* 硬件其实地址 */
+	resource_size_t end;    /* 硬件终止地址 */
+	const char *name;       /* 硬件资源名 */
+	unsigned long flags;    /* 硬件资源类型 
+    常用的有
+        IORESOURCE_IO
+        IORESOURCE_MEM
+        IORESOURCE_IRQ
+    */
+	unsigned long desc;     /* 硬件描述 */
+ 	struct resource *parent, *sibling, *child; /* 节点描述相关 允许资源是树状的  比如：设备树*/
+};
+```
+
+#### 注册与注销设备到平台设备总线
+```c
+int platform_device_register(struct platform_device *p_dev)
+/* 函数功能：加载platform_device对象到平台总线上 
+返回0 代表成功
+*/
+void platform_device_unregister(struct platform_device *p_dev)
+/* 函数功能：把platform_device从总线上卸载 */
+```
+
+#### 示例代码
+```c
+#include <linux/module.h>
+#include <linux/init.h>
+#include <linux/platform_device.h>
+
+// 定义一个平台设备
+
+struct resource my_device_001_res[] ={
+    [0] = {
+        .start = 0x55,
+        .end = 0x55 + 0x4,
+        .name = "rcc-reg",
+        .flags = IORESOURCE_MEM,
+        .desc = "aaa",
+    },
+    [1] = {
+        .start = 0x66,
+        .end = 0x66 + 0x4,
+        .name = "myemode-reg",
+        .flags = IORESOURCE_MEM,
+        .desc = "bbb",
+    },
+    [2] = {
+        .start = 0x77,
+        .end = 0x77 + 0x4,
+        .name = "myORD-reg",
+        .flags = IORESOURCE_MEM,
+        .desc = "ccc",
+    },
+    [3] = {
+        .start = 0x88,
+        .end = 0x88 + 0x4,
+        .name = "rcc-reg",
+        .flags = IORESOURCE_IRQ,
+        .desc = "ddd",
+    },
+ 
+};
+
+void my_dev_release(struct device *dev)
+{
+
+}
+
+struct platform_device my_platform_device = {
+    .name = "zzj,my_device_001",
+    .id = PLATFORM_DEVID_AUTO, // 自动分配或者给-1
+    .resource = my_device_001_res,
+    .num_resources = sizeof(my_device_001_res) / sizeof(struct resource),
+    .dev = {
+        .release = my_dev_release,
+    }
+};
+
+static int __init my_dev_init(void)
+{
+    int ret = 0;
+    ret = platform_device_register(&my_platform_device);
+    if(ret)
+    {
+        return -1;
+    }
+    return 0;
+}
+
+static void __exit my_dev_exit(void)
+{
+    // 注销
+    platform_device_unregister(&my_platform_device);
+}
+
+module_init(my_dev_init);
+module_exit(my_dev_exit);
+MODULE_LICENSE("GPL");
+
+```
+
+### platform_driver 驱动模块
+
+#### 相关结构体
+```c
+struct platform_driver {
+	int (*probe)(struct platform_device *);  // 设备与驱动匹配匹配成功时执行的回调函数
+	int (*remove)(struct platform_device *); //  设备与驱动匹配分离时执行的回调函数
+	void (*shutdown)(struct platform_device *); // 设备关闭与重启时的回调
+	int (*suspend)(struct platform_device *, pm_message_t state);  // 设备挂起时的回调函数
+	int (*resume)(struct platform_device *);  // 设备从低功耗状态唤醒时的回调函数
+	struct device_driver driver;  // 通用的设备驱动结构体
+	const struct platform_device_id *id_table; // id_table 匹配表
+	bool prevent_deferred_probe;  // 是否演示探针标志
+};
+
+struct device_driver {
+	const char		*name;  /* 驱动名称 */
+	struct bus_type		*bus;  
+
+	const struct of_device_id	*of_match_table; /* 设备树of样式匹配表 与设备节点 .compatible 属性匹配*/
+	const struct acpi_device_id	*acpi_match_table; /* acpi电源管理接口匹配 */
+
+	struct driver_private *p;  /* 私有数据，主要用于传参 */
+};
+```
+
+#### 注册与注销设备驱动到平台驱动总线
+```c
+int platform_driver_register(struct platform_driver *) /* 注册驱动到platform总线上，并自动匹配platfoem_device或设备树 */
+int platform_driver_unregister(struct platform_driver *)
+```
+
+#### 代码示例
+```c
+#include <linux/module.h>
+#include <linux/init.h>
+#include <linux/platform_device.h>
+#include <linux/mod_devicetable.h>
+
+int my_platform_probe(struct platform_device *device)
+{
+    printk("my_platform_probe函数执行了\n");
+    // 1. 直接使用struct platform_device获取资源
+    printk("rcc-reg: %#llx\n", device->resource[0].start);
+    // 2. 使用platform_get_resource函数获取资源
+    struct resource *res =  platform_get_resource(device, IORESOURCE_MEM, 1);
+    printk("gpioemode-reg: %#llx\n", res->start);
+    return 0;
+}
+
+int my_platform_remove(struct platform_device *device)
+{
+    printk("my_platform_remove函数执行了\n");
+
+    return 0;
+}
+
+/* 
+    struct platform_device_id {
+        char name[PLATFORM_NAME_SIZE];
+        kernel_ulong_t driver_data;
+    };
+ */
+static const struct platform_device_id id_table[] = {
+    [0] = {"zzj,my_device_001",1},
+    [1] = {"zzj,my_device_002",2},
+    [2] = { }, /* 最后一个一定要给定一个空元素，代表结束 */
+};
+
+static struct platform_driver my_platform_driver = {
+    .probe = my_platform_probe,
+    .remove = my_platform_remove,
+    .driver = {
+        .name = "zzj,my_device_001",
+    },
+    .id_table = id_table,
+};
+
+static int __init my_drv_init(void)
+{
+    int ret;
+    ret = platform_driver_register(&my_platform_driver);
+    if(ret < 0)
+    {
+        return -1;
+    }
+    return 0;
+}
+
+static void __exit my_drv_exit(void)
+{
+    platform_driver_unregister(&my_platform_driver);
+}
+module_init(my_drv_init);
+module_exit(my_drv_exit);
+
+MODULE_LICENSE("GPL");
+```
 
 
+### 设备与驱动的匹配方式
 
+#### 设备与驱动有3中匹配方式
+- name属性匹配
+- 设备名称与驱动的id_table匹配实现多对一的匹配
+- 设备树节点中的.compatible属性与of_match_table匹配实现多对一的匹配。
+
+```c
+struct bus_type platform_bus_type = {
+	.name		= "platform",
+	.dev_groups	= platform_dev_groups,
+	.match		= platform_match,
+	.uevent		= platform_uevent,
+	.pm		= &platform_dev_pm_ops,
+};
+static int platform_match(struct device *dev, struct device_driver *drv)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct platform_driver *pdrv = to_platform_driver(drv);
+
+	/* 先匹配强制匹配 */
+	if (pdev->driver_override)
+		return !strcmp(pdev->driver_override, drv->name);
+
+	/* 然后是设备树节点匹配 */
+	if (of_driver_match_device(dev, drv))
+		return 1;
+
+	/* 电源管理驱动匹配 */
+	if (acpi_driver_match_device(dev, drv))
+		return 1;
+
+	/* 然后使用platform_device  id_table匹配 */
+	if (pdrv->id_table)
+		return platform_match_id(pdrv->id_table, pdev) != NULL;
+
+	/* 最后使用platform_device  name匹配 */
+	return (strcmp(pdev->name, drv->name) == 0);
+}
+```
+
+#### 加载驱动时如何进行匹配的(为什么与加载顺序无关)
+
+platform_device_register和platform_driver_register无论调用哪个，都会去调用匹配函数
+```c
+// 调用流程
+platform_device_register
+platform_device_add  --> pdev->dev.bus = &platform_bus_type;
+    device_add
+        bus_add_device // 放入链表
+        bus_probe_device // probe 枚举设备，即找到匹配的(dev, drv)
+            device_initial_probe
+            __device_attach
+                bus_for_each_drv(...,__device_attach_driver,...) // 遍历driver进行匹配
+                __device_attach_driver
+                    driver_match_device(drv, dev) // drv->bus->match(dev, drv) 是否匹配
+                    driver_probe_device // 调用 drv 的 probe
+
+platform_driver_register
+__platform_driver_register --> drv->driver.bus = &platform_bus_type;  bus中包含了总线匹配等关键操作函数
+    driver_register
+        bus_add_driver // 放入链表
+            driver_attach(drv)
+                bus_for_each_dev(drv->bus, NULL, drv, __driver_attach);  // 遍历device进行匹配
+                    __driver_attach
+                        driver_match_device(drv, dev) // drv->bus->match(dev, drv) 是否匹配 
+                        driver_probe_device // 调用 drv 的 probe
+```
+
+
+### 驱动获取设备的方式
+#### 通过probe函数形参方式直接获取
+```c
+int my_platform_probe(struct platform_device *device)
+{
+    printk("my_platform_probe函数执行了\n");
+    // 直接使用struct platform_device获取资源
+    printk("rcc-reg: %#llx\n", device->resource[0].start);
+    return 0;
+}
+```
+
+#### 通过内核中的api platform_get_resource获取
+```c
+struct resource* platform_get_resource(struct platform_device* pdev，unsigned int type，unsigned int index);
+//参数1：即设备对象指针
+//参数2：即设备资源的类型：即那个flags标记类型是内存资源，还是中断资源，还是什么别的资源等。
+//参数3：即同类资源所处位置的索引值（注意是同类资源的索引）
+//功能：返回获取到的资源，失败返回NULL
+
+int my_platform_probe(struct platform_device *device)
+{
+    printk("my_platform_probe函数执行了\n");
+    // 使用platform_get_resource函数获取资源
+    struct resource *res =  platform_get_resource(device, IORESOURCE_MEM, 1);
+    printk("gpioemode-reg: %#llx\n", res->start);
+    return 0;
+}
+```
+
+## 设备树
 
 
 
