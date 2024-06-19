@@ -1,16 +1,16 @@
 # linux_driver 理论篇
 
-## 应用层和驱动的互交方式
+## 1. 应用层和驱动的互交方式
 
-### app和驱动
+### 1.1 app和驱动
 - copy_to_user()
 - copy_from_user()
 
-### 驱动和与硬件
+### 1.2 驱动和与硬件
 - 各个子系统的函数
 - 通过ioremap映射寄存器地址后，直接访问寄存器
 
-### app使用驱动和的4中方式
+### 1.3 app使用驱动和的4中方式
 
 驱动程序：提供能力，不提供策略
 - 非阻塞(轮询)
@@ -18,9 +18,9 @@
 - poll(定时)
 - 异步通知
 
-## 字符设备驱动
+## 2. 字符设备驱动
 
-### 简单的字符设备驱动框架
+### 2.1 简单的字符设备驱动框架
 
 1. 确定主设备号，也可以让内核分配  int major;  major = 0 时自动分配
 2. 定义自己的 file_operations 结构体
@@ -182,7 +182,7 @@ obj-m	+= hello_drv.o
 
 ```
 
-### 驱动设计的思想
+### 2.2 驱动设计的思想
 
 - 面向对象
 
@@ -212,7 +212,7 @@ int get_board_led_num(void);
     ![驱动的分离](Linux_driver.assets/1698064550218.png)
 
 
-## 驱动进化之路
+## 3. 驱动进化之路
 
 驱动编写的三种写法
 1. 传统写法
@@ -238,7 +238,7 @@ int get_board_led_num(void);
 - 无需重新编译内核/驱动。
 
 
-### 总线设备驱动模型
+### 3.1 总线设备驱动模型
 
 #### deice与driver的匹配规则
 - 最先比较
@@ -248,12 +248,12 @@ int get_board_led_num(void);
 - 然后比较
     - platform_device. name 和 platform_driver.id_table[i].name
     - Platform_driver.id_table 是“platform_device_id”指针，表示该 drv 支持若干个 device，它里面列出了各个 device 的{.name, .driver_data}，其中的“ name”表示该
-drv 支持的设备的名字， driver_data 是些提供给该 device 的私有数据。
+    drv 支持的设备的名字， driver_data 是些提供给该 device 的私有数据。
 
 - 最后比较
     - platform_device.name 和 platform_driver.driver.name
     - platform_driver.id_table 可能为空，
-这时可以根据 platform_driver.driver.name 来寻找同名的 platform_device。
+    这时可以根据 platform_driver.driver.name 来寻找同名的 platform_device。
 
 #### 比较过城中的函数调用
 ```c
@@ -320,9 +320,9 @@ int platform_get_irq_byname(struct platform_device *dev， const char *name)
 
 # linux_driver 实战篇
 
-## 常用函数集合
+## 1. 常用函数集合
 
-### 申请gpio 将gpio注册为中断
+### 1.1 申请gpio 将gpio注册为中断
 
 
 [查看实战示例](src/04_sr04_improve/gpio_drv.c#L221)
@@ -343,7 +343,7 @@ int platform_get_irq_byname(struct platform_device *dev， const char *name)
     // 释放irq
     free_irq(gpios[1].irq, &gpios[1]);
 ```
-### 定时器相关
+### 1.2 定时器相关
 
 定时器，定时结束执行函数
 [查看实战示例](src/04_sr04_improve/gpio_drv.c#L230)
@@ -360,7 +360,7 @@ int platform_get_irq_byname(struct platform_device *dev， const char *name)
 
 ```
 
-### 驱动注册与反注册框架 
+### 1.3 驱动注册与反注册框架 
 
 ```c
 // 注册
@@ -855,7 +855,7 @@ module_exit(gpio_drv_exit);
 ```
 
 
-## platform 平台设备总线框架
+## 2. platform 平台设备总线框架
 
 ![alt text](./Linux_driver.assets/image.png)
 平台总线模型将原来驱动中的设备信息与驱动逻辑分离，使用两个源文件中进行构建，分别是xxx_device.c （设备硬件的描述）和 xxx_driver.c(驱动逻辑)
@@ -863,9 +863,9 @@ module_exit(gpio_drv_exit);
 xxx_device.c  描述设备硬件。比如：在这个文件中我们有描述GPIO相应外设接口的寄存器地址信息，中断号等。
 xxx_driver.c  用来控制硬件。比如：在这个文件中我们书写如何操作GPIO，如何申请中断等逻辑。
 
-### platform_device 设备资源模块
+### 2.1 platform_device 设备资源模块
 
-#### 相关结构体
+#### 2.1.1相关结构体
 ```c
 /* 设备相关结构体 */
 struct platform_device {
@@ -902,7 +902,7 @@ struct resource {
 };
 ```
 
-#### 注册与注销设备到平台设备总线
+#### 2.1.2注册与注销设备到平台设备总线
 ```c
 int platform_device_register(struct platform_device *p_dev)
 /* 函数功能：加载platform_device对象到平台总线上 
@@ -912,7 +912,7 @@ void platform_device_unregister(struct platform_device *p_dev)
 /* 函数功能：把platform_device从总线上卸载 */
 ```
 
-#### 示例代码
+#### 2.1.3示例代码
 ```c
 #include <linux/module.h>
 #include <linux/init.h>
@@ -990,9 +990,9 @@ MODULE_LICENSE("GPL");
 
 ```
 
-### platform_driver 驱动模块
+### 2.2 platform_driver 驱动模块
 
-#### 相关结构体
+#### 2.2.1 相关结构体
 ```c
 struct platform_driver {
 	int (*probe)(struct platform_device *);  // 设备与驱动匹配匹配成功时执行的回调函数
@@ -1016,13 +1016,13 @@ struct device_driver {
 };
 ```
 
-#### 注册与注销设备驱动到平台驱动总线
+#### 2.2.2 注册与注销设备驱动到平台驱动总线
 ```c
 int platform_driver_register(struct platform_driver *) /* 注册驱动到platform总线上，并自动匹配platfoem_device或设备树 */
 int platform_driver_unregister(struct platform_driver *)
 ```
 
-#### 代码示例
+#### 2.2.3 代码示例
 ```c
 #include <linux/module.h>
 #include <linux/init.h>
@@ -1090,9 +1090,9 @@ MODULE_LICENSE("GPL");
 ```
 
 
-### 设备与驱动的匹配方式
+### 2.3 设备与驱动的匹配方式
 
-#### 设备与驱动有3中匹配方式
+#### 2.3.1 设备与驱动有3中匹配方式
 - name属性匹配
 - 设备名称与驱动的id_table匹配实现多对一的匹配
 - 设备树节点中的.compatible属性与of_match_table匹配实现多对一的匹配。
@@ -1131,7 +1131,7 @@ static int platform_match(struct device *dev, struct device_driver *drv)
 }
 ```
 
-#### 加载驱动时如何进行匹配的(为什么与加载顺序无关)
+#### 2.3.2 加载驱动时如何进行匹配的(为什么与加载顺序无关)
 
 platform_device_register和platform_driver_register无论调用哪个，都会去调用匹配函数
 ```c
@@ -1160,8 +1160,8 @@ __platform_driver_register --> drv->driver.bus = &platform_bus_type;  bus中包�
 ```
 
 
-### 驱动获取设备的方式
-#### 通过probe函数形参方式直接获取
+### 2.4 驱动获取设备的方式
+#### 2.4.1 通过probe函数形参方式直接获取
 ```c
 int my_platform_probe(struct platform_device *device)
 {
@@ -1172,7 +1172,7 @@ int my_platform_probe(struct platform_device *device)
 }
 ```
 
-#### 通过内核中的api platform_get_resource获取
+#### 2.4.2 通过内核中的api platform_get_resource获取
 ```c
 struct resource* platform_get_resource(struct platform_device* pdev，unsigned int type，unsigned int index);
 //参数1：即设备对象指针
@@ -1190,15 +1190,472 @@ int my_platform_probe(struct platform_device *device)
 }
 ```
 
-## 设备树
+## 3. 设备树
+
+### 3.1 设备树简述
+
+#### 3.1.1什么是设备树
+
+设备树是一种数据结构，用于描述硬件设备及其配置。它采用类似与josn或xml的树状结构，通过节点 **节点属性**的方式来描述系统中的个中硬件资源及其链接关系。设备树的文件通常以.dts(设备树源文件)和.dtsi(设备树包含文件)为后缀的文本文件。
+
+##### 设备树的结构
+
+设备树的基本结构包括根节点，子节点和属性。每个节点都可以包含多个子节点和属性，属性是以键值对的形式存在的。
+示例
+
+```c
+/dts-v1/;
+/ {
+    model = "Example Board";
+    compatible = "example,board";
+    cpus {
+        #address-cells = <1>;
+        #size-cells = <0>;
+        cpu@0 {
+            device_type = "cpu";
+            compatible = "arm,cortex-a9";
+            reg = <0>;
+        };
+        cpu@1 {
+            device_type = "cpu";
+            compatible = "arm,cortex-a9";
+            reg = <1>;
+        };
+    };
+    memory {
+        device_type = "memory";
+        reg = <0x80000000 0x40000000>;
+    };
+};
+```
+
+##### 设备树文件：
+
+1. 什么是dts文件，什么是dtc,什么是dtb文件？
+
+他们之间的关系
+![](Linux_driver.assets/devicetree.png)
+
+- dtsi: 即卖你说共享设备信息的部分
+- dts: 即描述独有设备信息的部分
+- dtc: 设备树编译器
+- dtb: 设备树的二进制文件
+
+2. Linux中的设备树所在的路径：
+    arch/arm/boot/dts
+
+##### 如何编译设备树
+1. 在linux根目录下使用 make dtbs会编译dts目录下所有的设备树文件，也可以使用dtc命令单独编译
+2. 编译设备树命令
+   ```shell
+        dtc -I dts -O dtb -o mytest.dtb test_device_tree.dts
+        
+        # 反编译设备树
+        dtc -I dtb -O dts -o hello.dts mytest.dtb
+   ```
+
+#### 3.1.2 设备树是用来做什么的
+
+现代驱动模型: 设备树 + 总线 + 驱动，设备树是用来**替换**总线中的**设备模块**的
+
+为什么要用设备树替换原来总线中的设备模块呢？原因：资源信息与内核分离
+平台总线把设备资源信息与驱动分离，对于内核来讲，设备资源信息也要与内核分离，通过这种耦合，实现内核通用性。
+
+![alt text](Linux_driver.assets/devicetree2.png)
+
+这样当设备资源发生变动时，内核无需进行编译匹配，而是兼容。可以更好的对内核进行升级，语序编译设备
+
+
+#### 3.1.3 分离后内核驱动要使用设备资源信息怎么办？
+
+uboot在启动内核前会将内核与设备树文件加载到不同的内存地址处。
+内核会到设备树所在地址自动解析设备树文件，解析为 struct of_node结构体，最终解析为struct platform_device与驱动进匹配
+
+![alt text](Linux_driver.assets/devicetree3.png)
+
+详细追踪内核启动函数start_kernel的分析：
+- [linux设备驱动程序-设备树(1)-dtb转换成device_node - 牧野星辰 - 博客园 (cnblogs.com)](https://www.cnblogs.com/downey-blog/p/10485596.html)
+- [linux设备驱动程序-设备树(2)-device_node转换成platform_device - 牧野星辰 - 博客园 (cnblogs.com)](https://www.cnblogs.com/downey-blog/p/10486568.html)
+
+### 3.2 设备树语法
+
+设备树语法及如何使用：设备树参考 - [eLinux.org](https://elinux.org/Device_Tree_Reference#What_Is_Device_Tree)
+
+#### 3.2.1 基本数据格式
+
+设备树是一个简单的右节点和属性组成的树状结构。属性是键值对，而节点可以包含属性和子节点
+
+
+> 使用 "/{}；;"的方式待变系统总线节点，在总线上也就是大括号以再去描述相应的设备，以节点及子节点的方法来边坡是连接关系
+
+示例
+```c
+/dts-v1/;
+/{//表示系统总线
+    node1{//子节点1
+         //   
+    };
+    node2{//子节点2
+            
+    };
+};
+同胞节点不可以重名，通过子节点的方式表示连接关系。
+```
 
 
 
+> 节点有一对属性组成，使用简单的键值对的方法表示，表示方法如下：
+
+```c
+string-property = "字符串";//值为单字符串。
+stringlist-property = "字符串1"， “字符串2”，..., "字符串n";//用逗号隔开的字符串列表。
+int32-property = <0x12 0x34 0x56> ;//用<>表示uint32的整数。
+binarydata-property = [12 34 56];//使用[]时使用16进制数，可以不带0x前缀;
+misc-list-property = "字符串"，<0x12 0x34 0x56>,[0x12 0x56 0x78];//也可以使用逗号的方式把不同的数据连接在一起。
+```
+代码示例
+```c
+//设备树根节点：可以理解为系统总线：
+/{
+    myled1{
+        model = "this is a led1 desc";
+        //设备节点中信息的描述，使用键值对的方式：
+        dev_type = "LED";
+        rcc_e = <0x50000a28 0x4>;
+        gpioe_modr = <0x50006000 0x4>;
+        gpioe_odr = <0x50006014 0x4>;
+        binary-data = [12 34 56];
+    };
+
+    myled2{
+        ...
+    };
+};
+```
 
 
 
+> 总结 
+
+设备树原则上可以更加自由的通过键值对的方式来描述设备信息，也更加灵活。只要附合以上的基础结构就不会有错，但是要更标准的话，还要学习接下来的规则与基本写法。
+Linux官方设备树手册的示例模型机的链接关系图
+![alt text](./Linux_driver.assets/devicetree4.png)
+
+#### 3.2.2 基本规则写法（标准写法）
+
+##### 设备节点中compatible属性与status属性的写法与重要性
+
+- compatible属性是一个字符串，它指定了确切的设备型号，格式为<制造商>,<型号>，主要用来与驱动匹配。compatible如果有多个字符串列，后续的字符串表示该设备与哪些其他设备驱动兼容。
+- status属性有两种："okay"启用设备，"disable"禁用设备，是一种状态的描述。status属性若在节点没有存在默认为okay状态。
+
+当一个节点中有compatible属性及status = "okay"时的设备树节点，后由内核启动阶段转换为struct device_node后，最终转换为platform_device设备，与驱动进行匹配。
+```c
+//版本号：
+/dts-v1/;
+//设备树根节点：可以理解为系统总线：
+/{
+    myled1{
+        model = "this is a led1 desc";
+        //用来与驱动进行匹配的
+        compatible = "WX,my_device_01";
+        //设备节点中信息的描述，使用键值对的方式：
+        dev_type = "LED";
+        rcc_e = <0x50000a28 0x4>;
+        gpioe_modr = <0x50006000 0x4>;
+        gpioe_odr = <0x50006014 0x4>;
+        binary-data = [12 34 56];
+        //status设置okay，表示启用此结点。
+        status = "okay";
+    };
+    myled2{
+
+    };
+};
+```
+
+##### 节点命名方式: 节点名 <name>, 节点全名 (节点名@地址) 
+
+1. 在设备树中，每个节点都必须有一个名字， 形式为<name>[@<unit-address>]
+    <name> 是一个简单的 ASCII 字符串，长度最多可达 31 个字符。通常，节点的命名是根据它所代表的设备类型来确定的。例如，一个 3com 以太网适配器的节点应该使用 ethernet 这个名字，而不是 3com509。比如：
+    
+    ```c
+    //版本号：
+    /dts-v1/;
+    //设备树根节点：可以理解为系统总线：
+    /{
+        myled@50006000{
+            model = "this is a led1 desc";
+            //用来与驱动进行匹配的
+            compatible = "WX,my_device_01";
+            //设备节点中信息的描述，使用键值对的方式：
+            dev_type = "LED";
+            reg = <0x50006000 0x4 0x50006014 0x4 0x50000a28 0x4>;
+            binary-data = [12 34 56];
+            //status设置okay，表示启用此结点。
+            status = "okay";
+        };
+    
+        myled{
+            ...
+        };
+    };
+    ```
+    如果节点描述的是一个具有地址的设备，则包含 <unit-address>。通常，单元地址是用于访问设备的主要地址，并会在节点的 reg 属性中列出。我们将在本文档的后面部分介绍 reg 属性。
+    
+    同级节点（sibling nodes）必须具有唯一的名称，但只要地址不同，多个节点使用相同的通用名称是正常的（例如，serial@101f1000 和 serial@101f2000）。
+    
+2. 节点的引用标签lable:
+    ```c
+    //版本号：
+    /dts-v1/;
+    //设备树根节点：可以理解为系统总线：
+    /{
+        //led1是myled的别名标签(引用节点)
+        led1:myled@50006000{
+            model = "this is a led1 desc";
+            //用来与驱动进行匹配的
+            compatible = "WX,my_device_01";
+            //设备节点中信息的描述，使用键值对的方式：
+            dev_type = "LED";
+            reg = <0x50006000 0x4 0x50006014 0x4 0x50000a28 0x4>;
+            binary-data = [12 34 56];
+            //status设置okay，表示启用此结点。
+            status = "okay";
+        };
+    
+        myled{
+            ...
+        };
+    };
+    ```
+    
 
 
 
+##### 地址资源属性的描述方式：reg 属性
+
+内存映射设备使用以下属性将地址信息编码到设备树中：
+- reg
+- #address-cells
+- #size-cells
+
+每个内存映射设备都有一个 reg 属性，它是一个元组列表，形式为 reg = <address1 length1 [address2 length2] [address3 length3] ... >。每个元组表示设备使用的地址范围。每个地址值都是一个或多个 32 位整数的列表，称为单元（cells）。类似地，长度值也可以是一个单元列表，或者为空。
+
+由于地址和长度字段的大小都是可变的，父节点中的 #address-cells 和 #size-cells 属性用于声明每个字段中有多少个单元。换句话说，正确解释 reg 属性需要参考父节点的 #address-cells 和 #size-cells 值。
 
 
+
+> 1. 最简单的cpu寻址设备
+
+```c
+cpus {
+    #address-cells = <1>;
+    #size-cells = <0>;
+    cpu@0 {
+        compatible = "arm,cortex-a9";
+        reg = <0>;
+    };
+    cpu@1 {
+        compatible = "arm,cortex-a9";
+        reg = <1>;
+    };
+};
+```
+在cpus节点中，#address-cells被设置为1，而#size-cells被设置为0。这意味着子节点的reg值是一个单独的uint32，它表示地址，没有大小字段。在这种情况下，两个CPU被分配了地址0和1。对于CPU节点，#size-cells为0，因为每个CPU只被分配了一个地址。
+
+您还会注意到reg值匹配节点名称中的值。按照惯例，如果节点有一个reg属性，那么节点名称必须包含单元地址（unit-address），即reg属性中的第一个地址值。
+
+
+
+> 2. 内存映射设备
+
+内存映射设备与CPU节点不同，它们被分配了一个地址范围，设备将响应这个范围内的地址。在子节点的reg元组中，#size-cells用于声明每个长度字段的大小。
+
+以下是一个示例，其中每个地址值和每个长度值都是一个单元（32位），这在32位系统中很常见。
+
+64位机器可能会将#address-cells和#size-cells的值设置为2，以便在设备树中获得64位寻址以高32位与低32位表示。
+
+```c
+/dts-v1/;  
+  
+/ {  
+    #address-cells = <1>;  
+    #size-cells = <1>;  
+  
+    ...  
+  
+    /* 串口设备，分配了一个地址范围 */  
+    serial@101f0000 {  
+        compatible = "arm,pl011";  
+        reg = <0x101f0000 0x1000 >; /* 起始地址0x101f0000，长度0x1000 */  
+    };  
+  
+    serial@101f2000 {  
+        compatible = "arm,pl011";  
+        reg = <0x101f2000 0x1000 >; /* 起始地址0x101f2000，长度0x1000 */  
+    };  
+  
+    /* GPIO设备，分配了两个地址范围 */  
+    gpio@101f3000 {  
+        compatible = "arm,pl061";  
+        reg = <0x101f3000 0x1000  /* 起始地址0x101f3000，长度0x1000 */  
+               0x101f4000 0x0010>; /* 起始地址0x101f4000，长度0x0010 */  
+    };  
+  
+    /* 中断控制器 */  
+    interrupt-controller@10140000 {  
+        compatible = "arm,pl190";  
+        reg = <0x10140000 0x1000 >; /* 起始地址0x10140000，长度0x1000 */  
+    };  
+  
+    /* SPI设备 */  
+    spi@10115000 {  
+        compatible = "arm,pl022";  
+        reg = <0x10115000 0x1000 >; /* 起始地址0x10115000，长度0x1000 */  
+    };  
+    ...  
+};
+```
+
+
+
+> 3. 无内存映射设备
+
+不如iic设备
+
+在处理器总线上，有些设备并不是内存映射的。它们可能有地址范围，但这些地址范围不是直接由CPU访问的。相反，这些设备的访问是由其父设备的驱动程序代表CPU间接进行的。
+
+以IIC（Inter-Integrated Circuit）设备为例，每个IIC设备都被分配了一个地址，但这个地址并没有与长度或范围相关联。这与CPU地址分配看起来非常相似，但实际上是有区别的。
+
+在提供的示例中，I²C总线被分配了一个地址，但没有指定长度，因为IIC设备是通过IIC总线的通信协议来访问的，而不是直接通过内存映射。
+
+```c
+i2c@1,0 {  
+    compatible = "acme,a1234-i2c-bus";  
+    #address-cells = <1>; /* 用于描述子设备地址的单元数，这里是1 */  
+    #size-cells = <0>;    /* 用于描述子设备大小或长度的单元数，这里是0，因为没有大小或长度 */  
+    reg = <1 0 0x1000>;   //此为I2c1-0的地址映射空间  与rang属性相关
+  
+    rtc@58 {  
+        compatible = "maxim,ds1338";  
+        reg = <0x58>;        /* RTC设备的I²C地址是58 */  
+    };  
+};
+```
+
+
+
+### 3.3 gpio子系统
+
+gpio子系统操作api从`gpio_*`发展到`gpiod_*`，到现在为止，`gpio_*`样式的api已经被弃用
+
+相关介绍文章：
+
+- [stack overflow](https://stackoverflow.com/questions/39103185/gpiod-vs-gpio-methods-in-the-linux-kernel)
+
+- [kernel doc](https://www.kernel.org/doc/html/v5.2/driver-api/gpio/index.html)
+
+#### 3.3.1 gpiod_* api 
+
+> 相关数据结构
+
+```c
+// include/linux/gpio/consumer.h
+struct gpio_desc; // 无法看到具体实现，只能使用指针进行传参
+
+// 定义gpio描述数组结构，用于批量处理gpio
+struct gpio_descs {
+        struct gpio_array *info;
+        unsigned int ndescs;
+        struct gpio_desc *desc[];
+}
+
+/* gpio 属性标志*/
+
+/* 设备树配置属性 */
+#define GPIO_ACTIVE_HIGH 0  高电平活动(亮)
+#define GPIO_ACTIVE_LOW 1   地点平活动(灭)
+
+/* 使用 gpiod_get 时，gpio初始化配置*/
+enum gpiod_flags {
+	GPIOD_ASIS	= 0,
+	GPIOD_IN	= GPIOD_FLAGS_BIT_DIR_SET,   // 输入模式
+	GPIOD_OUT_LOW	= GPIOD_FLAGS_BIT_DIR_SET | GPIOD_FLAGS_BIT_DIR_OUT,   //输出模式 高电平
+	GPIOD_OUT_HIGH	= GPIOD_FLAGS_BIT_DIR_SET | GPIOD_FLAGS_BIT_DIR_OUT |  //输出模式 低电平
+			  GPIOD_FLAGS_BIT_DIR_VAL,
+};
+```
+
+> gpio资源的申请与释放
+
+```c
+// 申请
+struct gpio_desc *gpiod_get(struct device *dev, const char *con_id,
+                            enum gpiod_flags flags)
+    
+struct gpio_desc *gpiod_get_index(struct device *dev,
+                          const char *con_id, unsigned int idx,
+                          enum gpiod_flags flags)   
+struct gpio_desc *gpiod_get_optional(struct device *dev,
+                             const char *con_id,
+                             enum gpiod_flags flags)
+
+struct gpio_desc *gpiod_get_index_optional(struct device *dev,
+                                   const char *con_id,
+                                   unsigned int index,
+                                   enum gpiod_flags flags)   
+struct gpio_descs *gpiod_get_array(struct device *dev,
+                       const char *con_id,
+                       enum gpiod_flags flags)
+
+struct gpio_descs *gpiod_get_array_optional(struct device *dev,
+                                const char *con_id,
+                                enum gpiod_flags flags)
+// 释放
+void gpiod_put(struct gpio_desc *desc)
+ void gpiod_put_array(struct gpio_descs *descs)
+```
+
+> 设置 gpio
+
+```c
+int gpiod_direction_input(struct gpio_desc *desc)
+int gpiod_direction_output(struct gpio_desc *desc, int value)
+
+int gpiod_get_direction(const struct gpio_desc *desc)
+```
+
+> 自旋锁安全 访问 gpio(可以在中断函数中使用)
+
+```c
+int gpiod_get_value(const struct gpio_desc *desc);
+void gpiod_set_value(struct gpio_desc *desc, int value);
+```
+
+> 允许sleep的 访问gpio
+
+```c
+int gpiod_cansleep(const struct gpio_desc *desc)
+    
+int gpiod_get_value_cansleep(const struct gpio_desc *desc)
+void gpiod_set_value_cansleep(struct gpio_desc *desc, int value)
+```
+
+#### 3.3.2 低电平有效和开漏语义
+
+| 函数（示例）                  | 线路属性              | 物理线路       |
+| ----------------------------- | --------------------- | -------------- |
+| gpiod_set_raw_value(desc, 0); | 不关心                | low            |
+| gpiod_set_raw_value(desc, 1); | 不关心                | high           |
+| gpiod_set_value(desc, 0);     | 默认（高电平有效）    | low            |
+| gpiod_set_value(desc, 1);     | 默认（高电平有效）    | high           |
+| gpiod_set_value(desc, 0);     | 低电平有效            | high           |
+| gpiod_set_value(desc, 1);     | 低电平有效            | low            |
+| gpiod_set_value(desc, 0);     | default (active high) | low            |
+| gpiod_set_value(desc, 1);     | default (active high) | high           |
+| gpiod_set_value(desc, 0);     | 漏极开路              | low            |
+| gpiod_set_value(desc, 1);     | 漏极开路              | high impedance |
+| gpiod_set_value(desc, 0);     | 源极开路              | high impedance |
+| gpiod_set_value(desc, 1);     | 源极开路              | high           |
+
+可以使用 set_raw/get_raw 函数覆盖这些语义，但应尽可能避免，特别是对于系统无关的驱动程序，它们不需要关心实际的物理线路级别，而是担心逻辑值。
