@@ -1229,7 +1229,7 @@ int my_platform_probe(struct platform_device *device)
 };
 ```
 
-##### 设备树文件：
+##### 设备树文件
 
 1. 什么是dts文件，什么是dtc,什么是dtb文件？
 
@@ -1357,14 +1357,14 @@ Linux官方设备树手册的示例模型机的链接关系图
     myled1{
         model = "this is a led1 desc";
         //用来与驱动进行匹配的
-        compatible = "WX,my_device_01";
+        compatible = "WX,my_device_01";  // 格式为 厂商,型号
         //设备节点中信息的描述，使用键值对的方式：
         dev_type = "LED";
         rcc_e = <0x50000a28 0x4>;
         gpioe_modr = <0x50006000 0x4>;
         gpioe_odr = <0x50006014 0x4>;
         binary-data = [12 34 56];
-        //status设置okay，表示启用此结点。
+        //status设置okay，表示启用此结点。  disable为关闭
         status = "okay";
     };
     myled2{
@@ -1445,7 +1445,7 @@ Linux官方设备树手册的示例模型机的链接关系图
 
 
 
-> 1. 最简单的cpu寻址设备
+> **1. 最简单的cpu寻址设备**
 
 ```c
 cpus {
@@ -1467,7 +1467,7 @@ cpus {
 
 
 
-> 2. 内存映射设备
+> **2. 内存映射设备**
 
 内存映射设备与CPU节点不同，它们被分配了一个地址范围，设备将响应这个范围内的地址。在子节点的reg元组中，#size-cells用于声明每个长度字段的大小。
 
@@ -1519,9 +1519,9 @@ cpus {
 
 
 
-> 3. 无内存映射设备
+> **3. 无内存映射设备**
 
-不如iic设备
+比如iic设备
 
 在处理器总线上，有些设备并不是内存映射的。它们可能有地址范围，但这些地址范围不是直接由CPU访问的。相反，这些设备的访问是由其父设备的驱动程序代表CPU间接进行的。
 
@@ -1543,9 +1543,281 @@ i2c@1,0 {
 };
 ```
 
+> **4. 总线或桥的地址范围ranges属性**
+
+我们之前讨论了如何为设备分配地址，但此时这些地址仅限于设备节点本地。还没有描述如何从这些地址映射到CPU可以使用的地址。
+
+根节点总是描述CPU对地址空间的视图。根节点的子节点已经使用了CPU的地址域，因此不需要任何显式的映射。例如，serial@101f0000设备直接分配了地址0x101f0000。
+
+不是根节点直接子节点的节点不使用CPU的地址域。为了获得内存映射地址，设备树必须指定如何将地址从一个域翻译到另一个域。为此使用了ranges属性。
+
+以下是添加了ranges属性的示例设备树。
+
+```c
+/dts-v1/;
+
+/ {
+    compatible = "acme,coyotes-revenge";
+    #address-cells = <1>;
+    #size-cells = <1>;
+    ...
+    external-bus {
+        #address-cells = <2>;
+        #size-cells = <1>;
+        //ranges单元格父节点中的#address-cells的值与子节点中的#address-cells值，及子节点的#size-cells决定：
+        ranges = <0 0  0x10100000   0x10000     
+                   // Chipselect 1, Ethernet：0 0 是子地址（Ethernet本地地址），0x10100000是CPU的全局映射父地址，0x10000是映射空间大小。
+                  1 0  0x10160000   0x10000     // Chipselect 2, i2c controller，同理...
+                  2 0  0x30000000   0x1000000>; // Chipselect 3, NOR Flash，同理...
+
+        ethernet@0,0 {
+            compatible = "smc,smc91c111";
+            reg = <0 0 0x1000>;
+        };
+
+        i2c@1,0 {
+            compatible = "acme,a1234-i2c-bus";
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg = <1 0 0x1000>;
+            rtc@58 {
+                compatible = "maxim,ds1338";
+                reg = <58>;
+            };
+        };
+
+        flash@2,0 {
+            compatible = "samsung,k8f1315ebm", "cfi-flash";
+            reg = <2 0 0x4000000>;
+        };
+    };
+};
+```
+
+ranges是地址翻译列表。
+
+ranges表中的每个条目都是一个元组，包含子地址、父地址和子地址空间的区域大小。每个字段的大小由子节点的#address-cells值、父节点的#address-cells值和子节点的#size-cells值决定。
+
+另外，如果父地址空间和子地址空间是相同的，那么节点可以添加一个空的ranges属性。空的ranges属性的存在意味着子地址空间中的地址1:1地映射到父地址空间。
+
+你可能会问，为什么在可以使用1:1映射时还使用地址翻译。有些总线（如PCI）有完全不同的地址空间，这些细节需要向操作系统暴露。其他总线有DMA引擎，需要知道总线上的实际地址。有时设备需要分组，因为它们共享相同的软件可编程物理地址映射。是否使用1:1映射在很大程度上取决于操作系统需要的信息和硬件设计。
+
+你还会注意到在i2c@1,0节点中没有ranges属性。原因是与外部总线不同，i2c总线上的设备在CPU的地址域中不是内存映射的。相反，CPU通过i2c@1,0设备间接访问rtc@58设备。没有ranges属性意味着设备不能被它的父设备之外的任何设备直接访问。
 
 
-### 3.3 gpio子系统
+
+>  **5. 连接中断控制器的设备的节点中的描述方式**
+
+与地址范围转换遵循树的自然结构不同，中断信号可以起源于并终止于机器中的任何设备。与设备地址在设备树中自然表达不同，中断信号被表达为节点之间的链接，这些链接独立于树结构。描述中断连接的四个属性是：
+
+- interrupt-controller：一个空属性，**声明一个节点为接收中断信号的设备**。
+- \#interrupt-cells：**这是中断控制器节点的属性。它声明了该中断控制器的中断说明符中有多少个单元**（类似于#address-cells和#size-cells）。
+- interrupt-parent：**设备节点的一个属性，包含指向它所连接的中断控制器的phandle**。没有interrupt-parent属性的节点也可以从其父节点继承该属性。
+- interrupts：**设备节点的一个属性，包含一个中断说明符列表，每个中断输出信号对应一个**。
+
+中断说明符是一个或多个数据单元（由#interrupt-cells指定），指定设备连接到的中断输入。大多数设备只有一个中断输出，如以下示例所示，但设备也可能有多个中断输出。中断说明符的含义完全取决于中断控制器设备的绑定。每个中断控制器可以决定它需要多少个单元来唯一定义一个中断输入。
+
+```c
+/dts-v1/;
+
+/ {
+    compatible = "acme,coyotes-revenge";
+    #address-cells = <1>;
+    #size-cells = <1>;
+    
+
+    cpus {
+        #address-cells = <1>;
+        #size-cells = <0>;
+        cpu@0 {
+            compatible = "arm,cortex-a9";
+            reg = <0>;
+        };
+        cpu@1 {
+            compatible = "arm,cortex-a9";
+            reg = <1>;
+        };
+    };
+    //中断控制器节点：
+    intc: interrupt-controller@10140000 {
+        compatible = "arm,pl190";
+        reg = <0x10140000 0x1000 >;
+        //声明此节点为中断控制器节点：
+        interrupt-controller;
+        //声明了该中断控制器的中断说明符中有2个单元：中断10管脚控制器及中断触发方式
+        #interrupt-cells = <2>;
+    };
+
+    serial@101f0000 {
+        compatible = "arm,pl011";
+        reg = <0x101f0000 0x1000 >;
+        //此串口设备有连接到中断控制器：
+        interrupt-parent = <&intc>;
+        //中断控制intc中的第1索引中断控制器，0下降边沿角触发中断。1，表中上升边沿触发中断 等等...
+        interrupts = < 1 0 >;
+    };
+
+    serial@101f2000 {
+        compatible = "arm,pl011";
+        reg = <0x101f2000 0x1000 >;
+        //此串口设备有连接到中断控制器：
+        interrupt-parent = <&intc>;
+        //中断控制intc中的第2索引中断控制器，0下降边沿角触发中断。1，表中上升边沿触发中断 等等...
+        interrupts = < 2 0 >;
+    };
+
+    
+
+    spi@10115000 {
+        compatible = "arm,pl022";
+        reg = <0x10115000 0x1000 >;
+        //此串口设备有连接到中断控制器：
+        interrupt-parent = <&intc>;
+        //中断控制intc中的第3索引中断控制器，0下降边沿角触发中断。1，表中上升边沿触发中断 等等... 
+        interrupts = < 4 0 >;
+    };
+
+};
+```
+
+
+
+> **6. 连接GPIO控制器的设备的节点中的描述方式: pinctl相关属性** 
+
+在设备树中，描述引脚多路复用（Pin Multiplexing，也称为 Pinmux）的设备节点时，通常会涉及到引脚复用控制器（Pin Controller）和特定的引脚组配置。引脚复用控制器用于管理引脚的多功能配置，使得一个引脚可以在不同的设备或功能之间切换。引脚复用功能的状态描述及复用的功能常用以下方式进行描述：
+
+- pinctrl-names：定义引脚控制配置集的名称列表。你可以为每个配置集选择任何有意义的名称，如 default, idle, sleep, active 等。
+
+- pinctrl-0, pinctrl-1, ...：这些属性引用实际的引脚控制配置，顺序与 pinctrl-names 中的名称列表一一对应。
+
+通过以上的方式对相关的控制器进行配置：比如I2C控制进行配置时，如果要配置引脚功能为I2c的SCL及SDA时：
+
+```c
+//以下为stm32157平台上的i2c示例：
+        /{
+            soc{
+                    i2c1: i2c@40012000 {
+                    compatible = "st,stm32mp15-i2c";
+                    reg = <0x40012000 0x400>;
+                    interrupt-names = "event", "error";
+                    interrupts-extended = <&exti 21 IRQ_TYPE_LEVEL_HIGH>,
+                                          <&intc GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
+                    clocks = <&rcc I2C1_K>;
+                    resets = <&rcc I2C1_R>;
+                    #address-cells = <1>;
+                    #size-cells = <0>;
+                    status = "disabled";
+                    };          
+            }; 
+            pinctrl{
+                i2c1_pins_b: i2c1-1 {
+                                    pins {
+                                            pinmux = <STM32_PINMUX('F', 14, AF5)>, /* I2C1_SCL */
+                                                     <STM32_PINMUX('F', 15, AF5)>; /* I2C1_SDA */
+                                            bias-disable;
+                                            drive-open-drain;
+                                            slew-rate = <0>;
+                                     };
+                               };
+
+                i2c1_sleep_pins_b: i2c1-sleep-1 {
+                                     pins {
+                                                pinmux = <STM32_PINMUX('F', 14, ANALOG)>, /* I2C1_SCL */
+                                                 <STM32_PINMUX('F', 15, ANALOG)>; /* I2C1_SDA */
+                                      };
+                                };            
+                    };                          
+        };
+        //如果对i2c1这个控制器进行配置相应的引脚为scl与sda功能的话：配置如下：
+&i2c1{
+    pinctrl-names = "default","sleep";    
+    pinctrl-0 = <&i2c1_pins_b>;        //工作状态管脚复用GPIOF_14/GPIOF_15复用为I2C_SCL与SDA功能。
+    pinctrl-1 = <&i2c1_sleep_pins_b>;  //休眠状态管脚复用  
+    status = "okay";
+    //子节点即为连接在I2C1控制器上的I2c设备。
+    si7006@40{
+        compatible = "si7006";
+        reg = <0x40>;
+    };
+};
+```
+
+#### 3.2.3 总结
+
+以上就是设备树的基本的通用属性的描述，当然设备树很灵活，可以自由的进行设置。但要遵从一定的基本规则。其它的更加详细与具体细节的用法可以查看内核说明手册DeviceTree下的Docment/bindings目录查看。
+
+以后还有连接到I2C控制器的设备，及连接到SPI控制器的设备等...的设备节点的描述，到时去查看相应的对应手册即可了。
+
+
+
+### 3.3 设备树中的节点使用
+
+#### 3.3.1 struct platform_device 与 struct device_node 的关系
+
+![alt text](./Linux_driver.assets/devicetree5.png)
+
+结构体具体实现
+
+```c
+struct device_node {
+	const char *name; // 节点名称
+	const char *type; 
+	phandle phandle;
+	const char *full_name; // 节点全称
+	struct fwnode_handle fwnode;
+
+	struct	property *properties;  // 节点属性结构体
+	struct	property *deadprops;	/* removed properties */
+	struct	device_node *parent;  // 父节点
+	struct	device_node *child;   // 子节点
+	struct	device_node *sibling;  // 兄弟节点
+	struct	kobject kobj;
+	unsigned long _flags;
+	void	*data;
+#if defined(CONFIG_SPARC)
+	const char *path_component_name;
+	unsigned int unique_id;
+	struct of_irq_controller *irq_trans;
+#endif
+};
+
+struct property {
+	char	*name; // 属性的标签名
+	int	length;   //属性长度，即值所点用的字节数。
+	void	*value; //属性值
+	struct property *next; //下一个属性节点，所有属性之间是用链接管理的。同一节点内的所有属性构成一条单链表。
+	unsigned long _flags;
+	unsigned int unique_id;
+	struct bin_attribute attr;
+};
+```
+
+#### 3.3.2 匹配方式
+
+使用 platform_driver中的 of_match_table成员的compatible字段实现设备树与驱动的多对一匹配
+
+```c
+static const struct of_device_id of_node_match_table[] = {
+    [0] = {.compatible = "zzj,my_device_001",},
+    [1] = {.compatible = "zzj,my_device_002"},
+    [2] = {}
+};
+
+static struct platform_driver my_platform_driver = {
+    .probe = my_platform_probe,
+    .remove = my_platform_remove,
+    .driver = { 
+        .name = "zzj,my_device_001",            // 名字方式匹配
+        .of_match_table = of_node_match_table   // 设备树方式匹配
+    },
+    .id_table = id_table,  // platform bus idtable式 一对多匹配
+};
+```
+
+
+
+
+### 3.4 gpio子系统
 
 gpio子系统操作api从`gpio_*`发展到`gpiod_*`，到现在为止，`gpio_*`样式的api已经被弃用
 
@@ -1553,9 +1825,15 @@ gpio子系统操作api从`gpio_*`发展到`gpiod_*`，到现在为止，`gpio_*`
 
 - [stack overflow](https://stackoverflow.com/questions/39103185/gpiod-vs-gpio-methods-in-the-linux-kernel)
 
-- [kernel doc](https://www.kernel.org/doc/html/v5.2/driver-api/gpio/index.html)
+- [kernel doc](https://kernel.org/doc/html/v5.2/driver-api/gpio/consumer.html)
 
-#### 3.3.1 gpiod_* api 
+
+
+#### 3.4.1 gpio子系统框架图
+
+![alt text](./Linux_driver.assets/gpiosubsys.png)
+
+#### 3.4.1 gpiod_* api 
 
 > 相关数据结构
 
@@ -1592,7 +1870,6 @@ enum gpiod_flags {
 // 申请
 struct gpio_desc *gpiod_get(struct device *dev, const char *con_id,
                             enum gpiod_flags flags)
-    
 struct gpio_desc *gpiod_get_index(struct device *dev,
                           const char *con_id, unsigned int idx,
                           enum gpiod_flags flags)   
@@ -1613,7 +1890,7 @@ struct gpio_descs *gpiod_get_array_optional(struct device *dev,
                                 enum gpiod_flags flags)
 // 释放
 void gpiod_put(struct gpio_desc *desc)
- void gpiod_put_array(struct gpio_descs *descs)
+void gpiod_put_array(struct gpio_descs *descs)
 ```
 
 > 设置 gpio
@@ -1641,21 +1918,73 @@ int gpiod_get_value_cansleep(const struct gpio_desc *desc)
 void gpiod_set_value_cansleep(struct gpio_desc *desc, int value)
 ```
 
-#### 3.3.2 低电平有效和开漏语义
+#### 3.4.2 低电平有效和开漏语义
 
-| 函数（示例）                  | 线路属性              | 物理线路       |
-| ----------------------------- | --------------------- | -------------- |
-| gpiod_set_raw_value(desc, 0); | 不关心                | low            |
-| gpiod_set_raw_value(desc, 1); | 不关心                | high           |
-| gpiod_set_value(desc, 0);     | 默认（高电平有效）    | low            |
-| gpiod_set_value(desc, 1);     | 默认（高电平有效）    | high           |
-| gpiod_set_value(desc, 0);     | 低电平有效            | high           |
-| gpiod_set_value(desc, 1);     | 低电平有效            | low            |
-| gpiod_set_value(desc, 0);     | default (active high) | low            |
-| gpiod_set_value(desc, 1);     | default (active high) | high           |
-| gpiod_set_value(desc, 0);     | 漏极开路              | low            |
-| gpiod_set_value(desc, 1);     | 漏极开路              | high impedance |
-| gpiod_set_value(desc, 0);     | 源极开路              | high impedance |
-| gpiod_set_value(desc, 1);     | 源极开路              | high           |
+| 函数（示例）                  | 线路属性           | 物理线路       |
+| ----------------------------- | ------------------ | -------------- |
+| gpiod_set_raw_value(desc, 0); | 不关心             | low            |
+| gpiod_set_raw_value(desc, 1); | 不关心             | high           |
+| gpiod_set_value(desc, 0);     | 默认（高电平有效） | low            |
+| gpiod_set_value(desc, 1);     | 默认（高电平有效） | high           |
+| gpiod_set_value(desc, 0);     | 低电平有效         | high           |
+| gpiod_set_value(desc, 1);     | 低电平有效         | low            |
+| gpiod_set_value(desc, 0);     | 默认（高电平有效） | low            |
+| gpiod_set_value(desc, 1);     | 默认（高电平有效） | high           |
+| gpiod_set_value(desc, 0);     | 漏极开路           | low            |
+| gpiod_set_value(desc, 1);     | 漏极开路           | high impedance |
+| gpiod_set_value(desc, 0);     | 源极开路           | high impedance |
+| gpiod_set_value(desc, 1);     | 源极开路           | high           |
 
 可以使用 set_raw/get_raw 函数覆盖这些语义，但应尽可能避免，特别是对于系统无关的驱动程序，它们不需要关心实际的物理线路级别，而是担心逻辑值。
+
+#### 3.4.3 代码示例
+
+> 设备树
+
+```c
+myled{
+		model = "this is a led desc";
+		compatible = "zzj,my_device_001";
+		dev_type = "LED";
+		status = "okay";
+    /*
+    	gpio的设备树配置标签命名为[con_id]-[gpio/gpios]
+    	&gpio5 3 代表 gpio5组第3个引脚
+    */
+    	led-gpio = <&gpio5 3 GPIO_ACTIVE_LOW>;
+    	led2-gpios = <&gpio5 4 GPIO_ACTIVE_LOW>,
+            			<&gpio6 2 GPIO_ACTIVE_LOW>,
+            			<&gpio6 3 GPIO_ACTIVE_LOW>
+	};
+```
+
+> 获取gpio
+
+```c
+// 获取一个gpio的个数
+struct gpio_desc* desc;
+ret = gpiod_count(&p_dev->dev, "led");
+printk("get led func gpio num: %d\n", ret);
+
+// 获取gpio描述符
+desc = gpiod_get(&p_dev->dev, "led", GPIOD_OUT_LOW);
+if(IS_ERR(desc))
+{
+    return -ENOENT;
+}
+
+ret = gpiod_count(&p_dev->dev, "led1");
+printk("get led func gpio num: %d\n", ret);
+
+// 获取gpio描述符
+desc = gpiod_get_array(&p_dev->dev, "led", GPIOD_OUT_LOW);
+if(IS_ERR(desc))
+{
+    return -ENOENT;
+}
+
+printk("gpiod get success...\n");
+```
+
+
+
