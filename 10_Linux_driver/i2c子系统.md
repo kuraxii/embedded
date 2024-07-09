@@ -48,25 +48,139 @@
 
 
 
-## i2c子系统api
+## 2. i2c总线驱动框架与调用路径
+I²C总线驱动框架是基于platform平台总线实现的，根据I2C子系统中源码的调用逻辑，绘制如图框架：以方便给大家学习时的整体感：（当我阅读了I2C源码后，发现网上广为传播的框图，有所谬误，所以根据调用逻辑重新绘制）
+![alt text](./Linux_driver.assets/i2c01.png)
 
 
-### 数据结构
+## 3. i1c子系统常用数据类型及操作接口
 
+### 3.1 认识i2c从机设备驱动的结构体 i2c_driver
 
+```c
+struct i2c_driver {
+    ...
+    /* Standard driver model interfaces */
+    int (*probe)(struct i2c_client *client, const struct i2c_device_id *id);
+    int (*remove)(struct i2c_client *client);
+    ...    
+    struct device_driver driver;//驱动的父类：父类中有匹配方式 of_match_table;
+    ...
 
-### 添加i2c驱动
+};
+//i2c驱动的父类
+struct device_driver {
+    const char        *name; //驱动的名字，用来生成节点
+    ...
+    const struct of_device_id    *of_match_table;//设备树匹配方式
+    ...
+    struct driver_private *p;//私有属性指针
+};
+```
 
+### 3.2 i2c_driver对象的注册于销毁
+```c
+//i2c_driver对象的注册宏：
+#define i2c_add_driver(driver) \
+    i2c_register_driver(THIS_MODULE, driver)
+//对应的注销宏：
+void i2c_del_driver(struct i2c_driver *driver);
 
+//一键注册注销宏：
+module_i2c_driver(i2c_driver对象);
+```
 
+### 3.3 从机设备：struct i2c_client结构体
+```c
+struct i2c_client {
+    unsigned short flags;           /* 设备的标志位 */
+    unsigned short addr;            /* 设备的 I2C 地址 */
+    char name[I2C_NAME_SIZE];       /* 设备的名称 */
+    struct i2c_adapter *adapter;    /* 指向 I2C 适配器的指针，表示该设备连接到哪个适配器上 */
+    struct device dev;              /* 通用设备结构，用于描述设备的基本信息 */
+    ...
+};
+```
 
+### 3.4 发数据接口：i2c_master_send
+```c
+int i2c_master_send(struct i2c_client *client, const char *buf, int count);
+// client: 指向 struct i2c_client 结构的指针，表示要发送数据的目标设备。
+// buf: 指向包含要发送数据的缓冲区的指针。
+// count: 要发送的字节数。
+// 功能和用法：i2c_master_send() 函数用于向连接到 I2C 总线的设备发送数据。
+// 它通过 client 参数确定要发送数据的目标设备，通过 buf 和 count 参数指定要发送的数据内容和长度。
+// 函数返回发送的字节数，如果发生错误，则返回负数
+```
 
+### 3.5 收数据接口：i2c_master_recv()
+```c
+int i2c_master_send(struct i2c_client *client, const char *buf, int count);
+// client: 指向 struct i2c_client 结构的指针，表示要发送数据的目标设备。
+// buf: 指向包含要发送数据的缓冲区的指针。
+// count: 要发送的字节数。
+// 功能和用法：i2c_master_send() 函数用于向连接到 I2C 总线的设备发送数据。
+// 它通过 client 参数确定要发送数据的目标设备，通过 buf 和 count 参数指定要发送的数据内容和长度。
+// 函数返回发送的字节数，如果发生错误，则返回负数
+```
 
+### 3.6 拓展内容
 
+#### 3.6.1 I2C控制器结构体：i2c_adapter
 
-## 示例
+```c
+struct i2c_adapter 
+{
+    struct module *owner;// 驱动程序模块的所有者
+    unsignedintclass;// 适配器类别
+    conststruct i2c_algorithm *algo;// 用于与硬件通信的算法
+    void *algo_data;                     // 算法相关数据
+    ...
+    struct device dev;// 设备结构
+    int nr;                              // 适配器号
+    char name[48];                       // 适配器名称
+    ...
+    };
+```
 
-设备树
+#### 3.6.2 i2c数据消息结构体：struct i2c_msg
+
+```c
+struct i2c_msg {
+    __u16 addr; /* slave address    从机地址        */
+    __u16 flags;//数据中的读写标记为0为写，1为读
+#define I2C_M_RD        0x0001  /* read data, from slave to master */
+                    /* I2C_M_RD is guaranteed to be 0x0001! */
+#define I2C_M_TEN       0x0010  /* this is a ten bit chip address */
+#define I2C_M_DMA_SAFE      0x0200  /* the buffer of this message is DMA safe */
+                    /* makes only sense in kernelspace */
+                    /* userspace buffers are copied anyway */
+#define I2C_M_RECV_LEN      0x0400  /* length will be first received byte */
+#define I2C_M_NO_RD_ACK     0x0800  /* if I2C_FUNC_PROTOCOL_MANGLING */
+#define I2C_M_IGNORE_NAK    0x1000  /* if I2C_FUNC_PROTOCOL_MANGLING */
+#define I2C_M_REV_DIR_ADDR  0x2000  /* if I2C_FUNC_PROTOCOL_MANGLING */
+#define I2C_M_NOSTART       0x4000  /* if I2C_FUNC_NOSTART */
+#define I2C_M_STOP      0x8000  /* if I2C_FUNC_PROTOCOL_MANGLING */
+    __u16 len;      /* msg length          消息长度     */
+    __u8 *buf;      /* pointer to msg data  消息的首地址        */
+};
+// 因为默认的都是写，即为0，所以并没有给出标志位，当需要读时，再给出这个标记位即可。所以就没有明确的写标志位，因为写是默认的。
+```
+
+#### 3.6.3 传输数据函数：int i2c_transfer()
+
+```c
+int i2c_transfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num);
+//通过adap调用alogrithom对象的操作方法进行收发数据：
+// 参数1：adap即为i2c控制器的抽象层的封装的对象
+// 参数2：msgs即封装的收发的数据信息
+// 参数3：num即收发数据结构体对象的个数
+// 成功返回 num个数，失败返回非num数或错误码.
+```
+
+## 4. 示例
+
+> 设备树
 ```tex
 &i2c1 {
 	clock-frequency = <100000>;
@@ -81,9 +195,6 @@
 
 };
 ```
-
-
-
 
 ```c
 #include <linux/module.h>
