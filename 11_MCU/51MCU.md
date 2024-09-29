@@ -36,7 +36,7 @@
 ### 三极管
 
 三极管是一种电子元器件，它由三个电极组成，分别是基极（Base）、集电极（Collector）和发射极（Emitter）。三极管的作用是控制电流的流动，它的工作原理是当电流从基极流向集电极时，三极管就会导通，电流就会从集电极流向发射极。三极管的电路图如下：
-![三极管](51MCU.assets/audion.png)
+![三极管](MCU.assets/audion.png)
 三极管分两种，有PNP三极管和NPN三极管
 
 如何区分：观察三极管的箭头指向，箭头由P->N
@@ -131,7 +131,7 @@ while(1)
 在单片机编程中，RAM 的使用非常重要。程序中定义的变量和数组等数据都需要存储在 RAM 中，在程序执行过程中进行读写操作。因此，程序员需要合理地利用 RAM，避免浪费空间，确保程序能够正常运行。同时，还需要注意 RAM 的读写速度，尽可能地减少对 RAM 的读写操作，提高程序的执行效率。
 
 ### program size
-![program size](51MCU.assets/programsize.png)
+![program size](MCU.assets/programsize.png)
 
 在单片机程序中，通常将内存分为三种类型：数据（data）、扩展数据（xdata）和代码（code）。
 
@@ -163,10 +163,10 @@ unsigned int code i;
 - T0计时器在嵌入式系统中具有广泛的应用，例如实现PWM（脉冲宽度调制）控制、定时采样、计时测量等功能。
 
 #### 定时器涉及的寄存器
-![定时器涉及的寄存器](51MCU.assets/定时器相关寄存器.png)
+![定时器涉及的寄存器](MCU.assets/定时器相关寄存器.png)
 
 - MTOD （0x89）
-  ![TMOD](51MCU.assets/TMOD.png)
+  ![TMOD](MCU.assets/TMOD.png)
   TMOD各位功能描述（以定时器0为例）
 
   |      位       |   符号   |                             功能                             |
@@ -181,7 +181,7 @@ unsigned int code i;
 
   
 - TCON （以定时器0 为例）
-  ![TCON](51MCU.assets/TCON.png)
+  ![TCON](MCU.assets/TCON.png)
     
 - 计数寄存器 （TH0 0x8c，TL0 0x8a）
     - LT0，HT0：分别为16位计数器的低位与高位
