@@ -213,6 +213,58 @@ set nonu：关闭行号
 vsp：在当前终端横向额外打开一个文件；
 ```
 
+
+## 分区管理  fdisk
+### 查看分区信息
+```shell
+# 查看所有的磁盘
+fdisk -l
+# 查看磁盘sdx
+fdisk -l /dev/dsx
+# 查看磁盘sdx的第n个分区
+fdisk -l /dev/sdxn
+```
+
+### fdisk命令行窗口
+```shell
+fdisk /dev/sdx
+
+# 命令行窗口解释
+   a   toggle a bootable flag                                   # 切换可启动标志
+   b   edit bsd disklabel　　　　　　　　　　　　　　　　　　         # 编辑磁盘标记
+   c   toggle the dos compatibility flag　　　　　　　　　　　　　　 # 切换dos兼容标志
+   d   delete a partition　　　　　　　　　　　　　　　　　　　　　　　 # 删除一个分区
+   g   create a new empty GPT partition table             　　   # 创建一个空的GPT分区表
+   G   create an IRIX (SGI) partition table            　　      # 创建一个IRIX分区表
+   l   list known partition types　　　　　　　　　　　　　　　　　　　# 列出已知的分区类型
+   m   print this menu　　　　　　　　　　　　　　　　　　　　　　　　　　# 打印菜单　　　　　　　　　　　　　　　　　　　
+   n   add a new partition                                       # 添加一个分区
+   o   create a new empty DOS partition table                    # 创建一个空的DOS分区表
+   p   print the partition table                                 # 打印分区表
+   q   quit without saving changes                               # 退出不保存
+   s   create a new empty Sun disklabel                          # 创建一个空的sun磁盘标签
+   t   change a partition's system id                            # 改变一个分区的类型
+   u   change display/entry units                                # 改变显示的单位
+   v   verify the partition table                                # 验证分区表
+   w   write table to disk and exit                              # 写分区表并退出
+   x   extra functionality (experts only)                        # 高级功能
+```
+
+### 新建分区
+
+
+
+### 分区扩容
+```shell
+
+
+
+
+
+```
+
+
+
 ## 软件包
 
 ### dpkg
